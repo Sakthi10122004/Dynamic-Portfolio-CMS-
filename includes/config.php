@@ -26,8 +26,8 @@ if ($isLocalhost) {
     // InfinityFree production credentials — update these with your actual values
     define('DB_HOST', 'sql300.infinityfree.com');
     define('DB_USER', 'if0_your_username');
-    define('DB_PASS', 'Sakthi1012204');
-    define('DB_NAME', 'if0_your_dbname');
+    define('DB_PASS', 'Sakthi10122004');
+    define('DB_NAME', 'if0_41140025_sakthi_portfolio');
 }
 
 // Paths
