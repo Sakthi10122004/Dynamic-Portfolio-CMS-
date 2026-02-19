@@ -328,8 +328,6 @@ body>* {
     transition: transform var(--duration-slow) var(--ease-out),
         box-shadow var(--duration) var(--ease-out),
         border-color var(--duration) ease;
-    transform-style: preserve-3d;
-    will-change: transform;
 }
 
 /* Holo border animation on hover */
@@ -775,12 +773,7 @@ body>* {
 }
 
 .btn.primary:hover {
-    transform: translateY(-3px) scale(1.03);
     box-shadow: 0 8px 40px rgba(0, 229, 255, 0.25), 0 0 100px rgba(0, 229, 255, 0.1);
-}
-
-.btn.primary:active {
-    transform: translateY(-1px) scale(0.99);
 }
 
 .btn.secondary {
@@ -793,7 +786,6 @@ body>* {
 .btn.secondary:hover {
     border-color: var(--plasma-cyan);
     box-shadow: 0 0 30px rgba(0, 229, 255, 0.08);
-    transform: translateY(-2px);
 }
 
 .btn.danger {
@@ -857,10 +849,6 @@ body>* {
     height: 100%;
     object-fit: cover;
     transition: transform 0.8s var(--ease-out);
-}
-
-.project-card:hover .project-image img {
-    transform: scale(1.1);
 }
 
 .project-card h3 {
@@ -977,7 +965,6 @@ body>* {
     border-color: var(--plasma-cyan);
     color: var(--plasma-cyan);
     background: rgba(0, 229, 255, 0.06);
-    transform: translateY(-4px) scale(1.06);
     box-shadow:
         0 8px 24px rgba(0, 229, 255, 0.1),
         0 0 0 1px rgba(0, 229, 255, 0.15),
@@ -1130,7 +1117,6 @@ body>* {
 .social-chip:hover {
     border-color: var(--plasma-cyan);
     color: var(--plasma-cyan);
-    transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(0, 229, 255, 0.1);
 }
 
@@ -1639,7 +1625,6 @@ body>* {
 
 .stat-card:hover {
     border-color: var(--border-hover);
-    transform: translateY(-4px);
     box-shadow: var(--shadow-md), var(--shadow-glow-cyan);
 }
 
@@ -2002,7 +1987,6 @@ body>* {
 .social-links a:hover {
     color: var(--plasma-cyan);
     border-color: var(--border-bright);
-    transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 229, 255, 0.08);
 }
 

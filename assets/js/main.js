@@ -120,33 +120,6 @@
     window.addEventListener('resize', () => { resize(); spawn(); });
 })();
 
-// ---- 3D NeuroTilt on Cards ----
-function init3DTilt() {
-    const cards = document.querySelectorAll('.bento-card');
-    const MAX_TILT = 6;
-
-    cards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const cx = rect.width / 2;
-            const cy = rect.height / 2;
-            const rx = ((y - cy) / cy) * -MAX_TILT;
-            const ry = ((x - cx) / cx) * MAX_TILT;
-
-            card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px) scale(1.01)`;
-
-            // Dynamic spotlight
-            card.style.backgroundImage = `radial-gradient(350px circle at ${x}px ${y}px, rgba(0,229,255,0.06), transparent 60%)`;
-        });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = '';
-            card.style.backgroundImage = '';
-        });
-    });
-}
 
 // ---- Scroll Reveal ----
 function initScrollReveal() {
@@ -248,18 +221,6 @@ function initDeleteConfirm() {
     });
 }
 
-// ---- Magnetic Hover on Primary Buttons ----
-function initMagneticButtons() {
-    document.querySelectorAll('.btn.primary').forEach(btn => {
-        btn.addEventListener('mousemove', (e) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            btn.style.transform = `translate(${x * 0.12}px, ${y * 0.12}px) scale(1.03)`;
-        });
-        btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
-    });
-}
 
 // ---- Animated Stat Counter ----
 function initCountUp() {
@@ -315,8 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavbarScroll();
     initMessages();
     initDeleteConfirm();
-    init3DTilt();
-    initMagneticButtons();
     initCountUp();
     initAdminSidebar();
 });
