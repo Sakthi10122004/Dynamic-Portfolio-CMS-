@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/style.css">
 </head>
 <body class="login-page">
@@ -63,15 +64,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" 
-                           id="password"
-                           name="password" 
-                           placeholder="Enter password" 
-                           required>
+                    <div class="pw-wrap">
+                        <input type="password" 
+                               id="password"
+                               name="password" 
+                               placeholder="Enter password" 
+                               required>
+                        <button type="button" class="pw-toggle" id="pwToggle" aria-label="Toggle password visibility">
+                            <i class="fa-regular fa-eye" id="pwIcon"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn primary full-width">Sign In</button>
+                <div class="forgot-link">
+                    <a href="<?php echo BASE_URL; ?>/admin/reset-password.php">Forgot password?</a>
+                </div>
             </form>
+            <script>
+            document.getElementById('pwToggle').addEventListener('click', function () {
+                var inp = document.getElementById('password');
+                var icn = document.getElementById('pwIcon');
+                if (inp.type === 'password') {
+                    inp.type = 'text';
+                    icn.className = 'fa-regular fa-eye-slash';
+                } else {
+                    inp.type = 'password';
+                    icn.className = 'fa-regular fa-eye';
+                }
+            });
+            </script>
             
             <div class="login-footer">
                 <a href="<?php echo BASE_URL; ?>/">← Back to site</a>

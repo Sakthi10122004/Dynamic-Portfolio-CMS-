@@ -40,7 +40,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         [$name, $email, $message, $ip],
         'ssss'
     );
-    
+
+    // Email notification to admin
+    $adminEmail = 'sakthikaribeeran@gmail.com';
+    $subject    = "New Contact Message from {$name}";
+    $body       = "You have a new message from your portfolio contact form.\n\n"
+                . "Name   : {$name}\n"
+                . "Email  : {$email}\n"
+                . "Message:\n{$message}\n\n"
+                . "---\nView in admin: " . BASE_URL . "/admin/messages.php";
+    $headers    = "From: noreply@" . ($_SERVER['HTTP_HOST'] ?? 'portfolio') . "\r\n"
+                . "Reply-To: {$email}\r\n"
+                . "X-Mailer: PHP/" . phpversion();
+    @mail($adminEmail, $subject, $body, $headers);
+
     header('Location: ' . BASE_URL . '/?sent=1#contact');
     exit;
 }

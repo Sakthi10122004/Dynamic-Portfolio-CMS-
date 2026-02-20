@@ -26,6 +26,9 @@
             <span class="badge"><?php echo $unreadMessages; ?></span>
             <?php endif; ?>
         </a>
+        <a href="<?php echo BASE_URL; ?>/admin/security.php" class="sidebar-link <?php echo basename($_SERVER['SCRIPT_NAME']) === 'security.php' ? 'active' : ''; ?>">
+            <span class="sidebar-icon">🔐</span> Security
+        </a>
         <a href="<?php echo BASE_URL; ?>/admin/logout.php" class="sidebar-link logout">
             <span class="sidebar-icon">🚪</span> Logout
         </a>

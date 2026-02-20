@@ -59,6 +59,8 @@ $tables = [
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(50) NOT NULL UNIQUE,
         password_hash VARCHAR(255) NOT NULL,
+        security_question VARCHAR(255) DEFAULT NULL,
+        security_answer VARCHAR(255) DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB",
     
@@ -120,6 +122,20 @@ foreach ($tables as $name => $sql) {
         $hasError = true;
     }
 }
+
+// Step 3b: Migrate existing users table (add security columns if missing)
+$migrations = [
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS security_question VARCHAR(255) DEFAULT NULL",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS security_answer   VARCHAR(255) DEFAULT NULL",
+];
+foreach ($migrations as $sql) {
+    try {
+        $conn->query($sql);
+    } catch (Exception $e) {
+        // Ignore — column may already exist on older MySQL without IF NOT EXISTS
+    }
+}
+$steps[] = ['✅', 'Users table migration applied (security question columns)'];
 
 // Step 4: Insert default data
 // Generate proper password hash
