@@ -1,230 +1,320 @@
 /* ============================================================
-   main.js — Premium Portfolio Animations v2
-   No external dependencies. GPU-accelerated transforms only.
+   main.js v3 — Command Palette + Theme Toggle + Micro Interactions
+   Vanilla JS, no libraries, production-ready
    ============================================================ */
 
 (function () {
     'use strict';
 
-    /* ── 1. Scroll Progress Bar ─────────────────────────────── */
-    const progressBar = document.getElementById('scrollProgress');
-    function updateProgress() {
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const pct = max > 0 ? Math.round((window.scrollY / max) * 1000) / 10 : 0;
-        document.documentElement.style.setProperty('--scroll-pct', pct + '%');
+    /* ── 0. Helpers ─────────────────────────────────────────── */
+    const qs = (sel, root) => (root ?? document).querySelector(sel);
+    const qsa = (sel, root) => [...(root ?? document).querySelectorAll(sel)];
+
+    /* ── 1. Theme (dark/light) ─────────────────────────────── */
+    const html = document.documentElement;
+    const THEME_KEY = 'portfolio-theme';
+    const themeToggle = qs('.theme-toggle');
+
+    function applyTheme(theme) {
+        html.setAttribute('data-theme', theme);
+        localStorage.setItem(THEME_KEY, theme);
     }
 
-    /* ── 2. Navbar Scroll Shrink ─────────────────────────────── */
-    const navbar = document.querySelector('.navbar');
-    function onScroll() {
-        updateProgress();
-        if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 40);
-        updateActiveNav();
+    // Init: respect stored preference, then OS preference
+    const storedTheme = localStorage.getItem(THEME_KEY);
+    const osDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(storedTheme || (osDark ? 'dark' : 'light'));
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+            applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
     }
-    let ticking = false;
+
+    /* ── 2. Scroll progress + topbar shrink ────────────────── */
+    const topbar = qs('.topbar');
+
+    function onScroll() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = max > 0 ? (window.scrollY / max * 100).toFixed(1) : 0;
+        html.style.setProperty('--scroll-pct', pct + '%');
+        if (topbar) topbar.classList.toggle('scrolled', window.scrollY > 40);
+        updateScrollspy();
+    }
+
+    let rafPending = false;
     window.addEventListener('scroll', function () {
-        if (!ticking) { requestAnimationFrame(function () { onScroll(); ticking = false; }); ticking = true; }
+        if (!rafPending) {
+            requestAnimationFrame(function () { onScroll(); rafPending = false; });
+            rafPending = true;
+        }
     }, { passive: true });
 
-    /* ── 3. Mobile hamburger ─────────────────────────────────── */
-    const toggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
-    if (toggle && navLinks) {
-        toggle.addEventListener('click', function () {
-            const open = navLinks.classList.toggle('open');
-            toggle.classList.toggle('open', open);
-            toggle.setAttribute('aria-expanded', open);
-            document.body.style.overflow = open ? 'hidden' : '';
-        });
-        navLinks.addEventListener('click', function (e) {
-            if (e.target.tagName === 'A') {
-                navLinks.classList.remove('open');
-                toggle.classList.remove('open');
-                toggle.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
-            }
-        });
-        document.addEventListener('click', function (e) {
-            if (!navbar.contains(e.target) && navLinks.classList.contains('open')) {
-                navLinks.classList.remove('open');
-                toggle.classList.remove('open');
-                toggle.setAttribute('aria-expanded', 'false');
-                document.body.style.overflow = '';
-            }
-        });
+    /* ── 3. Smooth scroll helper ────────────────────────────── */
+    function scrollToSection(id) {
+        const el = qs(id.startsWith('#') ? id : '#' + id);
+        if (!el) return;
+        const top = el.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top, behavior: 'smooth' });
     }
 
-    /* ── 4. Scrollspy — active nav link ─────────────────────── */
-    const sections = document.querySelectorAll('section[id]');
-    const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
-    function updateActiveNav() {
+    /* ── 4. Scrollspy ───────────────────────────────────────── */
+    function updateScrollspy() {
+        const sections = qsa('section[id]');
         let current = '';
         sections.forEach(function (sec) {
-            if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
-        });
-        navAnchors.forEach(function (a) {
-            a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+            if (window.scrollY >= sec.offsetTop - 130) current = sec.id;
         });
     }
 
-    /* ── 5. Smooth scroll ───────────────────────────────────── */
-    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    // Anchor links
+    qsa('a[href^="#"]').forEach(function (a) {
         a.addEventListener('click', function (e) {
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
+            const target = qs(a.getAttribute('href'));
+            if (target) { e.preventDefault(); scrollToSection(a.getAttribute('href')); }
+        });
+    });
+
+    /* ── 5. Command Palette ─────────────────────────────────── */
+    const backdrop = qs('#palette-backdrop');
+    const input = qs('#palette-input');
+    const list = qs('#palette-list');
+    const cmdBtn = qs('.cmd-trigger');
+
+    /* Nav items — extend freely */
+    const NAV_ITEMS = [
+        { icon: '🏠', label: 'Home', shortcut: 'G H', target: '#home' },
+        { icon: '👤', label: 'About', shortcut: 'G A', target: '#about' },
+        { icon: '⚙️', label: 'Tech Stack', shortcut: 'G T', target: '#tech' },
+        { icon: '💼', label: 'Experience', shortcut: 'G E', target: '#experience' },
+        { icon: '🚀', label: 'Projects', shortcut: 'G P', target: '#projects' },
+        { icon: '✉️', label: 'Contact', shortcut: 'G C', target: '#contact' },
+        { icon: '🌙', label: 'Toggle Theme', shortcut: 'G D', action: function () { if (themeToggle) themeToggle.click(); } },
+    ];
+
+    let paletteOpen = false;
+    let activeIdx = -1;
+
+    function renderPalette(query) {
+        if (!list) return;
+        const q = (query || '').toLowerCase().trim();
+        const items = q
+            ? NAV_ITEMS.filter(function (n) { return n.label.toLowerCase().includes(q); })
+            : NAV_ITEMS;
+
+        if (!items.length) {
+            list.innerHTML = '<li class="palette-empty">No results for "' + query + '"</li>';
+            activeIdx = -1;
+            return;
+        }
+
+        list.innerHTML = items.map(function (item, i) {
+            return '<li class="palette-item" data-idx="' + i + '" data-target="' + (item.target || '') + '" ' +
+                (item.action ? 'data-action="true"' : '') +
+                ' role="option">' +
+                '<span class="palette-item-icon">' + item.icon + '</span>' +
+                '<span class="palette-item-label">' + item.label + '</span>' +
+                '<span class="palette-item-shortcut">' + item.shortcut + '</span>' +
+                '</li>';
+        }).join('');
+
+        activeIdx = 0;
+        updatePaletteActive();
+
+        // Store filtered items for keyboard nav
+        list._items = items;
+    }
+
+    function updatePaletteActive() {
+        qsa('.palette-item', list).forEach(function (el, i) {
+            el.classList.toggle('active', i === activeIdx);
+        });
+    }
+
+    function selectPaletteItem() {
+        const items = list._items || NAV_ITEMS;
+        const item = items[activeIdx < 0 ? 0 : activeIdx];
+        if (!item) return;
+        closePalette();
+        if (item.action) { setTimeout(item.action, 60); }
+        if (item.target) { setTimeout(function () { scrollToSection(item.target); }, 60); }
+    }
+
+    function openPalette() {
+        if (!backdrop) return;
+        paletteOpen = true;
+        backdrop.classList.add('open');
+        if (input) { input.value = ''; input.focus(); }
+        renderPalette('');
+    }
+
+    function closePalette() {
+        if (!backdrop) return;
+        paletteOpen = false;
+        backdrop.classList.remove('open');
+    }
+
+    // Triggers
+    if (cmdBtn) cmdBtn.addEventListener('click', openPalette);
+    if (backdrop) backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closePalette(); });
+
+    if (input) {
+        input.addEventListener('input', function () { renderPalette(input.value); activeIdx = 0; updatePaletteActive(); });
+        input.addEventListener('keydown', function (e) {
+            const items = qsa('.palette-item', list);
+            if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                activeIdx = Math.min(activeIdx + 1, items.length - 1);
+                updatePaletteActive();
+                items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeIdx = Math.max(activeIdx - 1, 0);
+                updatePaletteActive();
+                items[activeIdx]?.scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                selectPaletteItem();
             }
         });
+    }
+
+    // Click on list items
+    if (list) {
+        list.addEventListener('click', function (e) {
+            const item = e.target.closest('.palette-item');
+            if (!item) return;
+            activeIdx = +item.dataset.idx;
+            selectPaletteItem();
+        });
+    }
+
+    // Global keyboard shortcut: Ctrl+K / Cmd+K
+    document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            paletteOpen ? closePalette() : openPalette();
+        }
+        if (e.key === 'Escape' && paletteOpen) closePalette();
     });
 
     /* ── 6. IntersectionObserver scroll reveal ──────────────── */
     const revealObs = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                const el = entry.target;
-                const delay = el.dataset.delay || 0;
-                setTimeout(function () { el.classList.add('visible'); }, +delay);
-                revealObs.unobserve(el);
-            }
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            const delay = +(el.dataset.delay || 0);
+            setTimeout(function () { el.classList.add('visible'); }, delay);
+            revealObs.unobserve(el);
         });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-    function addReveal(selector, cls, baseDelay) {
-        document.querySelectorAll(selector).forEach(function (el, i) {
-            el.classList.add(cls);
-            if (!el.dataset.delay) el.dataset.delay = baseDelay + i * 80;
+    function addReveal(sel, delay) {
+        qsa(sel).forEach(function (el, i) {
+            el.classList.add('reveal');
+            if (!el.dataset.delay) el.dataset.delay = delay + i * 70;
             revealObs.observe(el);
         });
     }
 
-    addReveal('.bento-card', 'reveal', 0);
-    addReveal('.timeline-item', 'reveal', 0);
-    addReveal('.section-title', 'reveal', 0);
+    addReveal('.card', 0);
+    addReveal('.exp-card', 0);
+    addReveal('.project-card', 60);
+    qsa('.section-label').forEach(function (el) {
+        el.classList.add('reveal');
+        revealObs.observe(el);
+    });
 
-    /* ── 7. Animated stat counters ──────────────────────────── */
-    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+    /* ── 7. Stat counters ───────────────────────────────────── */
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
 
-    function animateCounter(el) {
+    function animateCount(el) {
         const raw = el.textContent.trim();
-        const suffix = raw.replace(/[\d.]/g, '');
+        const suffix = raw.replace(/[\d.]+/, '');
         const target = parseFloat(raw);
         if (isNaN(target)) return;
-        const duration = 1800;
+        const dur = 1600;
         const start = performance.now();
-        function step(now) {
-            const elapsed = Math.min(now - start, duration);
-            const progress = easeOutCubic(elapsed / duration);
-            const value = target === Math.floor(target)
-                ? Math.floor(progress * target)
-                : (progress * target).toFixed(1);
-            el.textContent = value + suffix;
-            if (elapsed < duration) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
+        (function step(now) {
+            const p = Math.min((now - start) / dur, 1);
+            const v = target === Math.floor(target)
+                ? Math.floor(easeOut(p) * target)
+                : (easeOut(p) * target).toFixed(1);
+            el.textContent = v + suffix;
+            if (p < 1) requestAnimationFrame(step);
+        })(start);
     }
 
-    const counterObs = new IntersectionObserver(function (entries) {
+    new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                entry.target.querySelectorAll('.stat-number').forEach(animateCounter);
-                counterObs.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.5 });
-
-    document.querySelectorAll('.stats-card').forEach(function (c) { counterObs.observe(c); });
+            if (!entry.isIntersecting) return;
+            qsa('.hero-stat-num', entry.target).forEach(animateCount);
+            this.unobserve(entry.target);
+        }.bind(this));
+    }, { threshold: 0.5 }).observe(qs('.hero') || document.body);
 
     /* ── 8. Button ripple ───────────────────────────────────── */
-    document.addEventListener('click', function (e) {
+    document.addEventListener('pointerdown', function (e) {
         const btn = e.target.closest('.btn');
         if (!btn) return;
         const r = document.createElement('span');
-        r.className = 'ripple';
         const rect = btn.getBoundingClientRect();
         const size = Math.max(rect.width, rect.height);
+        r.className = 'ripple';
         r.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px';
         btn.appendChild(r);
         r.addEventListener('animationend', function () { r.remove(); });
     });
 
-    /* ── 9. Floating labels — contact form ──────────────────── */
-    document.querySelectorAll('.field input, .field textarea').forEach(function (inp) {
-        inp.placeholder = ' '; // CSS float relies on :not(:placeholder-shown)
-    });
-
-    /* ── 10. Admin sidebar drawer (mobile) ──────────────────── */
-    const sidebar = document.querySelector('.admin-sidebar');
-    const sidebarToggle = document.querySelector('.sidebar-toggle');
-    const sidebarClose = document.querySelector('.sidebar-close');
-    const sidebarOverlay = document.querySelector('.sidebar-overlay');
-
-    function openSidebar() { if (sidebar) sidebar.classList.add('open'); }
-    function closeSidebar() { if (sidebar) sidebar.classList.remove('open'); }
-
-    if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
-    if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
-    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
-
-    /* ── 11. Cursor glow (desktop only) ─────────────────────── */
-    if (window.matchMedia('(pointer: fine) and (min-width: 769px)').matches) {
-        const glow = document.querySelector('.cursor-glow');
-        if (glow) {
-            let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-            let cx = mx, cy = my;
-            document.addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; });
-            function animGlow() {
-                cx += (mx - cx) * 0.08;
-                cy += (my - cy) * 0.08;
-                glow.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)';
-                requestAnimationFrame(animGlow);
-            }
-            animGlow();
-        }
+    /* ── 9. Cursor glow (desktop only) ─────────────────────── */
+    const glow = qs('.cursor-glow');
+    if (glow && window.matchMedia('(pointer:fine) and (min-width:768px)').matches) {
+        let mx = innerWidth / 2, my = innerHeight / 2, cx = mx, cy = my;
+        document.addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; });
+        (function animate() {
+            cx += (mx - cx) * 0.07;
+            cy += (my - cy) * 0.07;
+            glow.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)';
+            requestAnimationFrame(animate);
+        })();
+    } else if (glow) {
+        glow.style.display = 'none';
     }
 
-    /* ── 12. Auto-dismiss alerts ─────────────────────────────── */
-    document.querySelectorAll('.alert, .success-message, .error-message').forEach(function (el) {
+    /* ── 10. Auto-dismiss alerts ────────────────────────────── */
+    qsa('.alert, .success-message, .error-message').forEach(function (el) {
         setTimeout(function () {
             el.style.transition = 'opacity 0.5s, max-height 0.5s, margin 0.5s, padding 0.5s';
-            el.style.opacity = '0';
-            el.style.maxHeight = '0';
-            el.style.overflow = 'hidden';
-            el.style.margin = '0';
-            el.style.padding = '0';
+            el.style.opacity = '0'; el.style.maxHeight = '0'; el.style.overflow = 'hidden';
+            el.style.margin = '0'; el.style.padding = '0';
             setTimeout(function () { el.remove(); }, 600);
         }, 4500);
     });
 
-    /* ── 13. File input preview ─────────────────────────────── */
-    document.querySelectorAll('input[type="file"][data-preview]').forEach(function (inp) {
-        inp.addEventListener('change', function () {
-            const preview = document.getElementById(this.dataset.preview);
-            if (preview && this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) { preview.src = e.target.result; preview.style.display = 'block'; };
-                reader.readAsDataURL(this.files[0]);
-            }
+    /* ── 11. Password visibility toggle ────────────────────── */
+    qsa('.pw-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const inp = btn.previousElementSibling || btn.parentElement.querySelector('input');
+            if (!inp) return;
+            inp.type = inp.type === 'text' ? 'password' : 'text';
+            const icon = btn.querySelector('i');
+            if (icon) icon.className = inp.type === 'text' ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
         });
     });
 
-    /* ── 14. Page fade-in ───────────────────────────────────── */
+    /* ── 12. Admin sidebar (mobile) ────────────────────────── */
+    const sidebar = qs('.admin-sidebar');
+    const sidebarClose = qs('.sidebar-close');
+    const mobileToggle = qs('.sidebar-toggle-mobile');
+
+    if (mobileToggle) mobileToggle.addEventListener('click', function () { sidebar?.classList.add('open'); });
+    if (sidebarClose) sidebarClose.addEventListener('click', function () { sidebar?.classList.remove('open'); });
+
+    /* ── 13. Page fade-in ───────────────────────────────────── */
     document.body.classList.add('page-fade');
 
-    /* ── 15. Password visibility toggle ─────────────────────── */
-    document.querySelectorAll('.pw-toggle').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const inp = document.getElementById(this.dataset.target) || this.previousElementSibling || this.parentElement.querySelector('input');
-            if (!inp) return;
-            const isText = inp.type === 'text';
-            inp.type = isText ? 'password' : 'text';
-            const icon = this.querySelector('i');
-            if (icon) icon.className = isText ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
-        });
+    /* ── 14. Floating label placeholder fix ─────────────────── */
+    qsa('.field input, .field textarea').forEach(function (inp) {
+        inp.placeholder = ' ';
     });
-
-    /* ── 16. CSRF token for AJAX (future use) ───────────────── */
-    const metaCsrf = document.querySelector('meta[name="csrf-token"]');
-    window.csrfToken = metaCsrf ? metaCsrf.content : '';
 
 })();
