@@ -1,128 +1,134 @@
-// ============================================================
-// SAKTHI PORTFOLIO — 2050 Interactive Engine
-// Quantum Particles · 3D NeuroTilt · Plasma Interactions
-// ============================================================
+/**
+ * Sakthi Portfolio — main.js
+ * Lightweight animations & interactions (no dependencies)
+ * GPU-accelerated where possible, requestAnimationFrame-based
+ */
 
-// ---- Quantum Particle System ----
-(function initParticles() {
-    const canvas = document.createElement('canvas');
-    canvas.id = 'particles-canvas';
-    document.body.prepend(canvas);
-    const ctx = canvas.getContext('2d');
-    let w, h, particles = [], mouse = { x: -1000, y: -1000 };
-    const COUNT = 55;
-    const COLORS = [
-        { r: 0, g: 229, b: 255 },   // cyan
-        { r: 83, g: 109, b: 254 },   // blue
-        { r: 124, g: 77, b: 255 },   // violet
-        { r: 224, g: 64, b: 251 },   // magenta
-        { r: 0, g: 230, b: 118 },    // green
-    ];
+/* ============================================================
+   UTILITY
+   ============================================================ */
+const $ = (s, ctx = document) => ctx.querySelector(s);
+const $$ = (s, ctx = document) => [...ctx.querySelectorAll(s)];
 
-    function resize() {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-    }
+/* ============================================================
+   1. NAVBAR — Scroll shrink & transparency
+   ============================================================ */
+(function initNavbar() {
+    const nav = $('#navbar');
+    if (!nav) return;
 
-    function spawn() {
-        particles = [];
-        for (let i = 0; i < COUNT; i++) {
-            const c = COLORS[Math.floor(Math.random() * COLORS.length)];
-            particles.push({
-                x: Math.random() * w,
-                y: Math.random() * h,
-                vx: (Math.random() - 0.5) * 0.25,
-                vy: (Math.random() - 0.5) * 0.25,
-                size: Math.random() * 1.8 + 0.5,
-                color: c,
-                baseOpacity: Math.random() * 0.4 + 0.15,
-                phase: Math.random() * Math.PI * 2
+    let ticking = false;
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                nav.classList.toggle('scrolled', window.scrollY > 40);
+                ticking = false;
             });
+            ticking = true;
         }
     }
 
-    document.addEventListener('mousemove', (e) => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-    });
-
-    function draw() {
-        ctx.clearRect(0, 0, w, h);
-
-        particles.forEach(p => {
-            // Mouse repulsion
-            const dx = p.x - mouse.x;
-            const dy = p.y - mouse.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 120 && dist > 0) {
-                const force = (120 - dist) / 120 * 0.8;
-                p.vx += (dx / dist) * force * 0.02;
-                p.vy += (dy / dist) * force * 0.02;
-            }
-
-            // Damping
-            p.vx *= 0.99;
-            p.vy *= 0.99;
-
-            p.x += p.vx;
-            p.y += p.vy;
-            p.phase += 0.015;
-
-            // Wrap
-            if (p.x < -20) p.x = w + 20;
-            if (p.x > w + 20) p.x = -20;
-            if (p.y < -20) p.y = h + 20;
-            if (p.y > h + 20) p.y = -20;
-
-            const osc = 0.5 + 0.5 * Math.sin(p.phase);
-            const opacity = p.baseOpacity * (0.5 + 0.5 * osc);
-            const sz = p.size * (0.8 + 0.4 * osc);
-            const { r, g, b } = p.color;
-
-            // Core
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, sz, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${r},${g},${b},${opacity})`;
-            ctx.fill();
-
-            // Glow ring
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, sz * 4, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${r},${g},${b},${opacity * 0.08})`;
-            ctx.fill();
-        });
-
-        // Connection lines
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const d = Math.sqrt(dx * dx + dy * dy);
-                if (d < 130) {
-                    const alpha = (1 - d / 130) * 0.06;
-                    const ci = particles[i].color;
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = `rgba(${ci.r},${ci.g},${ci.b},${alpha})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                }
-            }
-        }
-
-        requestAnimationFrame(draw);
-    }
-
-    resize();
-    spawn();
-    draw();
-    window.addEventListener('resize', () => { resize(); spawn(); });
+    window.addEventListener('scroll', onScroll, { passive: true });
 })();
 
+/* ============================================================
+   2. MOBILE MENU TOGGLE
+   ============================================================ */
+(function initMobileMenu() {
+    const toggle = $('#menuToggle');
+    const links = $('#navLinks');
+    if (!toggle || !links) return;
 
-// ---- Scroll Reveal ----
-function initScrollReveal() {
+    function close() {
+        toggle.classList.remove('open');
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    toggle.addEventListener('click', () => {
+        const open = toggle.classList.toggle('open');
+        links.classList.toggle('open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+    });
+
+    // Close on link click or outside click
+    links.addEventListener('click', close);
+    document.addEventListener('click', e => {
+        if (!toggle.contains(e.target) && !links.contains(e.target)) close();
+    });
+})();
+
+/* ============================================================
+   3. ADMIN SIDEBAR — Mobile drawer
+   ============================================================ */
+(function initAdminSidebar() {
+    const sidebar = $('#adminSidebar');
+    const closeBtn = $('#sidebarClose');
+    if (!sidebar) return;
+
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText =
+        'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1999;backdrop-filter:blur(4px);transition:opacity 0.25s';
+    document.body.appendChild(overlay);
+
+    // Create hamburger trigger for mobile
+    const menuBtn = document.createElement('button');
+    menuBtn.innerHTML = '☰';
+    menuBtn.setAttribute('aria-label', 'Open sidebar');
+    menuBtn.style.cssText =
+        'display:none;position:fixed;top:1rem;left:1rem;z-index:3000;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:0.5rem 0.75rem;font-size:1.25rem;cursor:pointer;';
+    document.body.appendChild(menuBtn);
+
+    function open() {
+        sidebar.classList.add('open');
+        overlay.style.display = 'block';
+        requestAnimationFrame(() => { overlay.style.opacity = '1'; });
+    }
+
+    function close() {
+        sidebar.classList.remove('open');
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.style.display = 'none'; }, 250);
+    }
+
+    menuBtn.addEventListener('click', open);
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', close);
+
+    // Show/hide based on viewport
+    function checkViewport() {
+        const isMobile = window.innerWidth <= 768;
+        menuBtn.style.display = isMobile ? 'block' : 'none';
+    }
+
+    window.addEventListener('resize', checkViewport, { passive: true });
+    checkViewport();
+})();
+
+/* ============================================================
+   4. SMOOTH SCROLL for anchor links
+   ============================================================ */
+document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const target = document.getElementById(a.getAttribute('href').slice(1));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+/* ============================================================
+   5. INTERSECTION OBSERVER — Scroll reveal
+   ============================================================ */
+(function initReveal() {
+    const items = $$('.reveal, .bento-card, .note-card, .project-card, .skills-card, .stat-card');
+
+    if (!items.length || !('IntersectionObserver' in window)) {
+        items.forEach(el => el.classList.add('visible'));
+        return;
+    }
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -130,152 +136,182 @@ function initScrollReveal() {
                 observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.04, rootMargin: '0px 0px -50px 0px' });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-    document.querySelectorAll('.bento-card, .section-title').forEach(el => observer.observe(el));
-}
-
-// ---- Smooth Anchor Scroll ----
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"], a[href*="/#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            let hash;
-            const href = this.getAttribute('href');
-            if (href.startsWith('#')) hash = href.substring(1);
-            else if (href.includes('/#')) hash = href.split('#')[1];
-            if (hash) {
-                const target = document.getElementById(hash);
-                if (target) {
-                    e.preventDefault();
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
-        });
-    });
-}
-
-// ---- Mobile Menu ----
-function initMobileMenu() {
-    const toggle = document.getElementById('menuToggle');
-    const navLinks = document.getElementById('navLinks');
-    if (!toggle || !navLinks) return;
-
-    toggle.addEventListener('click', () => {
-        navLinks.classList.toggle('open');
-        toggle.classList.toggle('active');
-    });
-
-    navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            navLinks.classList.remove('open');
-            toggle.classList.remove('active');
-        });
-    });
-
-    document.addEventListener('click', (e) => {
-        if (navLinks.classList.contains('open') &&
-            !e.target.closest('.nav-links') &&
-            !e.target.closest('.menu-toggle')) {
-            navLinks.classList.remove('open');
-            toggle.classList.remove('active');
+    items.forEach((el, i) => {
+        // Apply reveal class to enable the transition
+        if (!el.classList.contains('reveal')) {
+            el.classList.add('reveal');
+            // Stagger siblings inside the same parent grid
+            const siblings = el.parentElement
+                ? [...el.parentElement.children].filter(c => c !== el && c.classList.contains(el.classList[0]))
+                : [];
+            el.style.transitionDelay = (Math.min(i % 4, 3) * 80) + 'ms';
         }
+        observer.observe(el);
     });
-}
+})();
 
-// ---- Navbar Scroll ----
-function initNavbarScroll() {
-    const navbar = document.querySelector('.navbar');
-    if (!navbar) return;
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                navbar.classList.toggle('scrolled', window.scrollY > 20);
-                ticking = false;
-            });
-            ticking = true;
-        }
-    }, { passive: true });
-}
+/* ============================================================
+   6. ANIMATED STAT COUNTERS
+   ============================================================ */
+(function initCounters() {
+    const stats = $$('.stat-number');
+    if (!stats.length) return;
 
-// ---- Auto-dismiss Messages ----
-function initMessages() {
-    document.querySelectorAll('.success-message').forEach(msg => {
-        setTimeout(() => {
-            msg.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-            msg.style.opacity = '0';
-            msg.style.transform = 'translateY(-15px) scale(0.98)';
-            setTimeout(() => msg.remove(), 400);
-        }, 4000);
-    });
-}
+    function animateCounter(el) {
+        const raw = el.textContent.trim();
+        const suffix = raw.replace(/[\d.]/g, '');
+        const end = parseFloat(raw) || 0;
+        if (!end) return; // Skip if ∞ or non-numeric
 
-// ---- Delete Confirm ----
-function initDeleteConfirm() {
-    document.querySelectorAll('.action-btn.delete, a.delete').forEach(btn => {
-        if (!btn.getAttribute('onclick')) {
-            btn.addEventListener('click', function (e) {
-                if (!confirm('Are you sure you want to delete this?')) e.preventDefault();
-            });
-        }
-    });
-}
+        let start = 0;
+        const duration = 1400;
+        const startTime = performance.now();
 
+        const step = (now) => {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // Ease-out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(eased * end);
+            el.textContent = current + suffix;
+            if (progress < 1) requestAnimationFrame(step);
+            else el.textContent = raw; // Restore original text exactly
+        };
 
-// ---- Animated Stat Counter ----
-function initCountUp() {
-    const statNumbers = document.querySelectorAll('.stat-number');
-    if (!statNumbers.length) return;
+        requestAnimationFrame(step);
+    }
 
-    const observer = new IntersectionObserver((entries) => {
+    if (!('IntersectionObserver' in window)) {
+        stats.forEach(animateCounter);
+        return;
+    }
+
+    const obs = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const el = entry.target;
-                const text = el.textContent.trim();
-                const match = text.match(/(\d+)/);
-                if (match) {
-                    const target = parseInt(match[1]);
-                    const suffix = text.replace(match[1], '');
-                    const start = performance.now();
-                    const dur = 1800;
-                    function tick(now) {
-                        const progress = Math.min((now - start) / dur, 1);
-                        const eased = 1 - Math.pow(1 - progress, 4);
-                        el.textContent = Math.round(eased * target) + suffix;
-                        if (progress < 1) requestAnimationFrame(tick);
-                    }
-                    requestAnimationFrame(tick);
-                }
-                observer.unobserve(el);
+                animateCounter(entry.target);
+                observer.unobserve(entry.target);
             }
         });
     }, { threshold: 0.5 });
 
-    statNumbers.forEach(el => observer.observe(el));
-}
+    stats.forEach(el => obs.observe(el));
+})();
 
-// ---- Admin Sidebar Toggle (mobile) ----
-function initAdminSidebar() {
-    const sidebar = document.querySelector('.admin-sidebar');
-    if (!sidebar || window.innerWidth > 768) return;
+/* ============================================================
+   7. BUTTON RIPPLE EFFECT
+   ============================================================ */
+document.addEventListener('click', e => {
+    const btn = e.target.closest('.btn');
+    if (!btn) return;
 
-    const toggle = document.createElement('button');
-    toggle.className = 'sidebar-toggle-btn';
-    toggle.innerHTML = '☰';
-    toggle.style.cssText = 'position:fixed;top:64px;left:10px;z-index:1000;background:rgba(10,10,22,0.9);color:#eaeaf4;border:1px solid rgba(0,229,255,0.15);padding:0.5rem 0.75rem;border-radius:10px;font-size:1.1rem;cursor:pointer;backdrop-filter:blur(12px);';
-    document.body.appendChild(toggle);
+    const circle = document.createElement('span');
+    const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+    const rect = btn.getBoundingClientRect();
 
-    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-}
+    circle.className = 'ripple';
+    circle.style.cssText = `
+    width: ${diameter}px;
+    height: ${diameter}px;
+    left: ${e.clientX - rect.left - diameter / 2}px;
+    top: ${e.clientY - rect.top - diameter / 2}px;
+  `;
 
-// ---- Init Everything ----
-document.addEventListener('DOMContentLoaded', () => {
-    initScrollReveal();
-    initSmoothScroll();
-    initMobileMenu();
-    initNavbarScroll();
-    initMessages();
-    initDeleteConfirm();
-    initCountUp();
-    initAdminSidebar();
-});
+    btn.appendChild(circle);
+    setTimeout(() => circle.remove(), 700);
+}, true);
+
+/* ============================================================
+   8. SKILL TAG STAGGER ANIMATION
+   ============================================================ */
+(function initSkillTags() {
+    const tags = $$('.skill-tag');
+    tags.forEach((tag, i) => {
+        tag.style.animationDelay = (i * 40) + 'ms';
+        tag.style.opacity = '0';
+        tag.style.animation = `tagAppear 0.4s ease-out ${i * 40}ms both`;
+    });
+
+    if (!document.getElementById('tag-style')) {
+        const style = document.createElement('style');
+        style.id = 'tag-style';
+        style.textContent = `
+      @keyframes tagAppear {
+        from { opacity: 0; transform: scale(0.8) translateY(4px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
+      }
+    `;
+        document.head.appendChild(style);
+    }
+})();
+
+/* ============================================================
+   9. AUTO-DISMISS ALERTS
+   ============================================================ */
+(function initAlerts() {
+    $$('.alert, .success-message, .error-message').forEach(alert => {
+        setTimeout(() => {
+            alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease, margin 0.5s ease';
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-8px)';
+            setTimeout(() => {
+                alert.style.maxHeight = '0';
+                alert.style.margin = '0';
+                alert.style.padding = '0';
+                alert.style.overflow = 'hidden';
+            }, 500);
+        }, 4500);
+    });
+})();
+
+/* ============================================================
+   10. PAGE TRANSITION FADE-IN
+   ============================================================ */
+(function initPageFade() {
+    document.body.classList.add('page-fade');
+})();
+
+/* ============================================================
+   11. FILE INPUT PREVIEW (future-proof helper)
+   ============================================================ */
+(function initFilePreview() {
+    $$('input[type="file"][data-preview]').forEach(input => {
+        input.addEventListener('change', function () {
+            const previewId = this.dataset.preview;
+            const preview = document.getElementById(previewId);
+            if (!preview || !this.files[0]) return;
+
+            const reader = new FileReader();
+            reader.onload = e => { preview.src = e.target.result; };
+            reader.readAsDataURL(this.files[0]);
+        });
+    });
+})();
+
+/* ============================================================
+   12. ACTIVE NAV LINK highlighting (based on scroll position)
+   ============================================================ */
+(function initActiveNav() {
+    const sections = $$('section[id]');
+    const navLinks = $$('.nav-links a[href*="#"]');
+    if (!sections.length || !navLinks.length) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const id = entry.target.id;
+            navLinks.forEach(a => {
+                a.classList.toggle('active', a.getAttribute('href').includes('#' + id));
+            });
+        });
+    }, { threshold: 0.4 });
+
+    sections.forEach(s => observer.observe(s));
+})();
+
+/* ============================================================
+   13. CSRF TOKEN for fetch() calls (if any future AJAX is added)
+   ============================================================ */
+window.csrfToken = document.querySelector('input[name="csrf_token"]')?.value ?? '';

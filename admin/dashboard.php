@@ -4,6 +4,7 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 $auth->requireLogin();
+$isAdminPage = true;
 
 $db = Database::getInstance();
 $profile = getProfile();
@@ -11,50 +12,21 @@ $profile = getProfile();
 // Get statistics
 $stats = [
     'projects' => $db->getRow("SELECT COUNT(*) as count FROM projects")['count'] ?? 0,
-    'skills' => $db->getRow("SELECT COUNT(*) as count FROM skills")['count'] ?? 0,
-    'notes' => $db->getRow("SELECT COUNT(*) as count FROM notes")['count'] ?? 0,
-    'messages' => $db->getRow("SELECT COUNT(*) as count FROM contact_messages WHERE read_status = 0")['count'] ?? 0
+    'skills'   => $db->getRow("SELECT COUNT(*) as count FROM skills")['count'] ?? 0,
+    'notes'    => $db->getRow("SELECT COUNT(*) as count FROM notes")['count'] ?? 0,
+    'messages' => $db->getRow("SELECT COUNT(*) as count FROM contact_messages WHERE read_status = 0")['count'] ?? 0,
 ];
 
 $recentProjects = $db->getRows("SELECT * FROM projects ORDER BY created_at DESC LIMIT 5");
 $recentMessages = $db->getRows("SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 5");
+$unreadMessages = $stats['messages'];
 
 $pageTitle = 'Dashboard';
 require_once '../includes/header.php';
 ?>
 
 <div class="admin-layout">
-    <aside class="admin-sidebar">
-        <div class="sidebar-header">
-            <span class="sidebar-title">Admin Panel</span>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="<?php echo BASE_URL; ?>/admin/dashboard.php" class="sidebar-link active">
-                <span class="sidebar-icon">📊</span> Dashboard
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin/projects.php" class="sidebar-link">
-                <span class="sidebar-icon">🚀</span> Projects
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin/skills.php" class="sidebar-link">
-                <span class="sidebar-icon">💡</span> Skills
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin/notes.php" class="sidebar-link">
-                <span class="sidebar-icon">📝</span> Notes
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin/profile.php" class="sidebar-link">
-                <span class="sidebar-icon">👤</span> Profile
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin/messages.php" class="sidebar-link">
-                <span class="sidebar-icon">📬</span> Messages
-                <?php if ($stats['messages'] > 0): ?>
-                <span class="badge"><?php echo $stats['messages']; ?></span>
-                <?php endif; ?>
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin/logout.php" class="sidebar-link logout">
-                <span class="sidebar-icon">🚪</span> Logout
-            </a>
-        </nav>
-    </aside>
+    <?php include __DIR__ . '/_sidebar.php'; ?>
 
     <div class="admin-main">
         <div class="admin-header">

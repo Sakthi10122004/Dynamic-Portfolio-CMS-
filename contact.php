@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
     
     if ($recentCount && $recentCount['cnt'] >= 3) {
-        header('Location: ' . BASE_URL . '/?sent=1#contact');
+        header('Location: ' . BASE_URL . '/?limited=1#contact');
         exit;
     }
     

@@ -4,7 +4,7 @@ require_once 'includes/functions.php';
 require_once 'includes/auth.php';
 
 $profile = getProfile();
-$featuredProjects = getProjects(3);
+$featuredProjects = getProjects(3, false); // top 3 ordered by featured
 $skills = getSkills();
 $recentNotes = getNotes(3);
 
@@ -170,7 +170,11 @@ require_once 'includes/header.php';
         
         <?php if (isset($_GET['sent'])): ?>
         <div class="bento-card">
-            <div class="success-message">✅ Message sent successfully! I'll get back to you soon.</div>
+            <div class="alert alert-success">✅ Message sent successfully! I'll get back to you soon.</div>
+        </div>
+        <?php elseif (isset($_GET['limited'])): ?>
+        <div class="bento-card">
+            <div class="alert alert-error">⏱ Too many messages. Please wait an hour before sending another.</div>
         </div>
         <?php else: ?>
         <form class="contact-form bento-card" method="POST" action="<?php echo BASE_URL; ?>/contact.php">

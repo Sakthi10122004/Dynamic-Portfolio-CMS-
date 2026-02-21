@@ -4,23 +4,27 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 $auth->requireLogin();
+$isAdminPage = true;
 
 $db = Database::getInstance();
 
-// Handle mark as read
-if (isset($_GET['read'])) {
-    $id = (int)$_GET['read'];
-    $db->query("UPDATE contact_messages SET read_status = 1 WHERE id = ?", [$id], 'i');
-    header('Location: ' . BASE_URL . '/admin/messages.php');
-    exit;
-}
+// Handle POST actions (CSRF protected)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrf();
 
-// Handle delete
-if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
-    $db->query("DELETE FROM contact_messages WHERE id = ?", [$id], 'i');
-    header('Location: ' . BASE_URL . '/admin/messages.php?deleted=1');
-    exit;
+    if (isset($_POST['delete_id'])) {
+        $id = (int)$_POST['delete_id'];
+        $db->query("DELETE FROM contact_messages WHERE id = ?", [$id], 'i');
+        header('Location: ' . BASE_URL . '/admin/messages.php?deleted=1');
+        exit;
+    }
+
+    if (isset($_POST['read_id'])) {
+        $id = (int)$_POST['read_id'];
+        $db->query("UPDATE contact_messages SET read_status = 1 WHERE id = ?", [$id], 'i');
+        header('Location: ' . BASE_URL . '/admin/messages.php');
+        exit;
+    }
 }
 
 $messages = getMessages();
@@ -36,14 +40,18 @@ require_once '../includes/header.php';
         <div class="admin-header">
             <h1>Messages</h1>
         </div>
-        
+
         <?php if (isset($_GET['deleted'])): ?>
-        <div class="success-message">Message deleted</div>
+        <div class="alert alert-success">Message deleted.</div>
         <?php endif; ?>
-        
+
         <div class="data-card bento-card">
             <?php if (empty($messages)): ?>
-            <p class="empty-text">No messages yet. They'll appear here when visitors use the contact form.</p>
+            <div class="empty-state">
+                <div class="empty-icon">📬</div>
+                <h3>No messages yet</h3>
+                <p>They'll appear here when visitors use the contact form.</p>
+            </div>
             <?php else: ?>
             <div class="messages-list">
                 <?php foreach ($messages as $msg): ?>
@@ -58,12 +66,18 @@ require_once '../includes/header.php';
                     <p class="message-body"><?php echo nl2br(escape($msg['message'])); ?></p>
                     <div class="message-actions">
                         <?php if (!($msg['read_status'] ?? 0)): ?>
-                        <a href="<?php echo BASE_URL; ?>/admin/messages.php?read=<?php echo $msg['id']; ?>" class="action-btn edit">Mark Read</a>
+                        <form method="POST" class="inline-form">
+                            <?php echo csrfField(); ?>
+                            <input type="hidden" name="read_id" value="<?php echo $msg['id']; ?>">
+                            <button type="submit" class="action-btn edit">Mark Read</button>
+                        </form>
                         <?php endif; ?>
                         <a href="mailto:<?php echo escape($msg['email']); ?>" class="action-btn edit">Reply</a>
-                        <a href="<?php echo BASE_URL; ?>/admin/messages.php?delete=<?php echo $msg['id']; ?>" 
-                           class="action-btn delete"
-                           onclick="return confirm('Delete this message?')">Delete</a>
+                        <form method="POST" class="inline-form" onsubmit="return confirm('Delete this message?')">
+                            <?php echo csrfField(); ?>
+                            <input type="hidden" name="delete_id" value="<?php echo $msg['id']; ?>">
+                            <button type="submit" class="action-btn delete">Delete</button>
+                        </form>
                     </div>
                 </div>
                 <?php endforeach; ?>

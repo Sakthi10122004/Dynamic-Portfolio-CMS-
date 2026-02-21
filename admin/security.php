@@ -4,6 +4,7 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 $auth->requireLogin();
+$isAdminPage = true;
 
 $db      = Database::getInstance();
 $user    = $auth->getCurrentUser();
@@ -84,7 +85,7 @@ require_once '../includes/header.php';
 
         <!-- ── Change Password ──────────────────────────── -->
         <div class="bento-card visible" style="margin-bottom:1.5rem;">
-            <h2 style="font-size:1.1rem;margin-bottom:1.25rem;color:var(--plasma-cyan);">
+            <h2 style="font-size:1.1rem;margin-bottom:1.25rem;color:var(--primary);">
                 <i class="fa-solid fa-lock" style="margin-right:0.5rem;"></i>Change Password
             </h2>
             <form method="POST" class="edit-form" id="pwForm">
@@ -140,7 +141,7 @@ require_once '../includes/header.php';
 
         <!-- ── Security Question ───────────────────────── -->
         <div class="bento-card visible">
-            <h2 style="font-size:1.1rem;margin-bottom:0.4rem;color:var(--plasma-cyan);">
+            <h2 style="font-size:1.1rem;margin-bottom:0.4rem;color:var(--primary);">
                 <i class="fa-solid fa-shield-halved" style="margin-right:0.5rem;"></i>Security Question
             </h2>
             <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.25rem;">
@@ -268,10 +269,10 @@ document.getElementById('confirm_password').addEventListener('input', function (
     if (!this.value) { lbl.textContent = ''; return; }
     if (this.value === np) {
         lbl.textContent = '✓ Passwords match';
-        lbl.style.color = 'var(--plasma-green)';
+        lbl.style.color = 'var(--accent)';
     } else {
         lbl.textContent = '✗ Passwords do not match';
-        lbl.style.color = 'var(--error)';
+        lbl.style.color = 'var(--danger)';
     }
 });
 
@@ -282,10 +283,10 @@ document.getElementById('confirm_answer').addEventListener('input', function () 
     if (!this.value) { lbl.textContent = ''; return; }
     if (this.value === a) {
         lbl.textContent = '✓ Answers match';
-        lbl.style.color = 'var(--plasma-green)';
+        lbl.style.color = 'var(--accent)';
     } else {
         lbl.textContent = '✗ Answers do not match';
-        lbl.style.color = 'var(--error)';
+        lbl.style.color = 'var(--danger)';
     }
 });
 </script>

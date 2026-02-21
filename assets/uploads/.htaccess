@@ -1,0 +1,14 @@
+# Block direct PHP execution in uploads directory
+<FilesMatch "\.php$">
+    Require all denied
+</FilesMatch>
+
+# Also block other server-side script types
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|pl|py|jsp|asp|sh|cgi)$">
+    Require all denied
+</FilesMatch>
+
+# Allow only image and document types
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|svg)$">
+    Require all granted
+</FilesMatch>

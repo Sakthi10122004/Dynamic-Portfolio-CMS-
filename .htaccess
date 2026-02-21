@@ -1,34 +1,65 @@
 # Enable rewrite engine
 RewriteEngine On
 
-# Security headers
+# ===========================================================
+# SECURITY HEADERS
+# ===========================================================
 <IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set X-XSS-Protection "1; mode=block"
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Permitted-Cross-Domain-Policies "none"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    # Content Security Policy — allow Google Fonts and self
+    Header always set Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none';"
 </IfModule>
 
-# Block access to sensitive files
-<FilesMatch "\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|swp)$">
+# ===========================================================
+# BLOCK ACCESS TO SENSITIVE FILES
+# ===========================================================
+<FilesMatch "\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|swp|env)$">
     Require all denied
 </FilesMatch>
 
-# Protect includes directory
+# Protect includes directory — cannot be accessed directly
 RewriteRule ^includes/.*$ - [F,L]
 
-# Compress files
+# Block sensitive maintenance scripts in production
+# (Comment out on localhost if you need to run them)
+<FilesMatch "^(setup|fix_admin|migrate_profile|migrate_security|note)\.php$">
+    Require all denied
+</FilesMatch>
+
+# ===========================================================
+# COMPRESSION
+# ===========================================================
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/font-woff2
 </IfModule>
 
-# Cache control
+# ===========================================================
+# CACHE CONTROL
+# ===========================================================
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresByType image/jpg "access plus 1 year"
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 month"
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/font-woff2 "access plus 1 year"
 </IfModule>
+
+# ===========================================================
+# PREVENT DIRECTORY LISTING
+# ===========================================================
+Options -Indexes
+
+# ===========================================================
+# CHARACTER ENCODING
+# ===========================================================
+AddDefaultCharset UTF-8

@@ -4,18 +4,18 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 $auth->requireLogin();
+$isAdminPage = true;
 
 $db = Database::getInstance();
 
-// Handle delete
-if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
+// Handle POST delete (CSRF protected)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    verifyCsrf();
+    $id      = (int)$_POST['delete_id'];
     $project = getProject($id);
     if ($project && !empty($project['image'])) {
         $imagePath = UPLOAD_DIR . $project['image'];
-        if (file_exists($imagePath)) {
-            unlink($imagePath);
-        }
+        if (file_exists($imagePath)) unlink($imagePath);
     }
     $db->query("DELETE FROM projects WHERE id = ?", [$id], 'i');
     header('Location: ' . BASE_URL . '/admin/projects.php?deleted=1');
@@ -37,18 +37,23 @@ require_once '../includes/header.php';
             <h1>Projects</h1>
             <a href="<?php echo BASE_URL; ?>/admin/project-edit.php" class="btn primary">+ New Project</a>
         </div>
-        
+
         <?php if (isset($_GET['deleted'])): ?>
-        <div class="success-message">Project deleted successfully</div>
+        <div class="alert alert-success">Project deleted successfully.</div>
         <?php endif; ?>
-        
+
         <?php if (isset($_GET['saved'])): ?>
-        <div class="success-message">Project saved successfully</div>
+        <div class="alert alert-success">Project saved successfully.</div>
         <?php endif; ?>
-        
+
         <div class="data-card bento-card">
             <?php if (empty($projects)): ?>
-            <p class="empty-text">No projects yet. <a href="<?php echo BASE_URL; ?>/admin/project-edit.php">Create your first project</a></p>
+            <div class="empty-state">
+                <div class="empty-icon">🚀</div>
+                <h3>No projects yet</h3>
+                <p>Share your work with the world.</p>
+                <a href="<?php echo BASE_URL; ?>/admin/project-edit.php" class="btn primary">Create First Project</a>
+            </div>
             <?php else: ?>
             <table class="admin-table">
                 <thead>
@@ -65,16 +70,18 @@ require_once '../includes/header.php';
                         <td>
                             <strong><?php echo escape($project['title']); ?></strong>
                             <?php if (!empty($project['image'])): ?>
-                            <span class="has-image">📸</span>
+                            <span class="has-image" title="Has image">📸</span>
                             <?php endif; ?>
                         </td>
-                        <td><?php echo $project['featured'] ? '⭐' : '—'; ?></td>
+                        <td><?php echo $project['featured'] ? '<span class="badge badge-featured">⭐ Featured</span>' : '<span class="text-muted">—</span>'; ?></td>
                         <td><?php echo formatDate($project['created_at']); ?></td>
                         <td class="actions">
                             <a href="<?php echo BASE_URL; ?>/admin/project-edit.php?id=<?php echo $project['id']; ?>" class="action-btn edit">Edit</a>
-                            <a href="<?php echo BASE_URL; ?>/admin/projects.php?delete=<?php echo $project['id']; ?>" 
-                               class="action-btn delete" 
-                               onclick="return confirm('Delete this project?')">Delete</a>
+                            <form method="POST" class="inline-form" onsubmit="return confirm('Delete this project? This cannot be undone.')">
+                                <?php echo csrfField(); ?>
+                                <input type="hidden" name="delete_id" value="<?php echo $project['id']; ?>">
+                                <button type="submit" class="action-btn delete">Delete</button>
+                            </form>
                         </td>
                     </tr>
                     <?php endforeach; ?>

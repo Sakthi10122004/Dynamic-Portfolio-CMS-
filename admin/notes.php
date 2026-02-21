@@ -4,12 +4,14 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 $auth->requireLogin();
+$isAdminPage = true;
 
 $db = Database::getInstance();
 
-// Handle delete
-if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
+// Handle POST delete (CSRF protected)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    verifyCsrf();
+    $id = (int)$_POST['delete_id'];
     $db->query("DELETE FROM notes WHERE id = ?", [$id], 'i');
     header('Location: ' . BASE_URL . '/admin/notes.php?deleted=1');
     exit;
@@ -29,18 +31,23 @@ require_once '../includes/header.php';
             <h1>Notes</h1>
             <a href="<?php echo BASE_URL; ?>/admin/note-edit.php" class="btn primary">+ New Note</a>
         </div>
-        
+
         <?php if (isset($_GET['deleted'])): ?>
-        <div class="success-message">Note deleted successfully</div>
+        <div class="alert alert-success">Note deleted successfully.</div>
         <?php endif; ?>
-        
+
         <?php if (isset($_GET['saved'])): ?>
-        <div class="success-message">Note saved successfully</div>
+        <div class="alert alert-success">Note saved successfully.</div>
         <?php endif; ?>
-        
+
         <div class="data-card bento-card">
             <?php if (empty($notes)): ?>
-            <p class="empty-text">No notes yet. <a href="<?php echo BASE_URL; ?>/admin/note-edit.php">Write your first note</a></p>
+            <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <h3>No notes yet</h3>
+                <p>Start your digital garden.</p>
+                <a href="<?php echo BASE_URL; ?>/admin/note-edit.php" class="btn primary">Write First Note</a>
+            </div>
             <?php else: ?>
             <table class="admin-table">
                 <thead>
@@ -63,9 +70,11 @@ require_once '../includes/header.php';
                         <td><?php echo formatDate($note['created_at']); ?></td>
                         <td class="actions">
                             <a href="<?php echo BASE_URL; ?>/admin/note-edit.php?id=<?php echo $note['id']; ?>" class="action-btn edit">Edit</a>
-                            <a href="<?php echo BASE_URL; ?>/admin/notes.php?delete=<?php echo $note['id']; ?>" 
-                               class="action-btn delete"
-                               onclick="return confirm('Delete this note?')">Delete</a>
+                            <form method="POST" class="inline-form" onsubmit="return confirm('Delete this note?')">
+                                <?php echo csrfField(); ?>
+                                <input type="hidden" name="delete_id" value="<?php echo $note['id']; ?>">
+                                <button type="submit" class="action-btn delete">Delete</button>
+                            </form>
                         </td>
                     </tr>
                     <?php endforeach; ?>

@@ -16,14 +16,19 @@ define('BASE_URL', $isLocalhost ? '/protfolio' : '');
 define('SITE_NAME', 'Sakthi Portfolio');
 define('SITE_URL', ($isLocalhost ? 'http://localhost' : 'https://sakthi.page.gd') . BASE_URL);
 
-// Database credentials — environment-aware
+// ============================================================
+// DATABASE CREDENTIALS
+// NOTE: For maximum security, move these to a .env file above
+// webroot. On InfinityFree, protect via .htaccess which blocks
+// direct access to this file / the includes/ directory.
+// ============================================================
 if ($isLocalhost) {
     define('DB_HOST', 'localhost');
     define('DB_USER', 'root');
     define('DB_PASS', '');
     define('DB_NAME', 'portfolio_db');
 } else {
-    // InfinityFree production credentials — update these with your actual values
+    // InfinityFree production credentials
     define('DB_HOST', 'sql301.infinityfree.com');
     define('DB_USER', 'if0_41140025');
     define('DB_PASS', 'Sakthi10122004');
@@ -37,6 +42,8 @@ define('UPLOAD_URL', BASE_URL . '/assets/uploads/');
 // Security
 define('HASH_COST', 12);
 define('SESSION_TIMEOUT', 3600); // 1 hour
+define('LOGIN_MAX_ATTEMPTS', 5); // max failed logins before lockout
+define('LOGIN_LOCKOUT_MINUTES', 15); // lockout window in minutes
 
 // Error reporting — verbose on localhost, silent in production
 if ($isLocalhost) {
@@ -45,6 +52,7 @@ if ($isLocalhost) {
 } else {
     error_reporting(0);
     ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
 }
 
 // Timezone
@@ -52,4 +60,5 @@ date_default_timezone_set('Asia/Kolkata');
 
 // Upload limits
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+define('ALLOWED_IMAGE_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif', 'webp']);
 define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB

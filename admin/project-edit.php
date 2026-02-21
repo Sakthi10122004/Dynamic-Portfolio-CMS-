@@ -4,6 +4,7 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 $auth->requireLogin();
+$isAdminPage = true;
 
 $db = Database::getInstance();
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
