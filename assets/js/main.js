@@ -1,317 +1,230 @@
-/**
- * Sakthi Portfolio — main.js
- * Lightweight animations & interactions (no dependencies)
- * GPU-accelerated where possible, requestAnimationFrame-based
- */
-
 /* ============================================================
-   UTILITY
+   main.js — Premium Portfolio Animations v2
+   No external dependencies. GPU-accelerated transforms only.
    ============================================================ */
-const $ = (s, ctx = document) => ctx.querySelector(s);
-const $$ = (s, ctx = document) => [...ctx.querySelectorAll(s)];
 
-/* ============================================================
-   1. NAVBAR — Scroll shrink & transparency
-   ============================================================ */
-(function initNavbar() {
-    const nav = $('#navbar');
-    if (!nav) return;
+(function () {
+    'use strict';
 
-    let ticking = false;
+    /* ── 1. Scroll Progress Bar ─────────────────────────────── */
+    const progressBar = document.getElementById('scrollProgress');
+    function updateProgress() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = max > 0 ? Math.round((window.scrollY / max) * 1000) / 10 : 0;
+        document.documentElement.style.setProperty('--scroll-pct', pct + '%');
+    }
+
+    /* ── 2. Navbar Scroll Shrink ─────────────────────────────── */
+    const navbar = document.querySelector('.navbar');
     function onScroll() {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                nav.classList.toggle('scrolled', window.scrollY > 40);
-                ticking = false;
-            });
-            ticking = true;
-        }
+        updateProgress();
+        if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 40);
+        updateActiveNav();
     }
+    let ticking = false;
+    window.addEventListener('scroll', function () {
+        if (!ticking) { requestAnimationFrame(function () { onScroll(); ticking = false; }); ticking = true; }
+    }, { passive: true });
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-})();
-
-/* ============================================================
-   2. MOBILE MENU TOGGLE
-   ============================================================ */
-(function initMobileMenu() {
-    const toggle = $('#menuToggle');
-    const links = $('#navLinks');
-    if (!toggle || !links) return;
-
-    function close() {
-        toggle.classList.remove('open');
-        links.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-    }
-
-    toggle.addEventListener('click', () => {
-        const open = toggle.classList.toggle('open');
-        links.classList.toggle('open', open);
-        toggle.setAttribute('aria-expanded', String(open));
-    });
-
-    // Close on link click or outside click
-    links.addEventListener('click', close);
-    document.addEventListener('click', e => {
-        if (!toggle.contains(e.target) && !links.contains(e.target)) close();
-    });
-})();
-
-/* ============================================================
-   3. ADMIN SIDEBAR — Mobile drawer
-   ============================================================ */
-(function initAdminSidebar() {
-    const sidebar = $('#adminSidebar');
-    const closeBtn = $('#sidebarClose');
-    if (!sidebar) return;
-
-    // Create overlay
-    const overlay = document.createElement('div');
-    overlay.style.cssText =
-        'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1999;backdrop-filter:blur(4px);transition:opacity 0.25s';
-    document.body.appendChild(overlay);
-
-    // Create hamburger trigger for mobile
-    const menuBtn = document.createElement('button');
-    menuBtn.innerHTML = '☰';
-    menuBtn.setAttribute('aria-label', 'Open sidebar');
-    menuBtn.style.cssText =
-        'display:none;position:fixed;top:1rem;left:1rem;z-index:3000;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:0.5rem 0.75rem;font-size:1.25rem;cursor:pointer;';
-    document.body.appendChild(menuBtn);
-
-    function open() {
-        sidebar.classList.add('open');
-        overlay.style.display = 'block';
-        requestAnimationFrame(() => { overlay.style.opacity = '1'; });
-    }
-
-    function close() {
-        sidebar.classList.remove('open');
-        overlay.style.opacity = '0';
-        setTimeout(() => { overlay.style.display = 'none'; }, 250);
-    }
-
-    menuBtn.addEventListener('click', open);
-    if (closeBtn) closeBtn.addEventListener('click', close);
-    overlay.addEventListener('click', close);
-
-    // Show/hide based on viewport
-    function checkViewport() {
-        const isMobile = window.innerWidth <= 768;
-        menuBtn.style.display = isMobile ? 'block' : 'none';
-    }
-
-    window.addEventListener('resize', checkViewport, { passive: true });
-    checkViewport();
-})();
-
-/* ============================================================
-   4. SMOOTH SCROLL for anchor links
-   ============================================================ */
-document.addEventListener('click', e => {
-    const a = e.target.closest('a[href^="#"]');
-    if (!a) return;
-    const target = document.getElementById(a.getAttribute('href').slice(1));
-    if (!target) return;
-    e.preventDefault();
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-
-/* ============================================================
-   5. INTERSECTION OBSERVER — Scroll reveal
-   ============================================================ */
-(function initReveal() {
-    const items = $$('.reveal, .bento-card, .note-card, .project-card, .skills-card, .stat-card');
-
-    if (!items.length || !('IntersectionObserver' in window)) {
-        items.forEach(el => el.classList.add('visible'));
-        return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
+    /* ── 3. Mobile hamburger ─────────────────────────────────── */
+    const toggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (toggle && navLinks) {
+        toggle.addEventListener('click', function () {
+            const open = navLinks.classList.toggle('open');
+            toggle.classList.toggle('open', open);
+            toggle.setAttribute('aria-expanded', open);
+            document.body.style.overflow = open ? 'hidden' : '';
+        });
+        navLinks.addEventListener('click', function (e) {
+            if (e.target.tagName === 'A') {
+                navLinks.classList.remove('open');
+                toggle.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
             }
         });
-    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+        document.addEventListener('click', function (e) {
+            if (!navbar.contains(e.target) && navLinks.classList.contains('open')) {
+                navLinks.classList.remove('open');
+                toggle.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+        });
+    }
 
-    items.forEach((el, i) => {
-        // Apply reveal class to enable the transition
-        if (!el.classList.contains('reveal')) {
-            el.classList.add('reveal');
-            // Stagger siblings inside the same parent grid
-            const siblings = el.parentElement
-                ? [...el.parentElement.children].filter(c => c !== el && c.classList.contains(el.classList[0]))
-                : [];
-            el.style.transitionDelay = (Math.min(i % 4, 3) * 80) + 'ms';
-        }
-        observer.observe(el);
+    /* ── 4. Scrollspy — active nav link ─────────────────────── */
+    const sections = document.querySelectorAll('section[id]');
+    const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
+    function updateActiveNav() {
+        let current = '';
+        sections.forEach(function (sec) {
+            if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+        });
+        navAnchors.forEach(function (a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+    }
+
+    /* ── 5. Smooth scroll ───────────────────────────────────── */
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
     });
-})();
 
-/* ============================================================
-   6. ANIMATED STAT COUNTERS
-   ============================================================ */
-(function initCounters() {
-    const stats = $$('.stat-number');
-    if (!stats.length) return;
+    /* ── 6. IntersectionObserver scroll reveal ──────────────── */
+    const revealObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const delay = el.dataset.delay || 0;
+                setTimeout(function () { el.classList.add('visible'); }, +delay);
+                revealObs.unobserve(el);
+            }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    function addReveal(selector, cls, baseDelay) {
+        document.querySelectorAll(selector).forEach(function (el, i) {
+            el.classList.add(cls);
+            if (!el.dataset.delay) el.dataset.delay = baseDelay + i * 80;
+            revealObs.observe(el);
+        });
+    }
+
+    addReveal('.bento-card', 'reveal', 0);
+    addReveal('.timeline-item', 'reveal', 0);
+    addReveal('.section-title', 'reveal', 0);
+
+    /* ── 7. Animated stat counters ──────────────────────────── */
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
     function animateCounter(el) {
         const raw = el.textContent.trim();
         const suffix = raw.replace(/[\d.]/g, '');
-        const end = parseFloat(raw) || 0;
-        if (!end) return; // Skip if ∞ or non-numeric
-
-        let start = 0;
-        const duration = 1400;
-        const startTime = performance.now();
-
-        const step = (now) => {
-            const elapsed = now - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            // Ease-out cubic
-            const eased = 1 - Math.pow(1 - progress, 3);
-            const current = Math.floor(eased * end);
-            el.textContent = current + suffix;
-            if (progress < 1) requestAnimationFrame(step);
-            else el.textContent = raw; // Restore original text exactly
-        };
-
+        const target = parseFloat(raw);
+        if (isNaN(target)) return;
+        const duration = 1800;
+        const start = performance.now();
+        function step(now) {
+            const elapsed = Math.min(now - start, duration);
+            const progress = easeOutCubic(elapsed / duration);
+            const value = target === Math.floor(target)
+                ? Math.floor(progress * target)
+                : (progress * target).toFixed(1);
+            el.textContent = value + suffix;
+            if (elapsed < duration) requestAnimationFrame(step);
+        }
         requestAnimationFrame(step);
     }
 
-    if (!('IntersectionObserver' in window)) {
-        stats.forEach(animateCounter);
-        return;
-    }
-
-    const obs = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
+    const counterObs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
             if (entry.isIntersecting) {
-                animateCounter(entry.target);
-                observer.unobserve(entry.target);
+                entry.target.querySelectorAll('.stat-number').forEach(animateCounter);
+                counterObs.unobserve(entry.target);
             }
         });
     }, { threshold: 0.5 });
 
-    stats.forEach(el => obs.observe(el));
-})();
+    document.querySelectorAll('.stats-card').forEach(function (c) { counterObs.observe(c); });
 
-/* ============================================================
-   7. BUTTON RIPPLE EFFECT
-   ============================================================ */
-document.addEventListener('click', e => {
-    const btn = e.target.closest('.btn');
-    if (!btn) return;
-
-    const circle = document.createElement('span');
-    const diameter = Math.max(btn.clientWidth, btn.clientHeight);
-    const rect = btn.getBoundingClientRect();
-
-    circle.className = 'ripple';
-    circle.style.cssText = `
-    width: ${diameter}px;
-    height: ${diameter}px;
-    left: ${e.clientX - rect.left - diameter / 2}px;
-    top: ${e.clientY - rect.top - diameter / 2}px;
-  `;
-
-    btn.appendChild(circle);
-    setTimeout(() => circle.remove(), 700);
-}, true);
-
-/* ============================================================
-   8. SKILL TAG STAGGER ANIMATION
-   ============================================================ */
-(function initSkillTags() {
-    const tags = $$('.skill-tag');
-    tags.forEach((tag, i) => {
-        tag.style.animationDelay = (i * 40) + 'ms';
-        tag.style.opacity = '0';
-        tag.style.animation = `tagAppear 0.4s ease-out ${i * 40}ms both`;
+    /* ── 8. Button ripple ───────────────────────────────────── */
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn');
+        if (!btn) return;
+        const r = document.createElement('span');
+        r.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        r.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px';
+        btn.appendChild(r);
+        r.addEventListener('animationend', function () { r.remove(); });
     });
 
-    if (!document.getElementById('tag-style')) {
-        const style = document.createElement('style');
-        style.id = 'tag-style';
-        style.textContent = `
-      @keyframes tagAppear {
-        from { opacity: 0; transform: scale(0.8) translateY(4px); }
-        to   { opacity: 1; transform: scale(1) translateY(0); }
-      }
-    `;
-        document.head.appendChild(style);
-    }
-})();
+    /* ── 9. Floating labels — contact form ──────────────────── */
+    document.querySelectorAll('.field input, .field textarea').forEach(function (inp) {
+        inp.placeholder = ' '; // CSS float relies on :not(:placeholder-shown)
+    });
 
-/* ============================================================
-   9. AUTO-DISMISS ALERTS
-   ============================================================ */
-(function initAlerts() {
-    $$('.alert, .success-message, .error-message').forEach(alert => {
-        setTimeout(() => {
-            alert.style.transition = 'opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease, margin 0.5s ease';
-            alert.style.opacity = '0';
-            alert.style.transform = 'translateY(-8px)';
-            setTimeout(() => {
-                alert.style.maxHeight = '0';
-                alert.style.margin = '0';
-                alert.style.padding = '0';
-                alert.style.overflow = 'hidden';
-            }, 500);
+    /* ── 10. Admin sidebar drawer (mobile) ──────────────────── */
+    const sidebar = document.querySelector('.admin-sidebar');
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const sidebarClose = document.querySelector('.sidebar-close');
+    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+
+    function openSidebar() { if (sidebar) sidebar.classList.add('open'); }
+    function closeSidebar() { if (sidebar) sidebar.classList.remove('open'); }
+
+    if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
+    if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+    /* ── 11. Cursor glow (desktop only) ─────────────────────── */
+    if (window.matchMedia('(pointer: fine) and (min-width: 769px)').matches) {
+        const glow = document.querySelector('.cursor-glow');
+        if (glow) {
+            let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+            let cx = mx, cy = my;
+            document.addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; });
+            function animGlow() {
+                cx += (mx - cx) * 0.08;
+                cy += (my - cy) * 0.08;
+                glow.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)';
+                requestAnimationFrame(animGlow);
+            }
+            animGlow();
+        }
+    }
+
+    /* ── 12. Auto-dismiss alerts ─────────────────────────────── */
+    document.querySelectorAll('.alert, .success-message, .error-message').forEach(function (el) {
+        setTimeout(function () {
+            el.style.transition = 'opacity 0.5s, max-height 0.5s, margin 0.5s, padding 0.5s';
+            el.style.opacity = '0';
+            el.style.maxHeight = '0';
+            el.style.overflow = 'hidden';
+            el.style.margin = '0';
+            el.style.padding = '0';
+            setTimeout(function () { el.remove(); }, 600);
         }, 4500);
     });
-})();
 
-/* ============================================================
-   10. PAGE TRANSITION FADE-IN
-   ============================================================ */
-(function initPageFade() {
-    document.body.classList.add('page-fade');
-})();
-
-/* ============================================================
-   11. FILE INPUT PREVIEW (future-proof helper)
-   ============================================================ */
-(function initFilePreview() {
-    $$('input[type="file"][data-preview]').forEach(input => {
-        input.addEventListener('change', function () {
-            const previewId = this.dataset.preview;
-            const preview = document.getElementById(previewId);
-            if (!preview || !this.files[0]) return;
-
-            const reader = new FileReader();
-            reader.onload = e => { preview.src = e.target.result; };
-            reader.readAsDataURL(this.files[0]);
+    /* ── 13. File input preview ─────────────────────────────── */
+    document.querySelectorAll('input[type="file"][data-preview]').forEach(function (inp) {
+        inp.addEventListener('change', function () {
+            const preview = document.getElementById(this.dataset.preview);
+            if (preview && this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) { preview.src = e.target.result; preview.style.display = 'block'; };
+                reader.readAsDataURL(this.files[0]);
+            }
         });
     });
-})();
 
-/* ============================================================
-   12. ACTIVE NAV LINK highlighting (based on scroll position)
-   ============================================================ */
-(function initActiveNav() {
-    const sections = $$('section[id]');
-    const navLinks = $$('.nav-links a[href*="#"]');
-    if (!sections.length || !navLinks.length) return;
+    /* ── 14. Page fade-in ───────────────────────────────────── */
+    document.body.classList.add('page-fade');
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            const id = entry.target.id;
-            navLinks.forEach(a => {
-                a.classList.toggle('active', a.getAttribute('href').includes('#' + id));
-            });
+    /* ── 15. Password visibility toggle ─────────────────────── */
+    document.querySelectorAll('.pw-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const inp = document.getElementById(this.dataset.target) || this.previousElementSibling || this.parentElement.querySelector('input');
+            if (!inp) return;
+            const isText = inp.type === 'text';
+            inp.type = isText ? 'password' : 'text';
+            const icon = this.querySelector('i');
+            if (icon) icon.className = isText ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
         });
-    }, { threshold: 0.4 });
+    });
 
-    sections.forEach(s => observer.observe(s));
+    /* ── 16. CSRF token for AJAX (future use) ───────────────── */
+    const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+    window.csrfToken = metaCsrf ? metaCsrf.content : '';
+
 })();
-
-/* ============================================================
-   13. CSRF TOKEN for fetch() calls (if any future AJAX is added)
-   ============================================================ */
-window.csrfToken = document.querySelector('input[name="csrf_token"]')?.value ?? '';

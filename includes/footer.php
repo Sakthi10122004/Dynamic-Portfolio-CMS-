@@ -2,7 +2,14 @@
     <footer class="footer">
         <div class="footer-content">
             <?php $profile = $profile ?? []; ?>
-            <p>&copy; <?php echo date('Y'); ?> <?php echo escape($profile['name'] ?? 'Sakthi'); ?>. Crafted with passion.</p>
+            <p>© <?php echo date('Y'); ?> <?php echo escape($profile['name'] ?? 'Sakthi'); ?>. Crafted with passion.</p>
+            <nav class="footer-nav" aria-label="Footer navigation">
+                <a href="#about">About</a>
+                <a href="#work">Work</a>
+                <a href="#skills">Skills</a>
+                <a href="#experience">Journey</a>
+                <a href="#contact">Contact</a>
+            </nav>
             <div class="social-links">
                 <?php if (!empty($profile['github'])): ?>
                 <a href="<?php echo escape($profile['github']); ?>" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
