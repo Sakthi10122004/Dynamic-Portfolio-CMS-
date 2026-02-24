@@ -17,7 +17,7 @@ function escape($string) {
 function truncate($text, $length = 150) {
     $text = strip_tags($text ?? '');
     if (mb_strlen($text) <= $length) return $text;
-    $trimmed = mb_substr($text, 0, $length);
+    $trimmed   = mb_substr($text, 0, $length);
     $lastSpace = mb_strrpos($trimmed, ' ');
     return ($lastSpace !== false ? mb_substr($trimmed, 0, $lastSpace) : $trimmed) . '…';
 }
@@ -36,7 +36,7 @@ function timeAgo($date) {
 }
 
 /**
- * Sanitise URLs for social links — only allow http/https.
+ * Sanitise URLs — only allow http/https.
  */
 function sanitizeUrl($url) {
     $url = trim($url ?? '');
@@ -50,7 +50,6 @@ function sanitizeUrl($url) {
 // ----------------------------------------------------------
 
 function csrfToken() {
-    // Session must already be started by Auth::__construct()
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
@@ -64,11 +63,8 @@ function csrfField() {
 function verifyCsrf() {
     $token   = $_POST['csrf_token'] ?? '';
     $session = $_SESSION['csrf_token'] ?? '';
-
     if (!$token || !$session || !hash_equals($session, $token)) {
-        // Graceful redirect with error flag rather than die()
         $back = $_SERVER['HTTP_REFERER'] ?? BASE_URL . '/';
-        // Prevent open redirect
         $back = filter_var($back, FILTER_VALIDATE_URL) ? $back : BASE_URL . '/';
         header('Location: ' . $back . (strpos($back, '?') !== false ? '&' : '?') . 'csrf_error=1');
         exit();
@@ -84,7 +80,6 @@ function uploadImage($file, $existingFile = null) {
         return ['success' => false, 'error' => 'Upload failed (code ' . $file['error'] . ')'];
     }
 
-    // Validate MIME type via finfo (not user-supplied type)
     $finfo    = finfo_open(FILEINFO_MIME_TYPE);
     $mimeType = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
@@ -93,12 +88,10 @@ function uploadImage($file, $existingFile = null) {
         return ['success' => false, 'error' => 'Invalid file type. Allowed: JPG, PNG, GIF, WebP'];
     }
 
-    // Validate file size
     if ($file['size'] > MAX_FILE_SIZE) {
         return ['success' => false, 'error' => 'File too large. Maximum: 5MB'];
     }
 
-    // Derive extension from MIME (not from filename — blocks evil.php.jpg)
     $mimeExtMap = [
         'image/jpeg' => 'jpg',
         'image/png'  => 'png',
@@ -107,22 +100,18 @@ function uploadImage($file, $existingFile = null) {
     ];
     $extension = $mimeExtMap[$mimeType] ?? 'jpg';
 
-    // Double-extension guard: reject filenames with multiple dots before final ext
     $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
     if (strpos($originalName, '.') !== false) {
         return ['success' => false, 'error' => 'Invalid filename. Do not use dots in the file name.'];
     }
 
-    // Generate a cryptographically random filename
     $filename   = bin2hex(random_bytes(16)) . '.' . $extension;
     $uploadPath = UPLOAD_DIR . $filename;
 
-    // Ensure upload directory exists
     if (!is_dir(UPLOAD_DIR)) {
         mkdir(UPLOAD_DIR, 0755, true);
     }
 
-    // Delete old file
     if ($existingFile && file_exists(UPLOAD_DIR . $existingFile)) {
         unlink(UPLOAD_DIR . $existingFile);
     }
@@ -135,17 +124,17 @@ function uploadImage($file, $existingFile = null) {
 }
 
 // ----------------------------------------------------------
-// Data Retrieval
+// Data Retrieval — Profile
 // ----------------------------------------------------------
 
 function getProfile() {
     $db      = Database::getInstance();
     $profile = $db->getRow("SELECT * FROM profile WHERE id = 1");
     return $profile ?: [
-        'name'     => 'Sakthi',
+        'name'     => 'Developer',
         'headline' => 'Full-Stack Developer',
         'bio'      => 'Building digital experiences.',
-        'email'    => 'hello@sakthi.dev',
+        'email'    => 'hello@example.com',
         'avatar'   => null,
         'resume'   => null,
         'github'   => null,
@@ -153,6 +142,44 @@ function getProfile() {
         'twitter'  => null,
     ];
 }
+
+// ----------------------------------------------------------
+// Data Retrieval — Hero Section
+// ----------------------------------------------------------
+
+function getHero() {
+    $db   = Database::getInstance();
+    $hero = $db->getRow("SELECT * FROM hero WHERE id = 1");
+    return $hero ?: [
+        'title'    => 'Building Digital Experiences',
+        'subtitle' => 'Full-Stack Developer & Creative Technologist',
+    ];
+}
+
+// ----------------------------------------------------------
+// Data Retrieval — About Section
+// ----------------------------------------------------------
+
+function getAbout() {
+    $db    = Database::getInstance();
+    $about = $db->getRow("SELECT * FROM about WHERE id = 1");
+    return $about ?: [
+        'content' => 'Passionate full-stack developer crafting modern web experiences.',
+    ];
+}
+
+// ----------------------------------------------------------
+// Data Retrieval — Social Links
+// ----------------------------------------------------------
+
+function getSocialLinks() {
+    $db = Database::getInstance();
+    return $db->getRows("SELECT * FROM social_links ORDER BY display_order ASC, id ASC") ?: [];
+}
+
+// ----------------------------------------------------------
+// Data Retrieval — Projects
+// ----------------------------------------------------------
 
 function getProjects($limit = null, $featuredOnly = false) {
     $db  = Database::getInstance();
@@ -171,21 +198,29 @@ function getProject($id) {
     return $db->getRow("SELECT * FROM projects WHERE id = ?", [(int)$id], 'i');
 }
 
+// ----------------------------------------------------------
+// Data Retrieval — Skills
+// ----------------------------------------------------------
+
 function getSkills($category = null) {
     $db = Database::getInstance();
     if ($category) {
         return $db->getRows(
-            "SELECT * FROM skills WHERE category = ? ORDER BY display_order",
+            "SELECT * FROM skills WHERE category = ? ORDER BY display_order, id",
             [$category], 's'
         );
     }
-    return $db->getRows("SELECT * FROM skills ORDER BY category, display_order");
+    return $db->getRows("SELECT * FROM skills ORDER BY category, display_order, id");
 }
 
 function getSkill($id) {
     $db = Database::getInstance();
     return $db->getRow("SELECT * FROM skills WHERE id = ?", [(int)$id], 'i');
 }
+
+// ----------------------------------------------------------
+// Data Retrieval — Notes / Blog
+// ----------------------------------------------------------
 
 function getNotes($limit = null) {
     $db  = Database::getInstance();
@@ -216,6 +251,10 @@ function getPublishedNote($id) {
     $db = Database::getInstance();
     return $db->getRow("SELECT * FROM notes WHERE id = ? AND published = 1", [(int)$id], 'i');
 }
+
+// ----------------------------------------------------------
+// Data Retrieval — Contact Messages
+// ----------------------------------------------------------
 
 function saveContactMessage($name, $email, $message, $ip = '') {
     $db = Database::getInstance();

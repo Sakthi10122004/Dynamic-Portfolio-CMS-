@@ -6,104 +6,93 @@
     <?php if (!empty($isAdminPage)): ?>
     <meta name="robots" content="noindex, nofollow">
     <?php else: ?>
-    <meta name="description" content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Full-Stack Developer portfolio — bento grid, dark design'; ?>">
-    <meta name="theme-color" content="#0a0a0f">
+    <meta name="description" content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Full-Stack Developer — modern glassmorphism portfolio'; ?>">
+    <meta name="theme-color" content="#0f0c29">
+    <meta property="og:title" content="<?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?>">
+    <meta property="og:description" content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Full-Stack Developer Portfolio'; ?>">
+    <meta property="og:type" content="website">
     <?php endif; ?>
     <title><?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?></title>
 
-    <!-- Preload critical font -->
+    <!-- Fonts: Poppins + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-          crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- Main stylesheet -->
-    <link rel="preload" as="style" href="<?php echo BASE_URL; ?>/assets/css/style.css">
-    <link rel="stylesheet"         href="<?php echo BASE_URL; ?>/assets/css/style.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/style.css">
 
-    <!-- Apply stored theme immediately to avoid flash -->
+    <!-- Anti-flash theme script -->
     <script>
       (function(){
         var t = localStorage.getItem('portfolio-theme');
-        var d = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var d = window.matchMedia('(prefers-color-scheme:dark)').matches;
         document.documentElement.setAttribute('data-theme', t || (d ? 'dark' : 'light'));
       })();
     </script>
 </head>
 <body<?php echo !empty($isAdminPage) ? ' class="admin-body"' : ''; ?>>
 
-<!-- Scroll progress bar -->
-<div id="scroll-progress" aria-hidden="true"></div>
-
-<!-- Cursor glow (hidden on touch devices via CSS/JS) -->
-<div class="cursor-glow" aria-hidden="true"></div>
-
+<!-- ── Page Loader ─────────────────────────────────────── -->
 <?php if (empty($isAdminPage)): ?>
-
-<!-- ══ COMMAND PALETTE OVERLAY ════════════════════════════ -->
-<div id="palette-backdrop" class="palette-backdrop" role="dialog"
-     aria-modal="true" aria-label="Navigation search">
-    <div class="palette" role="combobox" aria-expanded="true">
-        <div class="palette-header">
-            <span class="palette-icon">⌘</span>
-            <input id="palette-input" class="palette-input"
-                   type="search" placeholder="Search or jump to…"
-                   autocomplete="off" spellcheck="false" aria-autocomplete="list"
-                   aria-controls="palette-list">
-            <kbd class="palette-esc">ESC</kbd>
-        </div>
-        <ul id="palette-list" class="palette-list" role="listbox"></ul>
-    </div>
+<div id="page-loader" aria-hidden="true">
+    <div class="loader-blob"></div>
 </div>
 
-<!-- ══ TOP BAR ════════════════════════════════════════════ -->
-<header class="topbar" role="banner">
-    <div class="topbar-inner">
-        <a href="<?php echo BASE_URL; ?>/" class="topbar-logo" aria-label="Home">
-            <span class="topbar-logo-dot" aria-hidden="true"></span>
-            <?php echo escape(SITE_NAME); ?>
+<!-- ── Scroll Progress ─────────────────────────────────── -->
+<div id="scroll-progress" aria-hidden="true"></div>
+
+<!-- ── Floating Background Shapes ─────────────────────── -->
+<div class="bg-shapes" aria-hidden="true">
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+    <div class="bg-shape bg-shape-3"></div>
+    <div class="bg-shape bg-shape-4"></div>
+</div>
+
+<!-- ── Glassmorphism Navbar ────────────────────────────── -->
+<header class="navbar" id="navbar" role="banner">
+    <div class="navbar-inner">
+        <a href="<?php echo BASE_URL; ?>/" class="navbar-brand" aria-label="Home">
+            <div class="brand-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 40 40" fill="none">
+                    <circle cx="20" cy="20" r="18" stroke="url(#ng)" stroke-width="2.5" fill="rgba(255,255,255,0.05)"/>
+                    <path d="M12 28 L20 12 L28 28" stroke="url(#ng)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="15" y1="22" x2="25" y2="22" stroke="url(#ng)" stroke-width="2" stroke-linecap="round"/>
+                    <defs><linearGradient id="ng" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#38bdf8"/></linearGradient></defs>
+                </svg>
+            </div>
+            <span class="brand-name"><?php echo escape(SITE_NAME); ?></span>
         </a>
 
-        <div class="topbar-actions">
-            <!-- Command palette trigger -->
-            <button class="cmd-trigger" aria-label="Open navigation (Ctrl+K)"
-                    aria-haspopup="dialog" aria-controls="palette-backdrop">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                </svg>
-                Search &amp; Navigate
-                <kbd>⌘K</kbd>
-            </button>
+        <nav class="navbar-nav" aria-label="Main navigation">
+            <a href="#hero" class="nav-link">Home</a>
+            <a href="#about" class="nav-link">About</a>
+            <a href="#skills" class="nav-link">Skills</a>
+            <a href="#projects" class="nav-link">Projects</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </nav>
 
-            <!-- Theme toggle -->
-            <button class="theme-toggle" aria-label="Toggle colour theme">
-                <!-- Dark mode icon (shown by default) -->
-                <svg class="icon-dark" width="16" height="16" viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                </svg>
-                <!-- Light mode icon (shown in light theme) -->
-                <svg class="icon-light" width="16" height="16" viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <circle cx="12" cy="12" r="5"/>
-                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                </svg>
+        <div class="navbar-actions">
+            <!-- Dark/Light toggle -->
+            <button class="theme-toggle" aria-label="Toggle dark/light mode" id="themeToggle">
+                <i class="fa-solid fa-moon icon-dark" aria-hidden="true"></i>
+                <i class="fa-solid fa-sun icon-light" aria-hidden="true"></i>
             </button>
 
             <?php if (isset($auth) && $auth->isLoggedIn()): ?>
-            <a href="<?php echo BASE_URL; ?>/admin/dashboard.php"
-               class="btn btn-ghost btn-sm" style="border-color:var(--border)">
-                Dashboard
+            <a href="<?php echo BASE_URL; ?>/admin/dashboard.php" class="btn-glass btn-sm">
+                <i class="fa-solid fa-gauge-high" aria-hidden="true"></i> Dashboard
             </a>
             <?php endif; ?>
+
+            <!-- Mobile menu toggle -->
+            <button class="Nav-hamburger" aria-label="Toggle mobile menu" id="navToggle" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </div>
 </header>

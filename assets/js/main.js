@@ -1,320 +1,238 @@
 /* ============================================================
-   main.js v3 — Command Palette + Theme Toggle + Micro Interactions
-   Vanilla JS, no libraries, production-ready
+   main.js — Portfolio Interactions & Animations
    ============================================================ */
 
 (function () {
     'use strict';
 
-    /* ── 0. Helpers ─────────────────────────────────────────── */
-    const qs = (sel, root) => (root ?? document).querySelector(sel);
-    const qsa = (sel, root) => [...(root ?? document).querySelectorAll(sel)];
-
-    /* ── 1. Theme (dark/light) ─────────────────────────────── */
-    const html = document.documentElement;
-    const THEME_KEY = 'portfolio-theme';
-    const themeToggle = qs('.theme-toggle');
-
-    function applyTheme(theme) {
-        html.setAttribute('data-theme', theme);
-        localStorage.setItem(THEME_KEY, theme);
+    // ── Page Loader ───────────────────────────────────────────
+    const loader = document.getElementById('page-loader');
+    if (loader) {
+        window.addEventListener('load', () => {
+            setTimeout(() => loader.classList.add('hidden'), 300);
+        });
+        // Failsafe
+        setTimeout(() => loader && loader.classList.add('hidden'), 3000);
     }
 
-    // Init: respect stored preference, then OS preference
-    const storedTheme = localStorage.getItem(THEME_KEY);
-    const osDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(storedTheme || (osDark ? 'dark' : 'light'));
+    // ── Scroll Progress Bar ───────────────────────────────────
+    const progressBar = document.getElementById('scroll-progress');
+    function updateProgress() {
+        if (!progressBar) return;
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const scrollH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        progressBar.style.width = scrollH > 0 ? (scrollTop / scrollH * 100) + '%' : '0%';
+    }
 
+    // ── Sticky Navbar ─────────────────────────────────────────
+    const navbar = document.getElementById('navbar');
+    function handleScroll() {
+        updateProgress();
+        if (navbar) {
+            navbar.classList.toggle('scrolled', window.scrollY > 60);
+        }
+        revealElements();
+        animateSkillBars();
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // ── Dark / Light Mode Toggle ──────────────────────────────
+    const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
-        themeToggle.addEventListener('click', function () {
-            applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('portfolio-theme', next);
         });
     }
 
-    /* ── 2. Scroll progress + topbar shrink ────────────────── */
-    const topbar = qs('.topbar');
-
-    function onScroll() {
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const pct = max > 0 ? (window.scrollY / max * 100).toFixed(1) : 0;
-        html.style.setProperty('--scroll-pct', pct + '%');
-        if (topbar) topbar.classList.toggle('scrolled', window.scrollY > 40);
-        updateScrollspy();
-    }
-
-    let rafPending = false;
-    window.addEventListener('scroll', function () {
-        if (!rafPending) {
-            requestAnimationFrame(function () { onScroll(); rafPending = false; });
-            rafPending = true;
-        }
-    }, { passive: true });
-
-    /* ── 3. Smooth scroll helper ────────────────────────────── */
-    function scrollToSection(id) {
-        const el = qs(id.startsWith('#') ? id : '#' + id);
-        if (!el) return;
-        const top = el.getBoundingClientRect().top + window.scrollY - 70;
-        window.scrollTo({ top, behavior: 'smooth' });
-    }
-
-    /* ── 4. Scrollspy ───────────────────────────────────────── */
-    function updateScrollspy() {
-        const sections = qsa('section[id]');
-        let current = '';
-        sections.forEach(function (sec) {
-            if (window.scrollY >= sec.offsetTop - 130) current = sec.id;
+    // ── Mobile Navigation ─────────────────────────────────────
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.querySelector('.navbar-nav');
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+            const open = navMenu.classList.toggle('open');
+            navToggle.setAttribute('aria-expanded', open);
+            navToggle.classList.toggle('active', open);
         });
-    }
 
-    // Anchor links
-    qsa('a[href^="#"]').forEach(function (a) {
-        a.addEventListener('click', function (e) {
-            const target = qs(a.getAttribute('href'));
-            if (target) { e.preventDefault(); scrollToSection(a.getAttribute('href')); }
+        // Close on nav link click
+        navMenu.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('open');
+                navToggle.setAttribute('aria-expanded', 'false');
+                navToggle.classList.remove('active');
+            });
         });
-    });
 
-    /* ── 5. Command Palette ─────────────────────────────────── */
-    const backdrop = qs('#palette-backdrop');
-    const input = qs('#palette-input');
-    const list = qs('#palette-list');
-    const cmdBtn = qs('.cmd-trigger');
-
-    /* Nav items — extend freely */
-    const NAV_ITEMS = [
-        { icon: '🏠', label: 'Home', shortcut: 'G H', target: '#home' },
-        { icon: '👤', label: 'About', shortcut: 'G A', target: '#about' },
-        { icon: '⚙️', label: 'Tech Stack', shortcut: 'G T', target: '#tech' },
-        { icon: '💼', label: 'Experience', shortcut: 'G E', target: '#experience' },
-        { icon: '🚀', label: 'Projects', shortcut: 'G P', target: '#projects' },
-        { icon: '✉️', label: 'Contact', shortcut: 'G C', target: '#contact' },
-        { icon: '🌙', label: 'Toggle Theme', shortcut: 'G D', action: function () { if (themeToggle) themeToggle.click(); } },
-    ];
-
-    let paletteOpen = false;
-    let activeIdx = -1;
-
-    function renderPalette(query) {
-        if (!list) return;
-        const q = (query || '').toLowerCase().trim();
-        const items = q
-            ? NAV_ITEMS.filter(function (n) { return n.label.toLowerCase().includes(q); })
-            : NAV_ITEMS;
-
-        if (!items.length) {
-            list.innerHTML = '<li class="palette-empty">No results for "' + query + '"</li>';
-            activeIdx = -1;
-            return;
-        }
-
-        list.innerHTML = items.map(function (item, i) {
-            return '<li class="palette-item" data-idx="' + i + '" data-target="' + (item.target || '') + '" ' +
-                (item.action ? 'data-action="true"' : '') +
-                ' role="option">' +
-                '<span class="palette-item-icon">' + item.icon + '</span>' +
-                '<span class="palette-item-label">' + item.label + '</span>' +
-                '<span class="palette-item-shortcut">' + item.shortcut + '</span>' +
-                '</li>';
-        }).join('');
-
-        activeIdx = 0;
-        updatePaletteActive();
-
-        // Store filtered items for keyboard nav
-        list._items = items;
-    }
-
-    function updatePaletteActive() {
-        qsa('.palette-item', list).forEach(function (el, i) {
-            el.classList.toggle('active', i === activeIdx);
-        });
-    }
-
-    function selectPaletteItem() {
-        const items = list._items || NAV_ITEMS;
-        const item = items[activeIdx < 0 ? 0 : activeIdx];
-        if (!item) return;
-        closePalette();
-        if (item.action) { setTimeout(item.action, 60); }
-        if (item.target) { setTimeout(function () { scrollToSection(item.target); }, 60); }
-    }
-
-    function openPalette() {
-        if (!backdrop) return;
-        paletteOpen = true;
-        backdrop.classList.add('open');
-        if (input) { input.value = ''; input.focus(); }
-        renderPalette('');
-    }
-
-    function closePalette() {
-        if (!backdrop) return;
-        paletteOpen = false;
-        backdrop.classList.remove('open');
-    }
-
-    // Triggers
-    if (cmdBtn) cmdBtn.addEventListener('click', openPalette);
-    if (backdrop) backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closePalette(); });
-
-    if (input) {
-        input.addEventListener('input', function () { renderPalette(input.value); activeIdx = 0; updatePaletteActive(); });
-        input.addEventListener('keydown', function (e) {
-            const items = qsa('.palette-item', list);
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                activeIdx = Math.min(activeIdx + 1, items.length - 1);
-                updatePaletteActive();
-                items[activeIdx]?.scrollIntoView({ block: 'nearest' });
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                activeIdx = Math.max(activeIdx - 1, 0);
-                updatePaletteActive();
-                items[activeIdx]?.scrollIntoView({ block: 'nearest' });
-            } else if (e.key === 'Enter') {
-                selectPaletteItem();
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!navbar.contains(e.target)) {
+                navMenu.classList.remove('open');
+                navToggle.setAttribute('aria-expanded', 'false');
+                navToggle.classList.remove('active');
             }
         });
     }
 
-    // Click on list items
-    if (list) {
-        list.addEventListener('click', function (e) {
-            const item = e.target.closest('.palette-item');
-            if (!item) return;
-            activeIdx = +item.dataset.idx;
-            selectPaletteItem();
+    // ── Hamburger animation ───────────────────────────────────
+    const style = document.createElement('style');
+    style.textContent = `
+    .Nav-hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .Nav-hamburger.active span:nth-child(2){opacity:0;transform:scaleX(0)}
+    .Nav-hamburger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  `;
+    document.head.appendChild(style);
+
+    // ── Active Nav Link Highlight ─────────────────────────────
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    function updateActiveNav() {
+        let current = '';
+        sections.forEach(s => {
+            if (window.scrollY >= s.offsetTop - 120) current = s.id;
+        });
+        navLinks.forEach(l => {
+            l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+        });
+    }
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+
+    // ── Reveal on Scroll (Intersection Observer) ───────────────
+    const revealItems = document.querySelectorAll('.reveal');
+    function revealElements() {
+        revealItems.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            const delay = parseInt(el.dataset.delay || 0);
+            if (rect.top < window.innerHeight - 80) {
+                setTimeout(() => el.classList.add('visible'), delay);
+            }
         });
     }
 
-    // Global keyboard shortcut: Ctrl+K / Cmd+K
-    document.addEventListener('keydown', function (e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-            e.preventDefault();
-            paletteOpen ? closePalette() : openPalette();
+    // Use IntersectionObserver if available
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const delay = parseInt(entry.target.dataset.delay || 0);
+                    setTimeout(() => entry.target.classList.add('visible'), delay);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+        revealItems.forEach(el => observer.observe(el));
+    } else {
+        // Fallback
+        revealElements();
+        window.addEventListener('scroll', revealElements, { passive: true });
+    }
+
+    // ── Skill Bar Animation ───────────────────────────────────
+    let skillsBarsAnimated = false;
+    function animateSkillBars() {
+        if (skillsBarsAnimated) return;
+        const skillsSection = document.getElementById('skills');
+        if (!skillsSection) return;
+        const rect = skillsSection.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 100) {
+            skillsBarsAnimated = true;
+            document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+                const w = bar.dataset.width || 80;
+                // Trigger reflow then animate
+                bar.style.width = '0%';
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        bar.style.width = w + '%';
+                    });
+                });
+            });
         }
-        if (e.key === 'Escape' && paletteOpen) closePalette();
-    });
-
-    /* ── 6. IntersectionObserver scroll reveal ──────────────── */
-    const revealObs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            if (!entry.isIntersecting) return;
-            const el = entry.target;
-            const delay = +(el.dataset.delay || 0);
-            setTimeout(function () { el.classList.add('visible'); }, delay);
-            revealObs.unobserve(el);
-        });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-    function addReveal(sel, delay) {
-        qsa(sel).forEach(function (el, i) {
-            el.classList.add('reveal');
-            if (!el.dataset.delay) el.dataset.delay = delay + i * 70;
-            revealObs.observe(el);
-        });
     }
 
-    addReveal('.card', 0);
-    addReveal('.exp-card', 0);
-    addReveal('.project-card', 60);
-    qsa('.section-label').forEach(function (el) {
-        el.classList.add('reveal');
-        revealObs.observe(el);
-    });
-
-    /* ── 7. Stat counters ───────────────────────────────────── */
-    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
-
-    function animateCount(el) {
-        const raw = el.textContent.trim();
-        const suffix = raw.replace(/[\d.]+/, '');
-        const target = parseFloat(raw);
-        if (isNaN(target)) return;
-        const dur = 1600;
-        const start = performance.now();
-        (function step(now) {
-            const p = Math.min((now - start) / dur, 1);
-            const v = target === Math.floor(target)
-                ? Math.floor(easeOut(p) * target)
-                : (easeOut(p) * target).toFixed(1);
-            el.textContent = v + suffix;
-            if (p < 1) requestAnimationFrame(step);
-        })(start);
+    // ── Lightweight Parallax ──────────────────────────────────
+    let ticking = false;
+    function onScrollParallax() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const y = window.scrollY;
+                // Parallax on background shapes
+                document.querySelectorAll('.bg-shape').forEach((s, i) => {
+                    const speed = (i + 1) * 0.08;
+                    s.style.transform = `translateY(${y * speed}px)`;
+                });
+                // Hero parallax
+                const heroContent = document.querySelector('.hero-content');
+                if (heroContent) heroContent.style.transform = `translateY(${y * 0.12}px)`;
+                ticking = false;
+            });
+            ticking = true;
+        }
     }
+    window.addEventListener('scroll', onScrollParallax, { passive: true });
 
-    new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            if (!entry.isIntersecting) return;
-            qsa('.hero-stat-num', entry.target).forEach(animateCount);
-            this.unobserve(entry.target);
-        }.bind(this));
-    }, { threshold: 0.5 }).observe(qs('.hero') || document.body);
-
-    /* ── 8. Button ripple ───────────────────────────────────── */
-    document.addEventListener('pointerdown', function (e) {
-        const btn = e.target.closest('.btn');
-        if (!btn) return;
-        const r = document.createElement('span');
-        const rect = btn.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        r.className = 'ripple';
-        r.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px';
-        btn.appendChild(r);
-        r.addEventListener('animationend', function () { r.remove(); });
-    });
-
-    /* ── 9. Cursor glow (desktop only) ─────────────────────── */
-    const glow = qs('.cursor-glow');
-    if (glow && window.matchMedia('(pointer:fine) and (min-width:768px)').matches) {
-        let mx = innerWidth / 2, my = innerHeight / 2, cx = mx, cy = my;
-        document.addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; });
-        (function animate() {
-            cx += (mx - cx) * 0.07;
-            cy += (my - cy) * 0.07;
-            glow.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)';
-            requestAnimationFrame(animate);
-        })();
-    } else if (glow) {
-        glow.style.display = 'none';
-    }
-
-    /* ── 10. Auto-dismiss alerts ────────────────────────────── */
-    qsa('.alert, .success-message, .error-message').forEach(function (el) {
-        setTimeout(function () {
-            el.style.transition = 'opacity 0.5s, max-height 0.5s, margin 0.5s, padding 0.5s';
-            el.style.opacity = '0'; el.style.maxHeight = '0'; el.style.overflow = 'hidden';
-            el.style.margin = '0'; el.style.padding = '0';
-            setTimeout(function () { el.remove(); }, 600);
-        }, 4500);
-    });
-
-    /* ── 11. Password visibility toggle ────────────────────── */
-    qsa('.pw-toggle').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const inp = btn.previousElementSibling || btn.parentElement.querySelector('input');
-            if (!inp) return;
-            inp.type = inp.type === 'text' ? 'password' : 'text';
-            const icon = btn.querySelector('i');
-            if (icon) icon.className = inp.type === 'text' ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    // ── Smooth Scroll for anchor links ───────────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const targetId = this.getAttribute('href').slice(1);
+            const target = document.getElementById(targetId);
+            if (target) {
+                e.preventDefault();
+                const offset = document.querySelector('.navbar')?.offsetHeight || 70;
+                const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top, behavior: 'smooth' });
+            }
         });
     });
 
-    /* ── 12. Admin sidebar (mobile) ────────────────────────── */
-    const sidebar = qs('.admin-sidebar');
-    const sidebarClose = qs('.sidebar-close');
-    const mobileToggle = qs('.sidebar-toggle-mobile');
-
-    if (mobileToggle) mobileToggle.addEventListener('click', function () { sidebar?.classList.add('open'); });
-    if (sidebarClose) sidebarClose.addEventListener('click', function () { sidebar?.classList.remove('open'); });
-
-    /* ── 13. Page fade-in ───────────────────────────────────── */
-    document.body.classList.add('page-fade');
-
-    /* ── 14. Floating label placeholder fix ─────────────────── */
-    qsa('.field input, .field textarea').forEach(function (inp) {
-        inp.placeholder = ' ';
+    // ── Password toggle (admin login) ───────────────────────
+    document.querySelectorAll('.pw-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = btn.closest('.pw-wrap')?.querySelector('input');
+            if (input) {
+                input.type = input.type === 'password' ? 'text' : 'password';
+                btn.innerHTML = input.type === 'password'
+                    ? '<i class="fa-regular fa-eye"></i>'
+                    : '<i class="fa-regular fa-eye-slash"></i>';
+            }
+        });
     });
+
+    // ── Skill percentage live preview (admin) ───────────────
+    const pctRange = document.getElementById('percentage-range');
+    const pctShow = document.getElementById('percentage-display');
+    if (pctRange && pctShow) {
+        pctRange.addEventListener('input', () => {
+            pctShow.textContent = pctRange.value + '%';
+        });
+    }
+
+    // ── Image preview for file inputs (admin) ───────────────
+    document.querySelectorAll('input[type="file"][data-preview]').forEach(input => {
+        input.addEventListener('change', () => {
+            const previewId = input.dataset.preview;
+            const preview = document.getElementById(previewId);
+            if (preview && input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => { preview.src = e.target.result; preview.style.display = 'block'; };
+                reader.readAsDataURL(input.files[0]);
+            }
+        });
+    });
+
+    // ── Auto-dismiss flash messages ──────────────────────────
+    document.querySelectorAll('.flash, .alert').forEach(flash => {
+        setTimeout(() => {
+            flash.style.transition = 'opacity .5s';
+            flash.style.opacity = '0';
+            setTimeout(() => flash.remove(), 600);
+        }, 5000);
+    });
+
+    // ── Initial triggers ──────────────────────────────────────
+    updateProgress();
+    updateActiveNav();
+    setTimeout(animateSkillBars, 600);
 
 })();

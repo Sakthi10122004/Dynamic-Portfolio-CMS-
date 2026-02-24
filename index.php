@@ -1,17 +1,20 @@
 <?php
 /* ============================================================
-   index.php — Portfolio Front Page (v3 Bento + Command Palette)
+   index.php — Glassmorphism Portfolio (Dynamic CMS)
    ============================================================ */
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
 
-$auth    = new Auth(Database::getInstance());
-$profile = getProfile();
-$skills  = getSkills();
-$projects= getProjects();
-$notes   = getNotes(3);
+$auth     = new Auth(Database::getInstance());
+$profile  = getProfile();
+$hero     = getHero();
+$about    = getAbout();
+$skills   = getSkills();
+$projects = getProjects();
+$socials  = getSocialLinks();
+$notes    = getNotes(3);
 
 // Group skills by category
 $skillsByCategory = [];
@@ -19,7 +22,7 @@ foreach ($skills as $s) {
     $skillsByCategory[$s['category']][] = $s;
 }
 
-// Handle contact form submission
+// Contact form
 $contactSuccess = false;
 $contactError   = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
@@ -28,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
     $email   = trim($_POST['email']   ?? '');
     $message = trim($_POST['message'] ?? '');
     $ip      = $_SERVER['REMOTE_ADDR'] ?? '';
-
     if (!$name || !$email || !$message) {
         $contactError = 'Please fill in all fields.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -39,435 +41,356 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
     }
 }
 
-// Tech icon map — emoji fallback (works without any CDN)
-function techIcon(string $name): string {
-    static $map = [
-        'html/css' => '🌐', 'html'     => '🌐', 'css'   => '🎨',
-        'javascript' => '🟨', 'js'     => '🟨', 'typescript' => '🔷',
-        'react'    => '⚛️',  'vue'     => '💚', 'angular' => '🔺',
-        'svelte'   => '🧡',  'nextjs'  => '▲',  'next.js' => '▲',
-        'tailwind' => '💨',  'tailwind css' => '💨', 'bootstrap' => '🅱️',
-        'php'      => '🐘',  'laravel' => '🔴', 'node.js' => '💚',
-        'nodejs'   => '💚',  'python'  => '🐍', 'django'  => '🌿',
-        'flask'    => '🍶',  'java'    => '☕',  'go'      => '🔵',
-        'rust'     => '🦀',  'ruby'    => '💎', 'mysql'   => '🐬',
-        'postgresql' => '🐘','mongodb' => '🍃', 'redis'   => '🔴',
-        'sqlite'   => '🗃️',  'rest apis' => '🔌','graphql' => '⬡',
-        'docker'   => '🐳',  'kubernetes' => '☸️','aws'    => '☁️',
-        'gcp'      => '☁️',  'azure'   => '☁️', 'linux'   => '🐧',
-        'git'      => '🌿',  'github'  => '🐙', 'gitlab'  => '🦊',
-        'ci/cd'    => '🔄',  'nginx'   => '⚡',  'figma'   => '🎭',
-        'photoshop' => '🖌️', 'vscode'  => '💙', 'vim'     => '📝',
-        'bash'     => '💻',  'linux'   => '🐧',
-    ];
-    $key = strtolower(trim($name));
-    return $map[$key] ?? '🔧';
-}
-
-$pageTitle       = null; // use SITE_NAME as title
-$pageDescription = escape($profile['name']) . ' — ' . escape($profile['headline'])
-                 . '. Full-stack developer portfolio.';
+$pageTitle       = null;
+$pageDescription = escape($profile['name']) . ' — ' . escape($hero['title']);
 include __DIR__ . '/includes/header.php';
+
+// Category display config
+$catConfig = [
+    'frontend' => ['label' => 'Frontend',     'icon' => 'fa-solid fa-palette'],
+    'backend'  => ['label' => 'Backend',      'icon' => 'fa-solid fa-server'],
+    'devops'   => ['label' => 'DevOps',       'icon' => 'fa-brands fa-docker'],
+    'other'    => ['label' => 'Other',        'icon' => 'fa-solid fa-wrench'],
+];
 ?>
 
-<!-- ══════════════════════════════════════════════════════════
-     HERO
-     ══════════════════════════════════════════════════════════ -->
-<section id="home" class="hero">
-    <div class="bento hero-grid">
+<!-- ══ HERO ══════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
 
-        <!-- Main bio card — spans 8 cols -->
-        <div class="col-8 card hero-main reveal">
-            <div>
-                <div class="hero-eyebrow">
-                    <?php if (!empty($profile['avatar'])): ?>
-                    <img src="<?php echo UPLOAD_URL . escape($profile['avatar']); ?>"
-                         alt="<?php echo escape($profile['name']); ?>"
-                         class="avatar-sm" width="56" height="56" loading="eager">
-                    <?php else: ?>
-                    <div class="avatar-sm" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
-                        🧑‍💻
-                    </div>
-                    <?php endif; ?>
-                    <span class="status-pill">Open to work</span>
-                </div>
+      <!-- Left: Content -->
+      <div class="hero-content reveal">
+        <div class="hero-badge">
+          <i class="fa-solid fa-circle" style="color:#4ade80;font-size:.5rem"></i>
+          Available for work
+        </div>
+        <h1 class="hero-title">
+          <?php echo escape($profile['name']); ?>
+          <span class="grad-text"><?php echo escape($hero['title']); ?></span>
+        </h1>
+        <p class="hero-subtitle"><?php echo escape($hero['subtitle']); ?></p>
 
-                <h1 class="hero-name"><?php echo escape($profile['name']); ?></h1>
-                <p class="hero-headline"><?php echo escape($profile['headline']); ?></p>
-                <p class="hero-bio"><?php echo escape($profile['bio'] ?? 'Building digital experiences with clean code and thoughtful design.'); ?></p>
-            </div>
-
-            <div class="hero-cta">
-                <a href="#projects" class="btn btn-primary">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M2 9h20M9 9V4M15 9V4M3 20h18a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1z"/>
-                    </svg>
-                    View Projects
-                </a>
-                <?php if (!empty($profile['resume'])): ?>
-                <a href="<?php echo UPLOAD_URL . escape($profile['resume']); ?>"
-                   class="btn btn-ghost" download target="_blank" rel="noopener">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Résumé
-                </a>
-                <?php endif; ?>
-                <a href="#contact" class="btn btn-ghost">Let's talk →</a>
-            </div>
+        <div class="hero-cta">
+          <a href="#projects" class="btn-primary">
+            <i class="fa-solid fa-rocket" aria-hidden="true"></i> View Projects
+          </a>
+          <a href="#contact" class="btn-glass">
+            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Get in Touch
+          </a>
+          <?php if (!empty($profile['resume'])): ?>
+          <a href="<?php echo UPLOAD_URL . escape($profile['resume']); ?>" class="btn-outline" download target="_blank" rel="noopener">
+            <i class="fa-solid fa-download" aria-hidden="true"></i> Résumé
+          </a>
+          <?php endif; ?>
         </div>
 
-        <!-- Stats column — 4 cols, 2 rows -->
-        <div class="col-4" style="display:flex;flex-direction:column;gap:1rem;">
-
-            <div class="card hero-stat reveal" data-delay="80">
-                <span class="hero-stat-num"><?php echo count($projects); ?>+</span>
-                <span class="hero-stat-label">Projects built</span>
-            </div>
-
-            <div class="card hero-stat reveal" data-delay="160">
-                <span class="hero-stat-num"><?php echo count($skills); ?>+</span>
-                <span class="hero-stat-label">Technologies</span>
-            </div>
-
-            <!-- Social links card -->
-            <div class="card hero-social reveal" data-delay="240">
-                <?php if (!empty($profile['github'])): ?>
-                <a href="<?php echo escape(sanitizeUrl($profile['github'])); ?>"
-                   class="social-row" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.05.14 3 .4 2.28-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.7.8.58A12 12 0 0 0 24 12C24 5.37 18.63 0 12 0z"/>
-                    </svg>
-                    GitHub
-                </a>
-                <?php endif; ?>
-                <?php if (!empty($profile['linkedin'])): ?>
-                <a href="<?php echo escape(sanitizeUrl($profile['linkedin'])); ?>"
-                   class="social-row" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.44-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43c-1.14 0-2.06-.93-2.06-2.06a2.06 2.06 0 1 1 2.06 2.06zm1.78 13.02H3.55V9h3.57v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.46C23.2 24 24 23.23 24 22.27V1.73C24 .77 23.2 0 22.22 0h.01z"/>
-                    </svg>
-                    LinkedIn
-                </a>
-                <?php endif; ?>
-                <?php if (!empty($profile['twitter'])): ?>
-                <a href="<?php echo escape(sanitizeUrl($profile['twitter'])); ?>"
-                   class="social-row" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">
-                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24H16.17l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25H8.08l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z"/>
-                    </svg>
-                    Twitter / X
-                </a>
-                <?php endif; ?>
-                <?php if (!empty($profile['email'])): ?>
-                <a href="mailto:<?php echo escape($profile['email']); ?>"
-                   class="social-row" aria-label="Email">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                        <polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                    <?php echo escape($profile['email']); ?>
-                </a>
-                <?php endif; ?>
-            </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-num"><?php echo count($projects); ?>+</span>
+            <span class="hero-stat-label">Projects</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num"><?php echo count($skills); ?>+</span>
+            <span class="hero-stat-label">Skills</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">3+</span>
+            <span class="hero-stat-label">Years Exp.</span>
+          </div>
         </div>
-    </div>
-</section>
+      </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     TECH STACK
-     ══════════════════════════════════════════════════════════ -->
-<section id="tech">
-    <span class="section-label">Toolbox</span>
-    <h2 style="margin-bottom:2rem">Tech Stack</h2>
+      <!-- Right: Visual Card -->
+      <div class="hero-visual reveal" data-delay="200">
+        <div class="glass-card hero-avatar-card">
+          <?php if (!empty($profile['avatar'])): ?>
+          <img src="<?php echo UPLOAD_URL . escape($profile['avatar']); ?>"
+               alt="<?php echo escape($profile['name']); ?>"
+               class="hero-avatar" loading="eager">
+          <?php else: ?>
+          <div class="hero-avatar-placeholder">🧑‍💻</div>
+          <?php endif; ?>
+          <div class="hero-name"><?php echo escape($profile['name']); ?></div>
+          <div class="hero-role"><?php echo escape($profile['headline']); ?></div>
+          <?php if (!empty($profile['email'])): ?>
+          <p style="font-size:.8rem;color:var(--text-muted);margin-top:.4rem">
+            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+            <?php echo escape($profile['email']); ?>
+          </p>
+          <?php endif; ?>
+        </div>
 
-    <?php
-    $categories = [
-        'frontend' => 'Frontend',
-        'backend'  => 'Backend',
-        'devops'   => 'DevOps & Tools',
-    ];
-    foreach ($categories as $cat => $catLabel):
-        $catSkills = $skillsByCategory[$cat] ?? [];
-        if (empty($catSkills)) continue;
-    ?>
-    <div class="card card--flat reveal" style="margin-bottom:1rem;padding:1.5rem 1.75rem;">
-        <div class="tech-category-label"><?php echo $catLabel; ?></div>
-        <div class="tech-grid">
-            <?php foreach ($catSkills as $skill): ?>
-            <div class="tech-icon" data-tooltip="<?php echo escape($skill['name']); ?>"
-                 role="img" aria-label="<?php echo escape($skill['name']); ?>">
-                <?php echo techIcon($skill['name']); ?>
-            </div>
+        <?php if ($socials): ?>
+        <div class="glass-card hero-social-card">
+          <h4><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Find me on</h4>
+          <div class="social-links-grid">
+            <?php foreach ($socials as $sl):
+              $url = sanitizeUrl($sl['url']);
+              if (!$url) continue; ?>
+            <a href="<?php echo escape($url); ?>" target="_blank" rel="noopener noreferrer"
+               class="social-link-pill">
+              <i class="<?php echo escape($sl['icon_class']); ?>" aria-hidden="true"></i>
+              <?php echo escape($sl['platform']); ?>
+            </a>
             <?php endforeach; ?>
+          </div>
         </div>
+        <?php endif; ?>
+      </div>
+
     </div>
-    <?php endforeach; ?>
+  </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     EXPERIENCE
-     ══════════════════════════════════════════════════════════ -->
-<section id="experience">
-    <span class="section-label">Journey</span>
-    <h2 style="margin-bottom:2rem">Experience</h2>
-
-    <div class="bento exp-grid">
-        <!-- Experience entries — add/edit here -->
-        <article class="col-12 card exp-card reveal">
-            <div class="exp-header">
-                <div>
-                    <div class="exp-role">Full-Stack Developer</div>
-                    <div class="exp-org">Freelance</div>
-                </div>
-                <span class="exp-period">2022 — Present</span>
-            </div>
-            <ul class="exp-bullets">
-                <li>Designed and shipped full-stack web applications using PHP, React, and MySQL for clients across multiple industries.</li>
-                <li>Built reusable component libraries and design systems that cut frontend development time by 40%.</li>
-                <li>Implemented REST APIs, authentication systems, and admin dashboards for 10+ client projects.</li>
-            </ul>
-            <div class="exp-tech">
-                <?php foreach (['PHP','React','MySQL','Docker','REST APIs'] as $t): ?>
-                <span class="badge badge-accent"><?php echo $t; ?></span>
-                <?php endforeach; ?>
-            </div>
-        </article>
-
-        <article class="col-12 card exp-card reveal" data-delay="80">
-            <div class="exp-header">
-                <div>
-                    <div class="exp-role">Web Development Intern</div>
-                    <div class="exp-org">Tech Startup (Remote)</div>
-                </div>
-                <span class="exp-period">2021 — 2022</span>
-            </div>
-            <ul class="exp-bullets">
-                <li>Contributed to building a SaaS product dashboard; wrote modular CSS and vanilla JS components.</li>
-                <li>Developed automated CI/CD pipelines using GitHub Actions, reducing deployment errors by 60%.</li>
-                <li>Collaborated with senior engineers in code reviews and agile sprint cycles.</li>
-            </ul>
-            <div class="exp-tech">
-                <?php foreach (['JavaScript','Node.js','GitHub Actions','Linux'] as $t): ?>
-                <span class="badge badge-neutral"><?php echo $t; ?></span>
-                <?php endforeach; ?>
-            </div>
-        </article>
-
-        <article class="col-12 card exp-card reveal" data-delay="160">
-            <div class="exp-header">
-                <div>
-                    <div class="exp-role">Computer Science (B.E.)</div>
-                    <div class="exp-org">College / University</div>
-                </div>
-                <span class="exp-period">2020 — 2024</span>
-            </div>
-            <ul class="exp-bullets">
-                <li>Specialised in software engineering, data structures, and database systems.</li>
-                <li>Built award-winning capstone project — end-to-end web platform with 500 + users.</li>
-            </ul>
-            <div class="exp-tech">
-                <?php foreach (['Python','Java','SQL','Algorithms'] as $t): ?>
-                <span class="badge badge-green"><?php echo $t; ?></span>
-                <?php endforeach; ?>
-            </div>
-        </article>
+<!-- ══ ABOUT ══════════════════════════════════════════════════ -->
+<section id="about">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <span class="section-label">Who I Am</span>
+      <h2 class="section-title">About <span>Me</span></h2>
     </div>
+    <div class="about-grid">
+      <div class="reveal">
+        <div class="glass-card about-illustration">🧑‍💻</div>
+      </div>
+      <div class="about-content reveal" data-delay="150">
+        <p class="about-text"><?php echo escape($about['content']); ?></p>
+        <div class="about-tags">
+          <?php $tags=['Problem Solver','Team Player','Fast Learner','Open Source','Creative Thinker','Full-Stack'];
+          foreach ($tags as $t): ?>
+          <span class="about-tag"><?php echo $t; ?></span>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     PROJECTS
-     ══════════════════════════════════════════════════════════ -->
-<section id="projects">
-    <span class="section-label">Portfolio</span>
-    <h2 style="margin-bottom:2rem">Projects</h2>
+<!-- ══ SKILLS ═════════════════════════════════════════════════ -->
+<section id="skills">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <span class="section-label">What I Know</span>
+      <h2 class="section-title">Technical <span>Skills</span></h2>
+      <p class="section-subtitle">A curated set of tools and technologies I use to build great products.</p>
+    </div>
 
-    <?php if ($projects): ?>
-    <div class="bento">
-        <?php
-        foreach ($projects as $i => $p):
-            // Alternate span for bento feel: featured gets 8 cols, rest get 4 or 6
-            if ($p['featured']) $span = 'col-8';
-            elseif ($i % 3 === 0) $span = 'col-6';
-            else $span = 'col-4';
-
-            // Simple tag extraction from description (first 3 words after "built with")
-            $descLower = strtolower($p['description'] ?? '');
-            $tags = [];
-            if (preg_match('/built (with|using)\s+([^.]+)/i', $descLower, $m)) {
-                $raw = preg_split('/[,&]+/', $m[2]);
-                foreach (array_slice($raw, 0, 4) as $t) {
-                    $t = trim($t);
-                    if ($t) $tags[] = ucfirst($t);
-                }
-            }
-        ?>
-        <div class="<?php echo $span; ?> card project-card reveal" data-delay="<?php echo $i * 55; ?>">
-            <?php if ($p['featured']): ?>
-            <div class="project-featured-tag">⭐ Featured</div>
-            <?php endif; ?>
-            <!-- Image / placeholder -->
-            <?php if (!empty($p['image'])): ?>
-            <img src="<?php echo UPLOAD_URL . escape($p['image']); ?>"
-                 alt="<?php echo escape($p['title']); ?>"
-                 class="project-img" loading="lazy">
-            <?php else: ?>
-            <div class="project-img-placeholder" aria-hidden="true">🚀</div>
-            <?php endif; ?>
-
-            <div class="project-body">
-                <div class="project-name"><?php echo escape($p['title']); ?></div>
-                <p class="project-desc"><?php echo escape(truncate($p['description'] ?? '', 120)); ?></p>
-                <div class="project-footer">
-                    <div class="project-tags">
-                        <?php foreach ($tags as $tag): ?>
-                        <span class="badge badge-accent"><?php echo escape($tag); ?></span>
-                        <?php endforeach; ?>
-                    </div>
-                    <div class="project-links">
-                        <?php if (!empty($p['github_link'])): ?>
-                        <a href="<?php echo escape(sanitizeUrl($p['github_link'])); ?>"
-                           class="project-link-btn" target="_blank" rel="noopener noreferrer"
-                           aria-label="GitHub repo for <?php echo escape($p['title']); ?>">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.34-1.75-1.34-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49.99.11-.77.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.19.7.8.58A12 12 0 0 0 24 12C24 5.37 18.63 0 12 0z"/>
-                            </svg>
-                            GitHub
-                        </a>
-                        <?php endif; ?>
-                        <a href="<?php echo BASE_URL; ?>/project.php?id=<?php echo (int)$p['id']; ?>"
-                           class="project-link-btn">Details →</a>
-                    </div>
-                </div>
-            </div>
+    <?php if ($skillsByCategory): ?>
+    <div class="skills-grid">
+      <?php foreach ($catConfig as $catKey => $catMeta):
+        $catSkills = $skillsByCategory[$catKey] ?? [];
+        if (empty($catSkills)) continue; ?>
+      <div class="glass-card skill-category-card reveal">
+        <div class="skill-category-title">
+          <i class="<?php echo $catMeta['icon']; ?>" aria-hidden="true"></i>
+          <?php echo $catMeta['label']; ?>
+        </div>
+        <?php foreach ($catSkills as $skill): ?>
+        <div class="skill-item">
+          <div class="skill-header">
+            <span class="skill-name"><?php echo escape($skill['name']); ?></span>
+            <span class="skill-pct"><?php echo (int)($skill['percentage'] ?? 80); ?>%</span>
+          </div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-width="<?php echo (int)($skill['percentage'] ?? 80); ?>"></div>
+          </div>
         </div>
         <?php endforeach; ?>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+    <div class="empty-state"><i class="fa-solid fa-code" aria-hidden="true"></i><p>Skills coming soon.</p></div>
+    <?php endif; ?>
+  </div>
+</section>
+
+<!-- ══ PROJECTS ════════════════════════════════════════════════ -->
+<section id="projects">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <span class="section-label">What I've Built</span>
+      <h2 class="section-title">Featured <span>Projects</span></h2>
+      <p class="section-subtitle">A selection of projects that showcase my skills and passion for building.</p>
+    </div>
+
+    <?php if ($projects): ?>
+    <div class="projects-grid">
+      <?php foreach ($projects as $i => $p):
+        $tags = [];
+        if (!empty($p['tech_stack'])) {
+            foreach (array_slice(preg_split('/[,;]+/', $p['tech_stack']), 0, 5) as $t) {
+                $t = trim($t); if ($t) $tags[] = $t;
+            }
+        }
+      ?>
+      <div class="glass-card project-card reveal" data-delay="<?php echo $i * 60; ?>">
+        <?php if ($p['featured']): ?>
+        <div class="project-featured-tag">⭐ Featured</div>
+        <?php endif; ?>
+
+        <div class="project-img-wrap">
+          <?php if (!empty($p['image'])): ?>
+          <img src="<?php echo UPLOAD_URL . escape($p['image']); ?>"
+               alt="<?php echo escape($p['title']); ?>" class="project-img" loading="lazy">
+          <?php else: ?>
+          <div class="project-img-placeholder">🚀</div>
+          <?php endif; ?>
+        </div>
+
+        <div class="project-body">
+          <h3 class="project-title"><?php echo escape($p['title']); ?></h3>
+          <p class="project-desc"><?php echo escape(truncate($p['description'] ?? '', 110)); ?></p>
+          <?php if ($tags): ?>
+          <div class="project-tags">
+            <?php foreach ($tags as $tag): ?>
+            <span class="tag"><?php echo escape($tag); ?></span>
+            <?php endforeach; ?>
+          </div>
+          <?php endif; ?>
+          <div class="project-links">
+            <?php if (!empty($p['github_link'])): ?>
+            <a href="<?php echo escape(sanitizeUrl($p['github_link'])); ?>"
+               class="project-link" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-github" aria-hidden="true"></i> GitHub
+            </a>
+            <?php endif; ?>
+            <?php if (!empty($p['demo_link'])): ?>
+            <a href="<?php echo escape(sanitizeUrl($p['demo_link'])); ?>"
+               class="project-link primary" target="_blank" rel="noopener noreferrer">
+              <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Live Demo
+            </a>
+            <?php endif; ?>
+            <a href="<?php echo BASE_URL; ?>/project.php?id=<?php echo (int)$p['id']; ?>"
+               class="project-link">Details →</a>
+          </div>
+        </div>
+      </div>
+      <?php endforeach; ?>
     </div>
     <?php else: ?>
     <div class="empty-state">
-        <div class="empty-icon">⚡</div>
-        <h3>Projects coming soon</h3>
-        <p style="font-size:0.875rem">Check back — exciting work is on its way.</p>
+      <i class="fa-regular fa-folder-open" aria-hidden="true"></i>
+      <p>Projects coming soon. Check back later!</p>
     </div>
     <?php endif; ?>
+  </div>
 </section>
 
+<!-- ══ BLOG / NOTES ══════════════════════════════════════════ -->
 <?php if ($notes): ?>
-<!-- ══════════════════════════════════════════════════════════
-     DIGITAL GARDEN (Notes)
-     ══════════════════════════════════════════════════════════ -->
-<section id="garden">
-    <span class="section-label">Writing</span>
-    <h2 style="margin-bottom:2rem">Digital Garden</h2>
-    <div class="bento">
-        <?php foreach ($notes as $j => $note): ?>
-        <a href="<?php echo BASE_URL; ?>/note.php?id=<?php echo (int)$note['id']; ?>"
-           class="col-4 card note-card reveal" data-delay="<?php echo $j * 80; ?>">
-            <h3><?php echo escape($note['title']); ?></h3>
-            <p class="note-excerpt"><?php echo escape(truncate($note['excerpt'] ?? '', 100)); ?></p>
-            <div class="note-meta">
-                <time datetime="<?php echo $note['created_at']; ?>">
-                    <?php echo formatDate($note['created_at']); ?>
-                </time>
-                <span class="read-more">Read →</span>
-            </div>
-        </a>
-        <?php endforeach; ?>
+<section id="blog">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <span class="section-label">Thoughts & Learnings</span>
+      <h2 class="section-title">Digital <span>Garden</span></h2>
     </div>
+    <div class="projects-grid">
+      <?php foreach ($notes as $j => $note): ?>
+      <a href="<?php echo BASE_URL; ?>/note.php?id=<?php echo (int)$note['id']; ?>"
+         class="glass-card project-card reveal" data-delay="<?php echo $j * 80; ?>" style="text-decoration:none;color:inherit">
+        <div class="project-body" style="padding:1.75rem">
+          <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:.6rem">
+            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+            <?php echo formatDate($note['created_at']); ?>
+          </div>
+          <h3 class="project-title"><?php echo escape($note['title']); ?></h3>
+          <p class="project-desc"><?php echo escape(truncate($note['excerpt'] ?? '', 100)); ?></p>
+          <span style="color:var(--accent);font-size:.85rem;font-weight:600">Read more →</span>
+        </div>
+      </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
 </section>
 <?php endif; ?>
 
-<!-- ══════════════════════════════════════════════════════════
-     CONTACT
-     ══════════════════════════════════════════════════════════ -->
+<!-- ══ CONTACT ════════════════════════════════════════════════ -->
 <section id="contact">
-    <span class="section-label">Say Hello</span>
-    <h2 style="margin-bottom:2rem">Get in Touch</h2>
-
-    <div class="bento" style="align-items:start;">
-
-        <!-- Info col -->
-        <div class="col-4 reveal" style="display:flex;flex-direction:column;gap:1rem;">
-            <div class="card card--flat" style="padding:1.75rem;">
-                <div class="contact-info-title">Let's work<br>together.</div>
-                <p class="contact-info-text">Open to freelance projects, collaborations, and full-time roles. If you've got something interesting — reach out.</p>
-                <div class="contact-meta-row">
-                    <?php if (!empty($profile['email'])): ?>
-                    <div class="contact-meta-item">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                        <a href="mailto:<?php echo escape($profile['email']); ?>">
-                            <?php echo escape($profile['email']); ?>
-                        </a>
-                    </div>
-                    <?php endif; ?>
-                    <?php if (!empty($profile['github'])): ?>
-                    <div class="contact-meta-item">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.34-1.75-1.34-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49.99.11-.77.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.19.7.8.58A12 12 0 0 0 24 12C24 5.37 18.63 0 12 0z"/>
-                        </svg>
-                        <a href="<?php echo escape(sanitizeUrl($profile['github'])); ?>" target="_blank" rel="noopener">GitHub</a>
-                    </div>
-                    <?php endif; ?>
-                    <?php if (!empty($profile['linkedin'])): ?>
-                    <div class="contact-meta-item">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.44-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.46C23.2 24 24 23.23 24 22.27V1.73C24 .77 23.2 0 22.22 0h.01z"/></svg>
-                        <a href="<?php echo escape(sanitizeUrl($profile['linkedin'])); ?>" target="_blank" rel="noopener">LinkedIn</a>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contact form col -->
-        <div class="col-8 card contact-card reveal" data-delay="100">
-            <?php if ($contactSuccess): ?>
-            <div class="alert alert-success" role="alert">
-                🎉 Message sent! I'll get back to you soon.
-            </div>
-            <?php endif; ?>
-            <?php if ($contactError): ?>
-            <div class="alert alert-error" role="alert">
-                <?php echo escape($contactError); ?>
-            </div>
-            <?php endif; ?>
-
-            <form method="POST" class="contact-form-wrap" novalidate>
-                <?php echo csrfField(); ?>
-                <div class="bento" style="grid-template-columns:1fr 1fr;gap:1rem;">
-                    <div class="field">
-                        <input type="text" id="contact-name" name="name"
-                               placeholder=" " required autocomplete="name"
-                               value="<?php echo !$contactSuccess ? escape($_POST['name'] ?? '') : ''; ?>">
-                        <label for="contact-name">Your name</label>
-                    </div>
-                    <div class="field">
-                        <input type="email" id="contact-email" name="email"
-                               placeholder=" " required autocomplete="email"
-                               value="<?php echo !$contactSuccess ? escape($_POST['email'] ?? '') : ''; ?>">
-                        <label for="contact-email">Email address</label>
-                    </div>
-                </div>
-                <div class="field">
-                    <textarea id="contact-message" name="message"
-                              placeholder=" " required rows="5"><?php echo !$contactSuccess ? escape($_POST['message'] ?? '') : ''; ?></textarea>
-                    <label for="contact-message">Your message</label>
-                </div>
-                <p style="font-size:0.75rem;color:var(--text-muted);">
-                    ⏱ Typically responds within 24 hours.
-                </p>
-                <button type="submit" name="contact_submit" class="btn btn-primary" style="align-self:flex-start;">
-                    Send Message
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                    </svg>
-                </button>
-            </form>
-        </div>
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <span class="section-label">Say Hello</span>
+      <h2 class="section-title">Get In <span>Touch</span></h2>
+      <p class="section-subtitle">Have a project in mind? Let's build something great together.</p>
     </div>
+
+    <div class="contact-grid">
+      <div class="glass-card contact-info reveal">
+        <h3>Let's connect</h3>
+        <p>Open to freelance projects, collaborations, and full-time opportunities. I typically respond within 24 hours.</p>
+        <?php if (!empty($profile['email'])): ?>
+        <div class="contact-detail">
+          <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+          <a href="mailto:<?php echo escape($profile['email']); ?>"><?php echo escape($profile['email']); ?></a>
+        </div>
+        <?php endif; ?>
+        <?php if (!empty($profile['github'])): ?>
+        <div class="contact-detail">
+          <i class="fab fa-github" aria-hidden="true"></i>
+          <a href="<?php echo escape(sanitizeUrl($profile['github'])); ?>" target="_blank" rel="noopener">GitHub Profile</a>
+        </div>
+        <?php endif; ?>
+        <?php if (!empty($profile['linkedin'])): ?>
+        <div class="contact-detail">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+          <a href="<?php echo escape(sanitizeUrl($profile['linkedin'])); ?>" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+        <?php endif; ?>
+        <div style="margin-top:1.5rem">
+          <div class="social-links-grid">
+            <?php foreach ($socials as $sl):
+              $url = sanitizeUrl($sl['url']); if(!$url) continue; ?>
+            <a href="<?php echo escape($url); ?>" target="_blank" rel="noopener" class="social-icon-btn" aria-label="<?php echo escape($sl['platform']); ?>">
+              <i class="<?php echo escape($sl['icon_class']); ?>" aria-hidden="true"></i>
+            </a>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card contact-form-card reveal" data-delay="120">
+        <?php if ($contactSuccess): ?>
+        <div class="alert alert-success">
+          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+          Message sent! I'll get back to you within 24 hours.
+        </div>
+        <?php endif; ?>
+        <?php if ($contactError): ?>
+        <div class="alert alert-error">
+          <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+          <?php echo escape($contactError); ?>
+        </div>
+        <?php endif; ?>
+
+        <form method="POST" novalidate>
+          <?php echo csrfField(); ?>
+          <div class="form-row">
+            <div class="field">
+              <label for="c-name">Your Name</label>
+              <input type="text" id="c-name" name="name" required autocomplete="name"
+                     placeholder="John Doe"
+                     value="<?php echo !$contactSuccess ? escape($_POST['name'] ?? '') : ''; ?>">
+            </div>
+            <div class="field">
+              <label for="c-email">Email Address</label>
+              <input type="email" id="c-email" name="email" required autocomplete="email"
+                     placeholder="john@example.com"
+                     value="<?php echo !$contactSuccess ? escape($_POST['email'] ?? '') : ''; ?>">
+            </div>
+          </div>
+          <div class="field">
+            <label for="c-msg">Message</label>
+            <textarea id="c-msg" name="message" required rows="5"
+                      placeholder="Tell me about your project..."><?php echo !$contactSuccess ? escape($_POST['message'] ?? '') : ''; ?></textarea>
+          </div>
+          <button type="submit" name="contact_submit" class="btn-primary">
+            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 </section>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
