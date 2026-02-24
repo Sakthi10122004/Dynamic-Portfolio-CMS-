@@ -58,9 +58,23 @@ INSERT IGNORE INTO `social_links` (`id`, `platform`, `url`, `icon_class`, `displ
   (1, 'GitHub',   'https://github.com/Sakthi10122004',    'fab fa-github',   1),
   (2, 'LinkedIn', 'https://linkedin.com/in/yourprofile',  'fab fa-linkedin', 2);
 
+-- ── 4. Reset admin credentials ────────────────────────────────
+-- Username: Sakthi
+-- Password: Sakthi@2004
+-- (bcrypt hash generated with PHP password_hash, cost=10)
+INSERT INTO `users` (`id`, `username`, `password_hash`)
+  VALUES (1, 'Sakthi', '$2y$10$exySZTLWNngWNiAI.s.2UuS5a2oXHSqz.9Qu4Xa.PKAT1T2d2apLW')
+  ON DUPLICATE KEY UPDATE
+    `username`      = 'Sakthi',
+    `password_hash` = '$2y$10$exySZTLWNngWNiAI.s.2UuS5a2oXHSqz.9Qu4Xa.PKAT1T2d2apLW';
+
+-- Verify:
+SELECT id, username, LEFT(password_hash, 20) AS hash_preview FROM users;
+
 -- ── Done! ──────────────────────────────────────────────────────
 -- After running:
---   1. Log in to your admin panel
+--   1. Log in to your admin panel with: Sakthi / Sakthi@2004
 --   2. Go to Hero, About, Social Links and fill in your data
 --   3. Upload your avatar and resume via Profile
 -- ── ──────────────────────────────────────────────────────────
+

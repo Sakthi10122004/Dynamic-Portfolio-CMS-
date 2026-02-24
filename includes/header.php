@@ -19,11 +19,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Font Awesome 6 (jsdelivr — reliable on InfinityFree) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+    <!-- FA fallback via cdnjs -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          onerror="this.remove()">
 
     <!-- Main CSS -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/style.css">
+    <?php if (!empty($isAdminPage)): ?>
+    <!-- Admin extra: ensure CSS loads even if BASE_URL is misconfigured -->
+    <link rel="stylesheet" href="../assets/css/style.css" onerror="this.remove()">
+    <?php endif; ?>
 
     <!-- Anti-flash theme script -->
     <script>
@@ -97,6 +104,6 @@
     </div>
 </header>
 
-<?php endif; ?>
+<?php endif; /* end non-admin navbar */ ?>
 
-<main>
+<main<?php echo !empty($isAdminPage) ? '' : ''; ?>>
