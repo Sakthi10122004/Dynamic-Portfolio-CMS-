@@ -84,7 +84,12 @@ $iconSuggestions = [
   <?php include __DIR__ . '/_sidebar.php'; ?>
   <div class="admin-main">
     <div class="admin-topbar">
-      <h1><i class="fa-solid fa-share-nodes"></i> Social Links</h1>
+      <div>
+        <h1 style="margin:0;font-size:1.4rem;font-weight:700;color:var(--text-strong)">
+            <i class="fa-solid fa-share-nodes" style="color:var(--accent)"></i> Social Links
+        </h1>
+        <p style="font-size:.83rem;color:var(--text-muted);margin-top:.1rem">Manage social media profiles and external links</p>
+      </div>
       <a href="<?php echo BASE_URL; ?>/" target="_blank" class="btn-glass btn-sm">View Site →</a>
     </div>
     <?php if ($flash): ?>
@@ -97,7 +102,10 @@ $iconSuggestions = [
 
       <!-- Add / Edit Form -->
       <div class="admin-card">
-        <h2><?php echo $editItem ? 'Edit Link' : 'Add New Link'; ?></h2>
+        <div class="admin-card-header">
+            <h2><i class="fa-solid fa-<?php echo $editItem ? 'pen' : 'plus'; ?>"></i> <?php echo $editItem ? 'Edit Link' : 'Add New Link'; ?></h2>
+        </div>
+        <div class="admin-card-body">
         <form method="POST" class="admin-form">
           <?php echo csrfField(); ?>
           <?php if ($editItem): ?>
@@ -123,11 +131,11 @@ $iconSuggestions = [
             <input type="text" id="icon_class" name="icon_class"
                    value="<?php echo escape($editItem['icon_class'] ?? 'fab fa-github'); ?>"
                    placeholder="fab fa-github">
-            <p class="form-hint">
+            <p class="form-hint" style="font-size:0.7rem">
               Quick picks:
               <?php foreach($iconSuggestions as $cls => $lbl): ?>
               <button type="button" onclick="document.getElementById('icon_class').value='<?php echo $cls; ?>'"
-                style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:.78rem;text-decoration:underline;padding:0 .15rem"><?php echo $lbl; ?></button>
+                style="background:none;border:none;color:var(--accent);cursor:pointer;text-decoration:underline;padding:0 .15rem"><?php echo $lbl; ?></button>
               <?php endforeach; ?>
             </p>
           </div>
@@ -149,11 +157,15 @@ $iconSuggestions = [
             <?php endif; ?>
           </div>
         </form>
+        </div>
       </div>
 
       <!-- List -->
       <div class="admin-card">
-        <h2>All Social Links (<?php echo count($links); ?>)</h2>
+        <div class="admin-card-header">
+            <h2><i class="fa-solid fa-list-nodes"></i> Links (<?php echo count($links); ?>)</h2>
+        </div>
+        <div class="admin-card-body" style="padding:0">
         <?php if ($links): ?>
         <table class="admin-table">
           <thead><tr><th>Platform</th><th>Icon</th><th>Order</th><th>Actions</th></tr></thead>
@@ -188,6 +200,7 @@ $iconSuggestions = [
           <p>No social links yet. Add one using the form.</p>
         </div>
         <?php endif; ?>
+        </div>
       </div>
 
     </div>

@@ -71,24 +71,34 @@ require_once '../includes/header.php';
     <?php include __DIR__ . '/_sidebar.php'; ?>
 
     <div class="admin-main">
-        <div class="admin-header">
-            <h1>Security Settings</h1>
+        <div class="admin-topbar">
+            <div>
+                <h1 style="margin:0;font-size:1.4rem;font-weight:700;color:var(--text-strong)">
+                    <i class="fa-solid fa-shield-halved" style="color:var(--accent)"></i> Security Settings
+                </h1>
+                <p style="font-size:.83rem;color:var(--text-muted);margin-top:.1rem">Manage your password and identity verification methods</p>
+            </div>
         </div>
 
         <?php if ($success): ?>
-        <div class="success-message"><?php echo escape($success); ?></div>
+        <div class="flash flash-success">
+            <i class="fa-solid fa-circle-check"></i> <?php echo escape($success); ?>
+        </div>
         <?php endif; ?>
 
         <?php if ($error): ?>
-        <div class="error-message"><?php echo escape($error); ?></div>
+        <div class="flash flash-error">
+            <i class="fa-solid fa-circle-exclamation"></i> <?php echo escape($error); ?>
+        </div>
         <?php endif; ?>
 
         <!-- ── Change Password ──────────────────────────── -->
-        <div class="bento-card visible" style="margin-bottom:1.5rem;">
-            <h2 style="font-size:1.1rem;margin-bottom:1.25rem;color:var(--primary);">
-                <i class="fa-solid fa-lock" style="margin-right:0.5rem;"></i>Change Password
-            </h2>
-            <form method="POST" class="edit-form" id="pwForm">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h2><i class="fa-solid fa-lock"></i> Change Password</h2>
+            </div>
+            <div class="admin-card-body">
+                <form method="POST" class="admin-form" id="pwForm">
                 <?php echo csrfField(); ?>
 
                 <div class="form-group">
@@ -131,35 +141,37 @@ require_once '../includes/header.php';
                     <small id="matchLabel" style="display:block;margin-top:0.25rem;"></small>
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" name="change_password" value="1" class="btn primary">
-                        Update Password
+                <div class="form-actions" style="margin-top:1.5rem">
+                    <button type="submit" name="change_password" value="1" class="btn-primary">
+                        <i class="fa-solid fa-key"></i> Update Password
                     </button>
                 </div>
             </form>
+            </div>
         </div>
 
         <!-- ── Security Question ───────────────────────── -->
-        <div class="bento-card visible">
-            <h2 style="font-size:1.1rem;margin-bottom:0.4rem;color:var(--primary);">
-                <i class="fa-solid fa-shield-halved" style="margin-right:0.5rem;"></i>Security Question
-            </h2>
-            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.25rem;">
-                Used to verify your identity when you forget your password.
-            </p>
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h2><i class="fa-solid fa-shield-halved"></i> Security Question</h2>
+            </div>
+            <div class="admin-card-body">
+                <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;">
+                    Used to verify your identity when you forget your password.
+                </p>
 
             <?php if (!empty($currentUser['security_question'])): ?>
-            <div class="security-question-display" style="margin-bottom:1.25rem;">
-                <span style="color:var(--text-muted);font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Current question</span><br>
-                <?php echo escape($currentUser['security_question']); ?>
+            <div style="background:rgba(167,139,250,0.06); border:1px solid var(--glass-border); border-radius:12px; padding:1.25rem; margin-bottom:1.5rem">
+                <div style="color:var(--text-muted);font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:0.5rem">Current question</div>
+                <div style="font-size:1rem; color:var(--text-strong); font-weight:500"><?php echo escape($currentUser['security_question']); ?></div>
             </div>
             <?php else: ?>
-            <div style="background:rgba(255,171,64,.06);border:1px solid rgba(255,171,64,.18);border-radius:var(--r-sm);padding:.75rem 1rem;margin-bottom:1.25rem;font-size:.85rem;color:var(--warning);">
-                ⚠️ No security question set. Without one, you cannot reset your password if you forget it.
+            <div class="flash flash-info" style="margin-bottom:1.5rem">
+                <i class="fa-solid fa-circle-info"></i> No security question set. Please set one to enable password recovery.
             </div>
             <?php endif; ?>
 
-            <form method="POST" class="edit-form" id="sqForm">
+            <form method="POST" class="admin-form" id="sqForm">
                 <?php echo csrfField(); ?>
 
                 <div class="form-group">
@@ -211,12 +223,13 @@ require_once '../includes/header.php';
                     <small id="ansMatchLabel" style="display:block;margin-top:.25rem;"></small>
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" name="save_security" value="1" class="btn primary">
-                        Save Security Question
+                <div class="form-actions" style="margin-top:1.5rem">
+                    <button type="submit" name="save_security" value="1" class="btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Security Question
                     </button>
                 </div>
             </form>
+            </div>
         </div>
     </div>
 </div>

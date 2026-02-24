@@ -56,15 +56,27 @@ require_once '../includes/header.php';
   <?php include __DIR__ . '/_sidebar.php'; ?>
   <div class="admin-main">
     <div class="admin-topbar">
-      <h1><i class="fa-solid fa-<?php echo $id ? 'pen' : 'plus'; ?>"></i> <?php echo $id ? 'Edit Project' : 'New Project'; ?></h1>
+      <div>
+        <h1 style="margin:0;font-size:1.4rem;font-weight:700;color:var(--text-strong)">
+            <i class="fa-solid fa-<?php echo $id ? 'pen' : 'plus'; ?>" style="color:var(--accent)"></i> <?php echo $id ? 'Edit Project' : 'New Project'; ?>
+        </h1>
+        <p style="font-size:.83rem;color:var(--text-muted);margin-top:.1rem">Showcase your best work with images and live demos</p>
+      </div>
       <a href="<?php echo BASE_URL; ?>/admin/projects.php" class="btn-glass btn-sm">← Back to Projects</a>
     </div>
+    
     <?php if ($error): ?>
-    <div class="flash flash-error"><i class="fa-solid fa-circle-exclamation"></i> <?php echo escape($error); ?></div>
+    <div class="flash flash-error">
+        <i class="fa-solid fa-circle-exclamation"></i> <?php echo escape($error); ?>
+    </div>
     <?php endif; ?>
 
     <div class="admin-card">
-      <form method="POST" enctype="multipart/form-data" class="admin-form">
+      <div class="admin-card-header">
+        <h2><i class="fa-solid fa-rocket"></i> Project Details</h2>
+      </div>
+      <div class="admin-card-body">
+        <form method="POST" enctype="multipart/form-data" class="admin-form">
         <?php echo csrfField(); ?>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
@@ -122,13 +134,14 @@ require_once '../includes/header.php';
           <label for="featured" style="margin-bottom:0;cursor:pointer">⭐ Mark as Featured Project</label>
         </div>
 
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem">
+        <div class="form-actions" style="margin-top:1.5rem">
           <button type="submit" class="btn-primary">
-            <i class="fa-solid fa-floppy-disk"></i> Save Project
+            <i class="fa-solid fa-floppy-disk"></i> <?php echo $id ? 'Update Project' : 'Create Project'; ?>
           </button>
           <a href="<?php echo BASE_URL; ?>/admin/projects.php" class="btn-glass">Cancel</a>
         </div>
       </form>
+      </div>
     </div>
   </div>
 </div>

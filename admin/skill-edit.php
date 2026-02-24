@@ -48,15 +48,27 @@ $cats = ['frontend' => 'Frontend', 'backend' => 'Backend', 'devops' => 'DevOps',
   <?php include __DIR__ . '/_sidebar.php'; ?>
   <div class="admin-main">
     <div class="admin-topbar">
-      <h1><i class="fa-solid fa-<?php echo $id ? 'pen' : 'plus'; ?>"></i> <?php echo $id ? 'Edit Skill' : 'New Skill'; ?></h1>
+      <div>
+        <h1 style="margin:0;font-size:1.4rem;font-weight:700;color:var(--text-strong)">
+            <i class="fa-solid fa-<?php echo $id ? 'pen' : 'plus'; ?>" style="color:var(--accent)"></i> <?php echo $id ? 'Edit Skill' : 'New Skill'; ?>
+        </h1>
+        <p style="font-size:.83rem;color:var(--text-muted);margin-top:.1rem">Define your proficiency levels and expertise areas</p>
+      </div>
       <a href="<?php echo BASE_URL; ?>/admin/skills.php" class="btn-glass btn-sm">← Back</a>
     </div>
+    
     <?php if ($error): ?>
-    <div class="flash flash-error"><i class="fa-solid fa-circle-exclamation"></i> <?php echo escape($error); ?></div>
+    <div class="flash flash-error">
+        <i class="fa-solid fa-circle-exclamation"></i> <?php echo escape($error); ?>
+    </div>
     <?php endif; ?>
 
     <div class="admin-card" style="max-width:520px">
-      <form method="POST" class="admin-form">
+      <div class="admin-card-header">
+        <h2><i class="fa-solid fa-bolt"></i> Skill Configuration</h2>
+      </div>
+      <div class="admin-card-body">
+        <form method="POST" class="admin-form">
         <?php echo csrfField(); ?>
 
         <div class="field">
@@ -95,13 +107,14 @@ $cats = ['frontend' => 'Frontend', 'backend' => 'Backend', 'devops' => 'DevOps',
           <p class="form-hint">Lower numbers appear first within the category.</p>
         </div>
 
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <div class="form-actions" style="margin-top:1.5rem">
           <button type="submit" class="btn-primary">
-            <i class="fa-solid fa-floppy-disk"></i> Save Skill
+            <i class="fa-solid fa-floppy-disk"></i> <?php echo $id ? 'Update Skill' : 'Create Skill'; ?>
           </button>
           <a href="<?php echo BASE_URL; ?>/admin/skills.php" class="btn-glass">Cancel</a>
         </div>
       </form>
+      </div>
     </div>
   </div>
 </div>

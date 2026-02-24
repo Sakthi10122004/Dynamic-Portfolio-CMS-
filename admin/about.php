@@ -35,7 +35,12 @@ require_once '../includes/header.php';
   <?php include __DIR__ . '/_sidebar.php'; ?>
   <div class="admin-main">
     <div class="admin-topbar">
-      <h1><i class="fa-solid fa-user" aria-hidden="true"></i> About Section</h1>
+      <div>
+        <h1 style="margin:0;font-size:1.4rem;font-weight:700;color:var(--text-strong)">
+            <i class="fa-solid fa-user" style="color:var(--accent)"></i> About Section
+        </h1>
+        <p style="font-size:.83rem;color:var(--text-muted);margin-top:.1rem">Edit the professional biography shown on your homepage</p>
+      </div>
       <a href="<?php echo BASE_URL; ?>/#about" target="_blank" class="btn-glass btn-sm">Preview →</a>
     </div>
     <?php if ($flash): ?>
@@ -45,8 +50,11 @@ require_once '../includes/header.php';
     </div>
     <?php endif; ?>
     <div class="admin-card">
-      <h2>Edit About Me Content</h2>
-      <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:1.5rem">Write about yourself — your background, skills, and what drives you. New lines are preserved as paragraphs.</p>
+      <div class="admin-card-header">
+        <h2><i class="fa-solid fa-pen-to-square"></i> Edit Biography</h2>
+      </div>
+      <div class="admin-card-body">
+        <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:1.5rem">Write about yourself — your background, skills, and what drives you. New lines are preserved as paragraphs.</p>
       <form method="POST" class="admin-form">
         <?php echo csrfField(); ?>
         <div class="field">
@@ -59,6 +67,7 @@ require_once '../includes/header.php';
           <i class="fa-solid fa-floppy-disk"></i> Save Changes
         </button>
       </form>
+      </div>
     </div>
   </div>
 </div>

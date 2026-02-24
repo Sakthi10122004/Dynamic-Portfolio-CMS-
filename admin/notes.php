@@ -27,20 +27,35 @@ require_once '../includes/header.php';
     <?php include __DIR__ . '/_sidebar.php'; ?>
 
     <div class="admin-main">
-        <div class="admin-header">
-            <h1>Notes</h1>
-            <a href="<?php echo BASE_URL; ?>/admin/note-edit.php" class="btn primary">+ New Note</a>
+        <div class="admin-topbar">
+            <div>
+                <h1 style="margin:0;font-size:1.4rem;font-weight:700;color:var(--text-strong)">
+                    <i class="fa-solid fa-newspaper" style="color:var(--accent)"></i> Blog Posts
+                </h1>
+                <p style="font-size:.83rem;color:var(--text-muted);margin-top:.1rem">Manage your digital garden and articles</p>
+            </div>
+            <a href="<?php echo BASE_URL; ?>/admin/note-edit.php" class="btn-primary">
+                <i class="fa-solid fa-plus"></i> New Post
+            </a>
         </div>
 
         <?php if (isset($_GET['deleted'])): ?>
-        <div class="alert alert-success">Note deleted successfully.</div>
+        <div class="flash flash-success">
+            <i class="fa-solid fa-check-circle"></i> Post deleted successfully.
+        </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['saved'])): ?>
-        <div class="alert alert-success">Note saved successfully.</div>
+        <div class="flash flash-success">
+            <i class="fa-solid fa-check-circle"></i> Post saved successfully.
+        </div>
         <?php endif; ?>
 
-        <div class="data-card bento-card">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h2><i class="fa-solid fa-list-ul"></i> All Posts</h2>
+            </div>
+            <div class="admin-card-body" style="padding:0">
             <?php if (empty($notes)): ?>
             <div class="empty-state">
                 <div class="empty-icon">📝</div>
@@ -63,17 +78,23 @@ require_once '../includes/header.php';
                     <tr>
                         <td><strong><?php echo escape($note['title']); ?></strong></td>
                         <td>
-                            <span class="status-badge <?php echo $note['published'] ? 'published' : 'draft'; ?>">
+                            <span class="badge-<?php echo $note['published'] ? 'published' : 'unpublished'; ?>">
+                                <i class="fa-solid fa-<?php echo $note['published'] ? 'check-circle' : 'circle'; ?>" style="font-size:0.7rem; margin-right:0.3rem"></i>
                                 <?php echo $note['published'] ? 'Published' : 'Draft'; ?>
                             </span>
                         </td>
                         <td><?php echo formatDate($note['created_at']); ?></td>
-                        <td class="actions">
-                            <a href="<?php echo BASE_URL; ?>/admin/note-edit.php?id=<?php echo $note['id']; ?>" class="action-btn edit">Edit</a>
+                        <td class="actions-cell">
+                            <a href="<?php echo BASE_URL; ?>/admin/note-edit.php?id=<?php echo $note['id']; ?>" 
+                               class="btn-icon" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
                             <form method="POST" class="inline-form" onsubmit="return confirm('Delete this note?')">
                                 <?php echo csrfField(); ?>
                                 <input type="hidden" name="delete_id" value="<?php echo $note['id']; ?>">
-                                <button type="submit" class="action-btn delete">Delete</button>
+                                <button type="submit" class="btn-icon danger" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </form>
                         </td>
                     </tr>
@@ -81,6 +102,7 @@ require_once '../includes/header.php';
                 </tbody>
             </table>
             <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>

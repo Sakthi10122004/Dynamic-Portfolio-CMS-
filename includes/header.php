@@ -30,6 +30,9 @@
     <?php if (!empty($isAdminPage)): ?>
     <!-- Admin extra: ensure CSS loads even if BASE_URL is misconfigured -->
     <link rel="stylesheet" href="../assets/css/style.css" onerror="this.remove()">
+    <!-- Admin-specific CSS -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/admin.css">
+    <link rel="stylesheet" href="../assets/css/admin.css" onerror="this.remove()">
     <?php endif; ?>
 
     <!-- Anti-flash theme script -->

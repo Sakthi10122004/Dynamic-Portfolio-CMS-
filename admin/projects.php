@@ -33,20 +33,35 @@ require_once '../includes/header.php';
     <?php include __DIR__ . '/_sidebar.php'; ?>
 
     <div class="admin-main">
-        <div class="admin-header">
-            <h1>Projects</h1>
-            <a href="<?php echo BASE_URL; ?>/admin/project-edit.php" class="btn primary">+ New Project</a>
+        <div class="admin-topbar">
+            <div>
+                <h1 style="margin:0;font-size:1.4rem;font-weight:700;color:var(--text-strong)">
+                    <i class="fa-solid fa-rocket" style="color:var(--accent)"></i> Projects
+                </h1>
+                <p style="font-size:.83rem;color:var(--text-muted);margin-top:.1rem">Manage your portfolio projects and case studies</p>
+            </div>
+            <a href="<?php echo BASE_URL; ?>/admin/project-edit.php" class="btn-primary">
+                <i class="fa-solid fa-plus"></i> New Project
+            </a>
         </div>
 
         <?php if (isset($_GET['deleted'])): ?>
-        <div class="alert alert-success">Project deleted successfully.</div>
+        <div class="flash flash-success">
+            <i class="fa-solid fa-check-circle"></i> Project deleted successfully.
+        </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['saved'])): ?>
-        <div class="alert alert-success">Project saved successfully.</div>
+        <div class="flash flash-success">
+            <i class="fa-solid fa-check-circle"></i> Project saved successfully.
+        </div>
         <?php endif; ?>
 
-        <div class="data-card bento-card">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h2><i class="fa-solid fa-list"></i> All Projects</h2>
+            </div>
+            <div class="admin-card-body" style="padding:0">
             <?php if (empty($projects)): ?>
             <div class="empty-state">
                 <div class="empty-icon">🚀</div>
@@ -75,12 +90,17 @@ require_once '../includes/header.php';
                         </td>
                         <td><?php echo $project['featured'] ? '<span class="badge badge-featured">⭐ Featured</span>' : '<span class="text-muted">—</span>'; ?></td>
                         <td><?php echo formatDate($project['created_at']); ?></td>
-                        <td class="actions">
-                            <a href="<?php echo BASE_URL; ?>/admin/project-edit.php?id=<?php echo $project['id']; ?>" class="action-btn edit">Edit</a>
+                        <td class="actions-cell">
+                            <a href="<?php echo BASE_URL; ?>/admin/project-edit.php?id=<?php echo $project['id']; ?>" 
+                               class="btn-icon" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
                             <form method="POST" class="inline-form" onsubmit="return confirm('Delete this project? This cannot be undone.')">
                                 <?php echo csrfField(); ?>
                                 <input type="hidden" name="delete_id" value="<?php echo $project['id']; ?>">
-                                <button type="submit" class="action-btn delete">Delete</button>
+                                <button type="submit" class="btn-icon danger" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </form>
                         </td>
                     </tr>
@@ -88,6 +108,7 @@ require_once '../includes/header.php';
                 </tbody>
             </table>
             <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>

@@ -27,20 +27,35 @@ require_once '../includes/header.php';
     <?php include __DIR__ . '/_sidebar.php'; ?>
 
     <div class="admin-main">
-        <div class="admin-header">
-            <h1>Skills</h1>
-            <a href="<?php echo BASE_URL; ?>/admin/skill-edit.php" class="btn primary">+ New Skill</a>
+        <div class="admin-topbar">
+            <div>
+                <h1 style="margin:0;font-size:1.4rem;font-weight:700;color:var(--text-strong)">
+                    <i class="fa-solid fa-code" style="color:var(--accent)"></i> Skills
+                </h1>
+                <p style="font-size:.83rem;color:var(--text-muted);margin-top:.1rem">Manage your technical expertise and proficiency levels</p>
+            </div>
+            <a href="<?php echo BASE_URL; ?>/admin/skill-edit.php" class="btn-primary">
+                <i class="fa-solid fa-plus"></i> New Skill
+            </a>
         </div>
 
         <?php if (isset($_GET['deleted'])): ?>
-        <div class="alert alert-success">Skill deleted successfully.</div>
+        <div class="flash flash-success">
+            <i class="fa-solid fa-check-circle"></i> Skill deleted successfully.
+        </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['saved'])): ?>
-        <div class="alert alert-success">Skill saved successfully.</div>
+        <div class="flash flash-success">
+            <i class="fa-solid fa-check-circle"></i> Skill saved successfully.
+        </div>
         <?php endif; ?>
 
-        <div class="data-card bento-card">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h2><i class="fa-solid fa-list-check"></i> All Skills</h2>
+            </div>
+            <div class="admin-card-body" style="padding:0">
             <?php if (empty($skills)): ?>
             <div class="empty-state">
                 <div class="empty-icon">💡</div>
@@ -62,14 +77,19 @@ require_once '../includes/header.php';
                     <?php foreach ($skills as $skill): ?>
                     <tr>
                         <td><strong><?php echo escape($skill['name']); ?></strong></td>
-                        <td><span class="category-badge <?php echo escape($skill['category']); ?>"><?php echo escape(ucfirst($skill['category'])); ?></span></td>
+                        <td><span class="badge badge-featured"><?php echo escape(ucfirst($skill['category'])); ?></span></td>
                         <td><?php echo (int)$skill['display_order']; ?></td>
-                        <td class="actions">
-                            <a href="<?php echo BASE_URL; ?>/admin/skill-edit.php?id=<?php echo $skill['id']; ?>" class="action-btn edit">Edit</a>
+                        <td class="actions-cell">
+                            <a href="<?php echo BASE_URL; ?>/admin/skill-edit.php?id=<?php echo $skill['id']; ?>" 
+                               class="btn-icon" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
                             <form method="POST" class="inline-form" onsubmit="return confirm('Delete this skill?')">
                                 <?php echo csrfField(); ?>
                                 <input type="hidden" name="delete_id" value="<?php echo $skill['id']; ?>">
-                                <button type="submit" class="action-btn delete">Delete</button>
+                                <button type="submit" class="btn-icon danger" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </form>
                         </td>
                     </tr>
@@ -77,6 +97,7 @@ require_once '../includes/header.php';
                 </tbody>
             </table>
             <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
