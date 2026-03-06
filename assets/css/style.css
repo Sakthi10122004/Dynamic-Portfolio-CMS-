@@ -134,18 +134,8 @@ ul {
     }
 }
 
-/* ── Scroll Progress ── */
-#scroll-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 2px;
-    width: 0%;
-    background: linear-gradient(90deg, var(--violet), var(--cyan));
-    z-index: 9998;
-    transition: width .1s linear;
-    box-shadow: 0 0 8px var(--violet);
-}
+/* scroll progress bar removed */
+
 
 /* ── Background Mesh ── */
 .bg-shapes {
@@ -181,6 +171,251 @@ ul {
 .bg-shape {
     display: none
 }
+
+/* ── Particle Canvas ── */
+#particle-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: .7;
+}
+
+/* ── Floating 3D Orbs ── */
+.orb-field {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: .18;
+    animation: orbFloat var(--dur, 20s) ease-in-out infinite alternate;
+}
+
+.orb-1 {
+    width: 520px;
+    height: 520px;
+    background: var(--violet);
+    top: -160px;
+    left: -120px;
+    --dur: 22s;
+}
+
+.orb-2 {
+    width: 420px;
+    height: 420px;
+    background: var(--cyan);
+    top: 20%;
+    right: -100px;
+    --dur: 18s;
+    animation-delay: -4s;
+}
+
+.orb-3 {
+    width: 380px;
+    height: 380px;
+    background: var(--coral);
+    bottom: 5%;
+    left: 20%;
+    --dur: 26s;
+    animation-delay: -10s;
+}
+
+.orb-4 {
+    width: 300px;
+    height: 300px;
+    background: var(--green);
+    bottom: 20%;
+    right: 10%;
+    --dur: 20s;
+    animation-delay: -6s;
+}
+
+@keyframes orbFloat {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(40px, -60px) scale(1.06);
+    }
+
+    66% {
+        transform: translate(-30px, 40px) scale(.96);
+    }
+
+    100% {
+        transform: translate(20px, -20px) scale(1.04);
+    }
+}
+
+/* ── 3D Card Utility ── */
+.project-card,
+.skill-card,
+.about-card {
+    transition: transform .25s ease, box-shadow .25s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
+    position: relative;
+}
+
+.card-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+    transition: background .2s ease;
+}
+
+/* gradient top border glow on hover */
+.project-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: calc(var(--radius) + 1px);
+    background: linear-gradient(135deg, var(--violet), var(--cyan), var(--coral));
+    z-index: -1;
+    opacity: 0;
+    transition: opacity .3s ease;
+}
+
+.project-card:hover::before {
+    opacity: 1;
+}
+
+/* ── Neon Text Glow ── */
+.glow-text {
+    text-shadow:
+        0 0 20px rgba(108, 99, 255, .8),
+        0 0 40px rgba(108, 99, 255, .4),
+        0 0 80px rgba(108, 99, 255, .2);
+}
+
+/* ── Animated Number Counters ── */
+.stat-grid {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius);
+    padding: 1.2rem 2rem;
+    flex: 1;
+    min-width: 110px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(108, 99, 255, .25);
+}
+
+.stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--violet), var(--cyan));
+}
+
+.stat-number {
+    font-family: var(--font-head);
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--violet), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: .78rem;
+    color: var(--ink2);
+    margin-top: .4rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+/* ── Floating tech pills in hero ── */
+.hero-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    justify-content: center;
+    margin-top: 1.8rem;
+}
+
+.hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .35rem .9rem;
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius-pill);
+    font-size: .78rem;
+    font-weight: 500;
+    color: var(--ink2);
+    background: rgba(108, 99, 255, .06);
+    transition: all .25s ease;
+    cursor: default;
+    animation: pillFloat 3s ease-in-out infinite alternate;
+}
+
+.hero-pill:nth-child(2) {
+    animation-delay: .4s;
+}
+
+.hero-pill:nth-child(3) {
+    animation-delay: .8s;
+}
+
+.hero-pill:nth-child(4) {
+    animation-delay: 1.2s;
+}
+
+.hero-pill:nth-child(5) {
+    animation-delay: 1.6s;
+}
+
+.hero-pill:nth-child(6) {
+    animation-delay: 2s;
+}
+
+.hero-pill:hover {
+    border-color: var(--violet);
+    color: var(--violet);
+    background: rgba(108, 99, 255, .12);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px rgba(108, 99, 255, .2);
+}
+
+@keyframes pillFloat {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-5px);
+    }
+}
+
 
 /* ── Navbar ── */
 .navbar {

@@ -54,13 +54,20 @@
             <div class="loader-blob"></div>
         </div>
 
-        <!-- ── Scroll Progress ─────────────────────────────────── -->
-        <div id="scroll-progress" aria-hidden="true"></div>
+        <!-- Particle Canvas -->
+        <canvas id="particle-canvas" aria-hidden="true"></canvas>
 
-        <!-- ── Animated Background Mesh ──────────────────────── -->
+        <!-- Animated Background Mesh + Floating Orbs -->
         <div class="bg-shapes" aria-hidden="true">
             <div class="bg-mesh"></div>
         </div>
+        <div class="orb-field" aria-hidden="true">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+            <div class="orb orb-4"></div>
+        </div>
+
 
         <!-- ── Glassmorphism Navbar ────────────────────────────── -->
         <header class="navbar" id="navbar" role="banner">
