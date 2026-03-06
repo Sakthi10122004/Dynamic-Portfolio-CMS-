@@ -1,6 +1,6 @@
 <?php
 /* ============================================================
-   index.php — Glassmorphism Portfolio (Dynamic CMS)
+   index.php — Deep Space Neon Portfolio (Dynamic CMS)
    ============================================================ */
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/db.php';
@@ -56,103 +56,96 @@ $catConfig = [
 
 <!-- ══ HERO ══════════════════════════════════════════════════ -->
 <section id="hero">
-  <div class="container">
-    <div class="hero-grid">
+  <div class="hero-center">
 
-      <!-- Left: Content -->
-      <div class="hero-content reveal">
-        <div class="hero-badge">
-          <i class="fa-solid fa-circle" style="color:#4ade80;font-size:.5rem"></i>
-          Available for work
-        </div>
-        <h1 class="hero-title">
-          <?php echo escape($profile['name']); ?>
-          <span class="grad-text"><?php echo escape($hero['title']); ?></span>
-        </h1>
-        <p class="hero-subtitle"><?php echo escape($hero['subtitle']); ?></p>
-
-        <div class="hero-cta">
-          <a href="#projects" class="btn-primary">
-            <i class="fa-solid fa-rocket" aria-hidden="true"></i> View Projects
-          </a>
-          <a href="#contact" class="btn-glass">
-            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Get in Touch
-          </a>
-          <?php if (!empty($profile['resume'])): ?>
-            <a href="<?php echo UPLOAD_URL . escape($profile['resume']); ?>" class="btn-outline" download target="_blank"
-              rel="noopener">
-              <i class="fa-solid fa-download" aria-hidden="true"></i> Résumé
-            </a>
-          <?php endif; ?>
-        </div>
-
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <span class="hero-stat-num"><?php echo count($projects); ?>+</span>
-            <span class="hero-stat-label">Projects</span>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num"><?php echo count($skills); ?>+</span>
-            <span class="hero-stat-label">Skills</span>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">3+</span>
-            <span class="hero-stat-label">Years Exp.</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right: Visual Card -->
-      <div class="hero-visual reveal" data-delay="200">
-        <div class="glass-card hero-avatar-card">
-          <?php if (!empty($profile['avatar'])): ?>
-            <img src="<?php echo UPLOAD_URL . escape($profile['avatar']); ?>"
-              alt="<?php echo escape($profile['name']); ?>" class="hero-avatar" loading="eager">
-          <?php else: ?>
-            <div class="hero-avatar-placeholder"><i class="fa-solid fa-user-tie"></i></div>
-          <?php endif; ?>
-          <div class="hero-name"><?php echo escape($profile['name']); ?></div>
-          <div class="hero-role"><?php echo escape($profile['headline']); ?></div>
-          <?php if (!empty($profile['email'])): ?>
-            <p style="font-size:.8rem;color:var(--text-muted);margin-top:.4rem">
-              <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-              <?php echo escape($profile['email']); ?>
-            </p>
-          <?php endif; ?>
-        </div>
-
-        <?php if ($socials): ?>
-          <div class="glass-card hero-social-card">
-            <h4><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Find me on</h4>
-            <div class="social-links-grid">
-              <?php foreach ($socials as $sl):
-                $url = sanitizeUrl($sl['url']);
-                if (!$url)
-                  continue; ?>
-                <a href="<?php echo escape($url); ?>" target="_blank" rel="noopener noreferrer" class="social-link-pill">
-                  <i class="<?php echo escape($sl['icon_class']); ?>" aria-hidden="true"></i>
-                  <?php echo escape($sl['platform']); ?>
-                </a>
-              <?php endforeach; ?>
-            </div>
-          </div>
-        <?php endif; ?>
-      </div>
-
+    <!-- Available badge -->
+    <div class="hero-badge reveal">
+      <i class="fa-solid fa-circle" style="font-size:.5rem"></i>
+      Available for work
     </div>
+
+    <!-- Glowing avatar -->
+    <div class="hero-avatar-wrap reveal" data-delay="80">
+      <div class="hero-avatar-glow"></div>
+      <?php if (!empty($profile['avatar'])): ?>
+        <img src="<?php echo UPLOAD_URL . escape($profile['avatar']); ?>" alt="<?php echo escape($profile['name']); ?>"
+          class="hero-avatar" loading="eager">
+      <?php else: ?>
+        <div class="hero-avatar-placeholder">
+          <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <!-- Name & title -->
+    <h1 class="hero-title reveal" data-delay="160">
+      <?php echo escape($profile['name']); ?>
+      <span class="grad-text"><?php echo escape($hero['title']); ?></span>
+    </h1>
+    <p class="hero-subtitle reveal" data-delay="220"><?php echo escape($hero['subtitle']); ?></p>
+
+    <!-- CTA buttons -->
+    <div class="hero-cta reveal" data-delay="300">
+      <a href="#projects" class="btn-primary">
+        <i class="fa-solid fa-rocket" aria-hidden="true"></i> View Projects
+      </a>
+      <a href="#contact" class="btn-glass">
+        <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Get in Touch
+      </a>
+      <?php if (!empty($profile['resume'])): ?>
+        <a href="<?php echo UPLOAD_URL . escape($profile['resume']); ?>" class="btn-outline" download target="_blank"
+          rel="noopener">
+          <i class="fa-solid fa-download" aria-hidden="true"></i> Résumé
+        </a>
+      <?php endif; ?>
+    </div>
+
+    <!-- Social pills -->
+    <?php if ($socials): ?>
+      <div class="hero-tech-pills reveal" data-delay="380">
+        <?php foreach ($socials as $sl):
+          $url = sanitizeUrl($sl['url']);
+          if (!$url)
+            continue; ?>
+          <a href="<?php echo escape($url); ?>" target="_blank" rel="noopener noreferrer" class="hero-tech-pill">
+            <i class="<?php echo escape($sl['icon_class']); ?>" aria-hidden="true"></i>
+            <?php echo escape($sl['platform']); ?>
+          </a>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+
+    <!-- Stats -->
+    <div class="hero-stats reveal" data-delay="440">
+      <div class="hero-stat">
+        <span class="hero-stat-num"><?php echo count($projects); ?>+</span>
+        <span class="hero-stat-label">Projects</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num"><?php echo count($skills); ?>+</span>
+        <span class="hero-stat-label">Skills</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">3+</span>
+        <span class="hero-stat-label">Years Exp.</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
-<!-- ══ ABOUT ══════════════════════════════════════════════════ -->
+<!-- ══ ABOUT ═════════════════════════════════════════════════ -->
 <section id="about">
   <div class="container">
-    <div class="text-center" style="margin-bottom:3rem">
+    <div class="text-center" style="margin-bottom:3.5rem">
       <span class="section-label">Who I Am</span>
       <h2 class="section-title">About <span>Me</span></h2>
     </div>
     <div class="about-grid">
       <div class="reveal">
-        <div class="glass-card about-illustration"><i class="fa-solid fa-user-tie"></i></div>
+        <div class="glass-card about-illustration">
+          <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+        </div>
       </div>
       <div class="about-content reveal" data-delay="150">
         <p class="about-text"><?php echo escape($about['content']); ?></p>
@@ -167,10 +160,10 @@ $catConfig = [
   </div>
 </section>
 
-<!-- ══ SKILLS ═════════════════════════════════════════════════ -->
+<!-- ══ SKILLS ════════════════════════════════════════════════ -->
 <section id="skills">
   <div class="container">
-    <div class="text-center" style="margin-bottom:3rem">
+    <div class="text-center" style="margin-bottom:3.5rem">
       <span class="section-label">What I Know</span>
       <h2 class="section-title">Technical <span>Skills</span></h2>
       <p class="section-subtitle">A curated set of tools and technologies I use to build great products.</p>
@@ -182,7 +175,7 @@ $catConfig = [
           $catSkills = $skillsByCategory[$catKey] ?? [];
           if (empty($catSkills))
             continue; ?>
-          <div class="glass-card skill-category-card reveal">
+          <div class="skill-category-card reveal">
             <div class="skill-category-title">
               <i class="<?php echo $catMeta['icon']; ?>" aria-hidden="true"></i>
               <?php echo $catMeta['label']; ?>
@@ -202,17 +195,18 @@ $catConfig = [
         <?php endforeach; ?>
       </div>
     <?php else: ?>
-      <div class="empty-state"><i class="fa-solid fa-code" aria-hidden="true"></i>
+      <div class="empty-state">
+        <i class="fa-solid fa-code" aria-hidden="true"></i>
         <p>Skills coming soon.</p>
       </div>
     <?php endif; ?>
   </div>
 </section>
 
-<!-- ══ PROJECTS ════════════════════════════════════════════════ -->
+<!-- ══ PROJECTS ══════════════════════════════════════════════ -->
 <section id="projects">
   <div class="container">
-    <div class="text-center" style="margin-bottom:3rem">
+    <div class="text-center" style="margin-bottom:3.5rem">
       <span class="section-label">What I've Built</span>
       <h2 class="section-title">Featured <span>Projects</span></h2>
       <p class="section-subtitle">A selection of projects that showcase my skills and passion for building.</p>
@@ -232,7 +226,9 @@ $catConfig = [
           ?>
           <div class="glass-card project-card reveal" data-delay="<?php echo $i * 60; ?>">
             <?php if ($p['featured']): ?>
-              <div class="project-featured-tag"><i class="fa-solid fa-star" aria-hidden="true"></i> Featured</div>
+              <div class="project-featured-tag">
+                <i class="fa-solid fa-star" aria-hidden="true"></i> Featured
+              </div>
             <?php endif; ?>
 
             <div class="project-img-wrap">
@@ -240,7 +236,9 @@ $catConfig = [
                 <img src="<?php echo UPLOAD_URL . escape($p['image']); ?>" alt="<?php echo escape($p['title']); ?>"
                   class="project-img" loading="lazy">
               <?php else: ?>
-                <div class="project-img-placeholder"><i class="fa-solid fa-rocket" aria-hidden="true"></i></div>
+                <div class="project-img-placeholder">
+                  <i class="fa-solid fa-rocket" aria-hidden="true"></i>
+                </div>
               <?php endif; ?>
             </div>
 
@@ -258,7 +256,7 @@ $catConfig = [
                 <?php if (!empty($p['github_link'])): ?>
                   <a href="<?php echo escape(sanitizeUrl($p['github_link'])); ?>" class="project-link" target="_blank"
                     rel="noopener noreferrer">
-                    <i class="fab fa-github" aria-hidden="true"></i> GitHub
+                    <i class="fa-brands fa-github" aria-hidden="true"></i> GitHub
                   </a>
                 <?php endif; ?>
                 <?php if (!empty($p['demo_link'])): ?>
@@ -267,8 +265,9 @@ $catConfig = [
                     <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Live Demo
                   </a>
                 <?php endif; ?>
-                <a href="<?php echo BASE_URL; ?>/project.php?id=<?php echo (int) $p['id']; ?>" class="project-link">Details
-                  <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                <a href="<?php echo BASE_URL; ?>/project.php?id=<?php echo (int) $p['id']; ?>" class="project-link">
+                  Details <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </a>
               </div>
             </div>
           </div>
@@ -287,8 +286,8 @@ $catConfig = [
 <?php if ($notes): ?>
   <section id="blog">
     <div class="container">
-      <div class="text-center" style="margin-bottom:3rem">
-        <span class="section-label">Thoughts & Learnings</span>
+      <div class="text-center" style="margin-bottom:3.5rem">
+        <span class="section-label">Thoughts &amp; Learnings</span>
         <h2 class="section-title">Digital <span>Garden</span></h2>
       </div>
       <div class="projects-grid">
@@ -297,14 +296,16 @@ $catConfig = [
             class="glass-card project-card reveal" data-delay="<?php echo $j * 80; ?>"
             style="text-decoration:none;color:inherit">
             <div class="project-body" style="padding:1.75rem">
-              <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:.6rem">
+              <div style="font-size:.76rem;color:var(--ink3);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem">
                 <i class="fa-regular fa-calendar" aria-hidden="true"></i>
                 <?php echo formatDate($note['created_at']); ?>
               </div>
               <h3 class="project-title"><?php echo escape($note['title']); ?></h3>
               <p class="project-desc"><?php echo escape(truncate($note['excerpt'] ?? '', 100)); ?></p>
-              <span style="color:var(--accent);font-size:.85rem;font-weight:600">Read more <i
-                  class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+              <span
+                style="color:var(--violet2);font-size:.84rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem">
+                Read more <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </span>
             </div>
           </a>
         <?php endforeach; ?>
@@ -316,14 +317,15 @@ $catConfig = [
 <!-- ══ CONTACT ════════════════════════════════════════════════ -->
 <section id="contact">
   <div class="container">
-    <div class="text-center" style="margin-bottom:3rem">
+    <div class="text-center" style="margin-bottom:3.5rem">
       <span class="section-label">Say Hello</span>
       <h2 class="section-title">Get In <span>Touch</span></h2>
       <p class="section-subtitle">Have a project in mind? Let's build something great together.</p>
     </div>
 
     <div class="contact-grid">
-      <div class="glass-card contact-info reveal">
+      <!-- Info side -->
+      <div class="glass-card contact-info reveal" style="padding:2.2rem">
         <h3>Let's connect</h3>
         <p>Open to freelance projects, collaborations, and full-time opportunities. I typically respond within 24 hours.
         </p>
@@ -335,32 +337,35 @@ $catConfig = [
         <?php endif; ?>
         <?php if (!empty($profile['github'])): ?>
           <div class="contact-detail">
-            <i class="fab fa-github" aria-hidden="true"></i>
+            <i class="fa-brands fa-github" aria-hidden="true"></i>
             <a href="<?php echo escape(sanitizeUrl($profile['github'])); ?>" target="_blank" rel="noopener">GitHub
               Profile</a>
           </div>
         <?php endif; ?>
         <?php if (!empty($profile['linkedin'])): ?>
           <div class="contact-detail">
-            <i class="fab fa-linkedin" aria-hidden="true"></i>
+            <i class="fa-brands fa-linkedin" aria-hidden="true"></i>
             <a href="<?php echo escape(sanitizeUrl($profile['linkedin'])); ?>" target="_blank" rel="noopener">LinkedIn</a>
           </div>
         <?php endif; ?>
-        <div style="margin-top:1.5rem">
-          <div class="social-links-grid">
-            <?php foreach ($socials as $sl):
-              $url = sanitizeUrl($sl['url']);
-              if (!$url)
-                continue; ?>
-              <a href="<?php echo escape($url); ?>" target="_blank" rel="noopener" class="social-icon-btn"
-                aria-label="<?php echo escape($sl['platform']); ?>">
-                <i class="<?php echo escape($sl['icon_class']); ?>" aria-hidden="true"></i>
-              </a>
-            <?php endforeach; ?>
+        <?php if ($socials): ?>
+          <div style="margin-top:1.5rem">
+            <div class="social-links-grid">
+              <?php foreach ($socials as $sl):
+                $url = sanitizeUrl($sl['url']);
+                if (!$url)
+                  continue; ?>
+                <a href="<?php echo escape($url); ?>" target="_blank" rel="noopener" class="social-icon-btn"
+                  aria-label="<?php echo escape($sl['platform']); ?>">
+                  <i class="<?php echo escape($sl['icon_class']); ?>" aria-hidden="true"></i>
+                </a>
+              <?php endforeach; ?>
+            </div>
           </div>
-        </div>
+        <?php endif; ?>
       </div>
 
+      <!-- Form side -->
       <div class="glass-card contact-form-card reveal" data-delay="120">
         <?php if ($contactSuccess): ?>
           <div class="alert alert-success">
@@ -394,7 +399,7 @@ $catConfig = [
             <textarea id="c-msg" name="message" required rows="5"
               placeholder="Tell me about your project..."><?php echo !$contactSuccess ? escape($_POST['message'] ?? '') : ''; ?></textarea>
           </div>
-          <button type="submit" name="contact_submit" class="btn-primary">
+          <button type="submit" name="contact_submit" class="btn-primary" style="width:100%;justify-content:center">
             <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Send Message
           </button>
         </form>

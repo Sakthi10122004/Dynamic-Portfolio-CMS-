@@ -8,8 +8,8 @@
         <meta name="robots" content="noindex, nofollow">
     <?php else: ?>
         <meta name="description"
-            content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Full-Stack Developer — modern glassmorphism portfolio'; ?>">
-        <meta name="theme-color" content="#ffffff">
+            content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Full-Stack Developer — deep space neon portfolio'; ?>">
+        <meta name="theme-color" content="#0a0a0f">
         <meta property="og:title"
             content="<?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?>">
         <meta property="og:description"
@@ -18,14 +18,14 @@
     <?php endif; ?>
     <title><?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?></title>
 
-    <!-- Fonts: Syne + DM Mono (matching admin design) -->
+    <!-- Fonts: Space Grotesk (headings) + Inter (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet">
 
-    <!-- Font Awesome 6 (jsdelivr — reliable on InfinityFree) -->
+    <!-- Font Awesome 6 (jsdelivr — reliable) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
     <!-- FA fallback via cdnjs -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -34,9 +34,7 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/style.css">
     <?php if (!empty($isAdminPage)): ?>
-        <!-- Admin extra: ensure CSS loads even if BASE_URL is misconfigured -->
         <link rel="stylesheet" href="../assets/css/style.css" onerror="this.remove()">
-        <!-- Admin-specific CSS -->
         <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/admin.css">
         <link rel="stylesheet" href="../assets/css/admin.css" onerror="this.remove()">
     <?php endif; ?>
@@ -45,15 +43,14 @@
     <script>
         (function () {
             var t = localStorage.getItem('portfolio-theme');
-            var d = window.matchMedia('(prefers-color-scheme:dark)').matches;
             document.documentElement.setAttribute('data-theme', t || 'dark');
         })();
     </script>
 </head>
 <body<?php echo !empty($isAdminPage) ? ' class="admin-body"' : ''; ?>>
 
-    <!-- ── Page Loader ─────────────────────────────────────── -->
     <?php if (empty($isAdminPage)): ?>
+        <!-- ── Page Loader ─────────────────────────────────────── -->
         <div id="page-loader" aria-hidden="true">
             <div class="loader-blob"></div>
         </div>
@@ -61,14 +58,9 @@
         <!-- ── Scroll Progress ─────────────────────────────────── -->
         <div id="scroll-progress" aria-hidden="true"></div>
 
-        <!-- ── Animated Grid + Noise + Blobs Background ─────────── -->
+        <!-- ── Animated Background Mesh ──────────────────────── -->
         <div class="bg-shapes" aria-hidden="true">
-            <div class="bg-grid"></div>
-            <div class="bg-noise"></div>
-            <div class="bg-shape bg-shape-1"></div>
-            <div class="bg-shape bg-shape-2"></div>
-            <div class="bg-shape bg-shape-3"></div>
-            <div class="bg-shape bg-shape-4"></div>
+            <div class="bg-mesh"></div>
         </div>
 
         <!-- ── Glassmorphism Navbar ────────────────────────────── -->
@@ -76,19 +68,13 @@
             <div class="navbar-inner">
                 <a href="<?php echo BASE_URL; ?>/" class="navbar-brand" aria-label="Home">
                     <div class="brand-icon" aria-hidden="true">
-                        <svg width="22" height="22" viewBox="0 0 40 40" fill="none">
-                            <circle cx="20" cy="20" r="18" stroke="url(#ng)" stroke-width="2.5"
-                                fill="rgba(255,255,255,0.05)" />
-                            <path d="M12 28 L20 12 L28 28" stroke="url(#ng)" stroke-width="2.5" stroke-linecap="round"
+                        <svg width="18" height="18" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="17" stroke="white" stroke-width="2.5"
+                                fill="rgba(255,255,255,0.08)" />
+                            <path d="M13 29 L20 11 L27 29" stroke="white" stroke-width="2.5" stroke-linecap="round"
                                 stroke-linejoin="round" />
-                            <line x1="15" y1="22" x2="25" y2="22" stroke="url(#ng)" stroke-width="2"
+                            <line x1="15.5" y1="23" x2="24.5" y2="23" stroke="white" stroke-width="2"
                                 stroke-linecap="round" />
-                            <defs>
-                                <linearGradient id="ng" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#4f46e5" />
-                                    <stop offset="1" stop-color="#06b6d4" />
-                                </linearGradient>
-                            </defs>
                         </svg>
                     </div>
                     <span class="brand-name"><?php echo escape(SITE_NAME); ?></span>
@@ -105,8 +91,8 @@
                 <div class="navbar-actions">
                     <!-- Dark/Light toggle -->
                     <button class="theme-toggle" aria-label="Toggle dark/light mode" id="themeToggle">
-                        <i class="fa-solid fa-moon icon-dark" aria-hidden="true"></i>
-                        <i class="fa-solid fa-sun icon-light" aria-hidden="true"></i>
+                        <i class="fa-solid fa-moon  icon-dark" aria-hidden="true"></i>
+                        <i class="fa-solid fa-sun   icon-light" aria-hidden="true"></i>
                     </button>
 
                     <?php if (isset($auth) && $auth->isLoggedIn()): ?>

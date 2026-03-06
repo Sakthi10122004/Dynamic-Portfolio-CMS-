@@ -33,13 +33,13 @@
                     <?php if (!empty($profile['github'])): ?>
                         <a href="<?php echo escape(sanitizeUrl($profile['github'])); ?>" target="_blank" rel="noopener noreferrer"
                             aria-label="GitHub" class="social-icon-btn">
-                            <i class="fab fa-github" aria-hidden="true"></i>
+                            <i class="fa-brands fa-github" aria-hidden="true"></i>
                         </a>
                     <?php endif; ?>
                     <?php if (!empty($profile['linkedin'])): ?>
                         <a href="<?php echo escape(sanitizeUrl($profile['linkedin'])); ?>" target="_blank" rel="noopener noreferrer"
                             aria-label="LinkedIn" class="social-icon-btn">
-                            <i class="fab fa-linkedin" aria-hidden="true"></i>
+                            <i class="fa-brands fa-linkedin" aria-hidden="true"></i>
                         </a>
                     <?php endif; ?>
                 <?php endif; ?>
@@ -47,8 +47,10 @@
         </div>
 
         <div class="footer-bottom">
-            <p>© <?php echo date('Y'); ?>     <?php echo escape($profile['name'] ?? SITE_NAME); ?>. Built with <i
-                    class="fa-solid fa-heart"></i> using PHP &amp; MySQL.</p>
+            <p>&copy; <?php echo date('Y'); ?> &nbsp;
+                <?php echo escape($profile['name'] ?? SITE_NAME); ?>.
+                Built with <i class="fa-solid fa-heart"></i> using PHP &amp; MySQL.
+            </p>
         </div>
     </footer>
 <?php endif; ?>
