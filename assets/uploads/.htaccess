@@ -1,14 +1,16 @@
-# Block direct PHP execution in uploads directory
+# Allow image files to be served from uploads
+Options -Indexes -ExecCGI
+
+# Block PHP execution in uploads directory (security)
 <FilesMatch "\.php$">
     Require all denied
 </FilesMatch>
 
-# Also block other server-side script types
-<FilesMatch "\.(php|php3|php4|php5|php7|phtml|pl|py|jsp|asp|sh|cgi)$">
-    Require all denied
-</FilesMatch>
-
-# Allow only image and document types
-<FilesMatch "\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|svg)$">
+# Allow image and document types
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|pdf|doc|docx)$">
     Require all granted
 </FilesMatch>
+
+# Set correct MIME types
+AddType image/webp .webp
+AddType image/jpeg .jpg .jpeg
