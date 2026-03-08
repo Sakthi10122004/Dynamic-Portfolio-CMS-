@@ -1074,7 +1074,7 @@ section {
     background: linear-gradient(90deg, var(--violet), var(--cyan));
 }
 
-.about-content {}
+
 
 .about-text {
     font-size: 1rem;
@@ -1114,7 +1114,7 @@ section {
 
 .skills-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1.5rem;
     max-width: 1200px;
     margin: 0 auto;
@@ -1945,5 +1945,34 @@ input[type=range] {
 
     .hero-tech-pills {
         gap: .4rem
+    }
+
+    /* Stack hero stats vertically, remove right border */
+    .hero-stats {
+        flex-direction: column;
+        gap: 0;
+        border-top: none;
+        padding-top: 1.5rem;
+    }
+
+    .hero-stat {
+        padding: .9rem 0;
+        border-right: none !important;
+        border-bottom: 1px solid var(--stroke2);
+        width: 100%;
+    }
+
+    .hero-stat:last-child {
+        border-bottom: none;
+    }
+
+    /* Skills cards full width on very small screens */
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Reduce contact heading size */
+    .contact-info h3 {
+        font-size: 1.6rem;
     }
 }

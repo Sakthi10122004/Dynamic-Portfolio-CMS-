@@ -24,6 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($name) || empty($headline) || empty($email)) {
         $error = 'Name, headline, and email are required';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Please enter a valid email address';
     } else {
         $avatarFile = $profile['avatar'] ?? null;
         $resumeFile = $profile['resume'] ?? null;
@@ -38,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Handle avatar removal
-        if (isset($_POST['remove_avatar']) && $avatarFile) {
+        // Handle avatar removal — only if no new avatar was just uploaded
+        if (isset($_POST['remove_avatar']) && $avatarFile && $avatarFile === ($profile['avatar'] ?? null)) {
             if (file_exists(UPLOAD_DIR . $avatarFile)) {
                 unlink(UPLOAD_DIR . $avatarFile);
             }
@@ -215,7 +217,8 @@ require_once '../includes/header.php';
                                             style="font-size:1.5rem; color:var(--accent)"></i>
                                         <div>
                                             <div style="font-size:0.85rem; font-weight:600; color:var(--text-strong)">
-                                                <?php echo escape($profile['resume']); ?></div>
+                                                <?php echo escape($profile['resume']); ?>
+                                            </div>
                                             <div style="font-size:0.75rem; color:var(--text-muted)">Click to download or
                                                 replace below</div>
                                         </div>

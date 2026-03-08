@@ -296,6 +296,25 @@
         });
     });
 
+    // ── Admin Sidebar Mobile Toggle ───────────────────────────
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const adminSidebar = document.querySelector('.admin-sidebar');
+    if (sidebarToggle && adminSidebar) {
+        // Show toggle only on mobile
+        function handleSidebarResize() {
+            sidebarToggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+        }
+        handleSidebarResize();
+        window.addEventListener('resize', handleSidebarResize);
+
+        sidebarToggle.addEventListener('click', () => {
+            const isOpen = adminSidebar.classList.toggle('sidebar-open');
+            sidebarToggle.setAttribute('aria-expanded', isOpen);
+            const icon = document.getElementById('sidebarToggleIcon');
+            if (icon) icon.className = isOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+        });
+    }
+
     // ── Skill % preview (admin) ───────────────────────────────
     const pctRange = document.getElementById('percentage-range');
     const pctShow = document.getElementById('percentage-display');

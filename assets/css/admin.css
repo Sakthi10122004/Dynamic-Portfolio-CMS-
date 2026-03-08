@@ -682,7 +682,15 @@
 
 .actions-cell {
     display: flex;
-    gap: .5rem
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+/* Horizontal-scroll wrapper for wide tables on narrow screens */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0 0 20px 20px;
 }
 
 /* ── Icon Buttons ── */
@@ -1010,6 +1018,11 @@
     .dashboard-grid {
         grid-template-columns: 1fr
     }
+
+    /* Social page two-column layout collapses */
+    .social-layout {
+        grid-template-columns: 1fr !important
+    }
 }
 
 @media (max-width:768px) {
@@ -1017,6 +1030,7 @@
         flex-direction: column
     }
 
+    /* Sidebar mobile: collapsible */
     .admin-sidebar {
         width: 100%;
         height: auto;
@@ -1024,8 +1038,47 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, .06)
     }
 
+    .sidebar-nav,
+    .sidebar-footer {
+        display: none
+    }
+
+    .admin-sidebar.sidebar-open .sidebar-nav,
+    .admin-sidebar.sidebar-open .sidebar-footer {
+        display: block
+    }
+
+    /* Mobile sidebar toggle button */
+    .sidebar-mobile-toggle {
+        display: flex !important;
+        align-items: center;
+        gap: .6rem;
+        width: 100%;
+        padding: .75rem 1.5rem;
+        background: none;
+        border: none;
+        border-top: 1.5px solid #ddd8cf;
+        color: #5a5248;
+        font-size: .87rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: left;
+        transition: all .2s
+    }
+
+    .sidebar-mobile-toggle:hover {
+        color: #f04a00;
+        background: rgba(240, 74, 0, .05)
+    }
+
     .admin-main {
         padding: 1.25rem
+    }
+
+    /* Topbar wraps on mobile */
+    .admin-topbar {
+        flex-wrap: wrap;
+        gap: .75rem
     }
 
     .dashboard-stats,
@@ -1035,6 +1088,11 @@
 
     .form-row {
         grid-template-columns: 1fr
+    }
+
+    /* Table with horizontal scroll */
+    .admin-table {
+        min-width: 480px
     }
 }
 

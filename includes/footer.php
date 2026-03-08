@@ -1,6 +1,9 @@
 </main>
 
-<?php if (empty($isAdminPage)): ?>
+<?php
+$profile = $profile ?? getProfile();
+if (empty($isAdminPage)):
+    ?>
     <footer class="site-footer" role="contentinfo">
         <div class="footer-inner">
             <div class="footer-brand">
