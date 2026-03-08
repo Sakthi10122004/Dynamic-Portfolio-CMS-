@@ -24,6 +24,10 @@ try {
     $db->query("ALTER TABLE profile ADD COLUMN twitter VARCHAR(255) DEFAULT NULL;");
 } catch (Exception $e) {
 }
+try {
+    $db->query("ALTER TABLE profile ADD COLUMN resume VARCHAR(255) DEFAULT NULL;");
+} catch (Exception $e) {
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyCsrf();

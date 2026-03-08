@@ -63,3 +63,20 @@ Options -Indexes
 # CHARACTER ENCODING
 # ===========================================================
 AddDefaultCharset UTF-8
+
+# ===========================================================
+# CUSTOM ERROR PAGES
+# ===========================================================
+# IMPORTANT: For InfinityFree (where the app is hosted in the root /)
+# Use: ErrorDocument [code] /error.php
+# 
+# If running locally in a subfolder (e.g. /protfolio), you MUST prefix the path
+# example: ErrorDocument 404 /protfolio/error.php
+#
+# Below rules attempt to grab the query param if it is passed, but generally it uses REDIRECT_STATUS
+ErrorDocument 400 /protfolio/error.php
+ErrorDocument 401 /protfolio/error.php
+ErrorDocument 403 /protfolio/error.php
+ErrorDocument 404 /protfolio/error.php
+ErrorDocument 500 /protfolio/error.php
+ErrorDocument 503 /protfolio/error.php
