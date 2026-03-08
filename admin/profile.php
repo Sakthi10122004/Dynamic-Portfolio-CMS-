@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $success = true;
                 $profile = getProfile();
             } else {
-                $error = 'Failed to save profile settings. Please try again.';
+                $error = 'Failed to save profile settings. Error: ' . $db->getConnection()->error;
             }
         }
     }
