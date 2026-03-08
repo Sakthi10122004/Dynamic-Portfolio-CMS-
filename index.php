@@ -36,7 +36,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
   } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $contactError = 'Please enter a valid email address.';
   } else {
+    // 1. Save to database
     saveContactMessage($name, $email, $message, $ip);
+
+    // 2. Send Email Notification
+    $to = !empty($profile['email']) ? $profile['email'] : 'hello@example.com';
+    $subject = "New Contact Message from " . $name;
+
+    // Construct email body
+    $body = "You have received a new message from your portfolio website.\n\n";
+    $body .= "Name: " . $name . "\n";
+    $body .= "Email: " . $email . "\n";
+    $body .= "IP Address: " . $ip . "\n\n";
+    $body .= "Message:\n" . $message . "\n";
+
+    // Construct headers
+    $headers = "From: noreply@" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "\r\n";
+    $headers .= "Reply-To: " . $email . "\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion();
+
+    // Silently attempt to send email (suppress warnings in case mail server is unavailable)
+    @mail($to, $subject, $body, $headers);
+
     $contactSuccess = true;
   }
 }
