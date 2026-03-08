@@ -20,6 +20,11 @@ ALTER TABLE `users`
   ADD COLUMN IF NOT EXISTS `security_question`    VARCHAR(255) DEFAULT NULL AFTER `password_hash`,
   ADD COLUMN IF NOT EXISTS `security_answer_hash` VARCHAR(255) DEFAULT NULL AFTER `security_question`;
 
+ALTER TABLE `profile`
+  ADD COLUMN IF NOT EXISTS `github` VARCHAR(255) DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS `linkedin` VARCHAR(255) DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS `twitter` VARCHAR(255) DEFAULT NULL;
+
 -- ── 2. Create new tables ──────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS `hero` (

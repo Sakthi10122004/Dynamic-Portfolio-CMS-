@@ -11,6 +11,20 @@ $profile = getProfile();
 $success = false;
 $error = '';
 
+// Auto-migrate missing columns for users upgrading from v1
+try {
+    $db->query("ALTER TABLE profile ADD COLUMN github VARCHAR(255) DEFAULT NULL;");
+} catch (Exception $e) {
+}
+try {
+    $db->query("ALTER TABLE profile ADD COLUMN linkedin VARCHAR(255) DEFAULT NULL;");
+} catch (Exception $e) {
+}
+try {
+    $db->query("ALTER TABLE profile ADD COLUMN twitter VARCHAR(255) DEFAULT NULL;");
+} catch (Exception $e) {
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyCsrf();
 
@@ -85,22 +99,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$error) {
             $existing = $db->getRow("SELECT id FROM profile WHERE id = 1");
 
+            $querySuccess = false;
             if ($existing) {
-                $db->query(
+                $stmt = $db->query(
                     "UPDATE profile SET name=?, headline=?, bio=?, email=?, avatar=?, resume=?, github=?, linkedin=?, twitter=? WHERE id=1",
                     [$name, $headline, $bio, $email, $avatarFile, $resumeFile, $github, $linkedin, $twitter],
                     'sssssssss'
                 );
+                $querySuccess = $stmt !== false;
             } else {
-                $db->query(
+                $stmt = $db->query(
                     "INSERT INTO profile (id, name, headline, bio, email, avatar, resume, github, linkedin, twitter) VALUES (1,?,?,?,?,?,?,?,?,?)",
                     [$name, $headline, $bio, $email, $avatarFile, $resumeFile, $github, $linkedin, $twitter],
                     'sssssssss'
                 );
+                $querySuccess = $stmt !== false;
             }
 
-            $success = true;
-            $profile = getProfile();
+            if ($querySuccess) {
+                $success = true;
+                $profile = getProfile();
+            } else {
+                $error = 'Failed to save profile settings. Please try again.';
+            }
         }
     }
 }
