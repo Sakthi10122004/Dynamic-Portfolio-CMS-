@@ -28,6 +28,13 @@ try {
     $db->query("ALTER TABLE profile ADD COLUMN resume VARCHAR(255) DEFAULT NULL;");
 } catch (Exception $e) {
 }
+try {
+    $db->query("ALTER TABLE profile ADD COLUMN smtp_host VARCHAR(255) DEFAULT NULL;");
+    $db->query("ALTER TABLE profile ADD COLUMN smtp_user VARCHAR(255) DEFAULT NULL;");
+    $db->query("ALTER TABLE profile ADD COLUMN smtp_pass VARCHAR(255) DEFAULT NULL;");
+    $db->query("ALTER TABLE profile ADD COLUMN smtp_port INT DEFAULT 587;");
+} catch (Exception $e) {
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyCsrf();
@@ -39,6 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $github = trim($_POST['github'] ?? '');
     $linkedin = trim($_POST['linkedin'] ?? '');
     $twitter = trim($_POST['twitter'] ?? '');
+
+    // SMTP
+    $smtp_host = trim($_POST['smtp_host'] ?? '');
+    $smtp_user = trim($_POST['smtp_user'] ?? '');
+    $smtp_pass = trim($_POST['smtp_pass'] ?? '');
+    $smtp_port = (int) ($_POST['smtp_port'] ?? 587);
 
     if (empty($name) || empty($headline) || empty($email)) {
         $error = 'Name, headline, and email are required';
@@ -106,16 +119,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $querySuccess = false;
             if ($existing) {
                 $stmt = $db->query(
-                    "UPDATE profile SET name=?, headline=?, bio=?, email=?, avatar=?, resume=?, github=?, linkedin=?, twitter=? WHERE id=1",
-                    [$name, $headline, $bio, $email, $avatarFile, $resumeFile, $github, $linkedin, $twitter],
-                    'sssssssss'
+                    "UPDATE profile SET name=?, headline=?, bio=?, email=?, avatar=?, resume=?, github=?, linkedin=?, twitter=?, smtp_host=?, smtp_user=?, smtp_pass=?, smtp_port=? WHERE id=1",
+                    [$name, $headline, $bio, $email, $avatarFile, $resumeFile, $github, $linkedin, $twitter, $smtp_host, $smtp_user, $smtp_pass, $smtp_port],
+                    'ssssssssssssi'
                 );
                 $querySuccess = $stmt !== false;
             } else {
                 $stmt = $db->query(
-                    "INSERT INTO profile (id, name, headline, bio, email, avatar, resume, github, linkedin, twitter) VALUES (1,?,?,?,?,?,?,?,?,?)",
-                    [$name, $headline, $bio, $email, $avatarFile, $resumeFile, $github, $linkedin, $twitter],
-                    'sssssssss'
+                    "INSERT INTO profile (id, name, headline, bio, email, avatar, resume, github, linkedin, twitter, smtp_host, smtp_user, smtp_pass, smtp_port) VALUES (1,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    [$name, $headline, $bio, $email, $avatarFile, $resumeFile, $github, $linkedin, $twitter, $smtp_host, $smtp_user, $smtp_pass, $smtp_port],
+                    'ssssssssssssi'
                 );
                 $querySuccess = $stmt !== false;
             }
@@ -294,7 +307,40 @@ require_once '../includes/header.php';
                             value="<?php echo escape($profile['twitter'] ?? ''); ?>">
                     </div>
 
-                    <div class="form-actions" style="margin-top:1.5rem">
+                    <div style="margin:2rem 0; height:1px; background:var(--glass-border)"></div>
+
+                    <h3 style="font-size:1rem; font-weight:700; color:var(--text-strong); margin-bottom:1.5rem">
+                        <i class="fa-solid fa-envelope-open-text" style="color:var(--accent); margin-right:0.5rem"></i> SMTP Settings (For Contact Form)
+                    </h3>
+                    <p class="form-hint" style="margin-bottom:1.5rem">InfinityFree blocks native PHP mail. Enter your SMTP credentials here (e.g. Gmail App Passwords, SendGrid, Mailtrap) to ensure contact form messages arrive in your inbox.</p>
+
+                    <div class="form-row">
+                        <div class="field">
+                            <label for="smtp_host">SMTP Host</label>
+                            <input type="text" id="smtp_host" name="smtp_host" placeholder="smtp.gmail.com"
+                                value="<?php echo escape($profile['smtp_host'] ?? ''); ?>">
+                        </div>
+                        <div class="field">
+                            <label for="smtp_port">SMTP Port</label>
+                            <input type="number" id="smtp_port" name="smtp_port" placeholder="587"
+                                value="<?php echo escape($profile['smtp_port'] ?? '587'); ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="field">
+                            <label for="smtp_user">SMTP Username / Email</label>
+                            <input type="text" id="smtp_user" name="smtp_user" placeholder="youremail@gmail.com"
+                                value="<?php echo escape($profile['smtp_user'] ?? ''); ?>">
+                        </div>
+                        <div class="field">
+                            <label for="smtp_pass">SMTP Password / App Password</label>
+                            <input type="password" id="smtp_pass" name="smtp_pass" placeholder="••••••••"
+                                value="<?php echo escape($profile['smtp_pass'] ?? ''); ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-actions" style="margin-top:2rem">
                         <button type="submit" class="btn-primary">
                             <i class="fa-solid fa-floppy-disk"></i> Save Profile Settings
                         </button>

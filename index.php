@@ -50,13 +50,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
     $body .= "IP Address: " . $ip . "\n\n";
     $body .= "Message:\n" . $message . "\n";
 
-    // Construct headers
-    $headers = "From: noreply@" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "\r\n";
-    $headers .= "Reply-To: " . $email . "\r\n";
-    $headers .= "X-Mailer: PHP/" . phpversion();
+    // Attempt PHPMailer first if SMTP is configured
+    if (!empty($profile['smtp_host']) && !empty($profile['smtp_user'])) {
+      require_once __DIR__ . '/includes/PHPMailer/Exception.php';
+      require_once __DIR__ . '/includes/PHPMailer/PHPMailer.php';
+      require_once __DIR__ . '/includes/PHPMailer/SMTP.php';
 
-    // Silently attempt to send email (suppress warnings in case mail server is unavailable)
-    @mail($to, $subject, $body, $headers);
+      $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+      try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = $profile['smtp_host'];
+        $mail->SMTPAuth = true;
+        $mail->Username = $profile['smtp_user'];
+        $mail->Password = $profile['smtp_pass'];
+        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = !empty($profile['smtp_port']) ? (int) $profile['smtp_port'] : 587;
+
+        // Recipients
+        $mail->setFrom($profile['smtp_user'], escape($profile['name']) . ' Portfolio'); // Best practice: send exactly FROM authenticated user
+        $mail->addAddress($to);
+        $mail->addReplyTo($email, $name);
+
+        // Content
+        $mail->isHTML(false);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+
+        $mail->send();
+      } catch (Exception $e) {
+        // Fallback natively silently if PHPMailer fails (or log error)
+        error_log("PHPMailer Error: {$mail->ErrorInfo}");
+      }
+    } else {
+      // Fallback to native mail if no configure SMTP
+      $headers = "From: noreply@" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "\r\n";
+      $headers .= "Reply-To: " . $email . "\r\n";
+      $headers .= "X-Mailer: PHP/" . phpversion();
+      @mail($to, $subject, $body, $headers);
+    }
 
     $contactSuccess = true;
   }
