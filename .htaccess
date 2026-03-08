@@ -74,9 +74,9 @@ AddDefaultCharset UTF-8
 # example: ErrorDocument 404 /protfolio/error.php
 #
 # Below rules attempt to grab the query param if it is passed, but generally it uses REDIRECT_STATUS
-ErrorDocument 400 /protfolio/error.php
-ErrorDocument 401 /protfolio/error.php
-ErrorDocument 403 /protfolio/error.php
-ErrorDocument 404 /protfolio/error.php
-ErrorDocument 500 /protfolio/error.php
-ErrorDocument 503 /protfolio/error.php
+ErrorDocument 400 /error.php
+ErrorDocument 401 /error.php
+ErrorDocument 403 /error.php
+ErrorDocument 404 /error.php
+ErrorDocument 500 /error.php
+ErrorDocument 503 /error.php
