@@ -52,10 +52,15 @@ if (empty($isAdminPage)):
         <div class="footer-bottom">
             <p>&copy; <?php echo date('Y'); ?> &nbsp;
                 <?php echo escape($profile['name'] ?? SITE_NAME); ?>.
-                All rights reserved.
+                Crafted with <i class="fa-solid fa-heart" aria-hidden="true"></i> &amp; code.
             </p>
         </div>
     </footer>
+
+    <!-- Back to top button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+    </button>
 <?php endif; ?>
 
 <script src="<?php echo BASE_URL; ?>/assets/js/main.js" defer></script>

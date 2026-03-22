@@ -103,6 +103,7 @@ $catConfig = [
 
 <!-- ══ HERO ══════════════════════════════════════════════════ -->
 <section id="hero">
+  <div class="hero-grid-overlay" aria-hidden="true"></div>
   <div class="hero-center">
 
     <!-- Available badge -->

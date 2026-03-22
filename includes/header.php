@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
     <?php else: ?>
         <meta name="description"
             content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Professional Portfolio — Full-Stack Developer'; ?>">
-        <meta name="theme-color" content="#2563eb">
+        <meta name="theme-color" content="#06b6d4">
         <meta property="og:title"
             content="<?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?>">
         <meta property="og:description"
@@ -18,11 +18,11 @@
     <?php endif; ?>
     <title><?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?></title>
 
-    <!-- Fonts: Playfair Display (headings) + Inter (body) -->
+    <!-- Fonts: Outfit (headings) + Inter (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
     <!-- Font Awesome 6 — self-hosted -->
@@ -41,7 +41,7 @@
     <script>
         (function () {
             var t = localStorage.getItem('portfolio-theme');
-            document.documentElement.setAttribute('data-theme', t || 'light');
+            document.documentElement.setAttribute('data-theme', t || 'dark');
         })();
     </script>
 </head>
@@ -52,6 +52,10 @@
         <div id="page-loader" aria-hidden="true">
             <div class="loader-blob"></div>
         </div>
+
+        <!-- ── Custom cursor (desktop only) ── -->
+        <div class="cursor-dot" id="cursorDot"></div>
+        <div class="cursor-ring" id="cursorRing"></div>
 
         <!-- ── Navbar ────────────────────────────────────────────── -->
         <header class="navbar" id="navbar" role="banner">
@@ -90,6 +94,11 @@
                             <i class="fa-solid fa-gauge-high" aria-hidden="true"></i> Dashboard
                         </a>
                     <?php endif; ?>
+
+                    <!-- Hire Me CTA -->
+                    <a href="#contact" class="nav-link nav-cta hide-mobile">
+                        <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Let's Talk
+                    </a>
 
                     <!-- Mobile menu toggle -->
                     <button class="Nav-hamburger" aria-label="Toggle mobile menu" id="navToggle" aria-expanded="false">
