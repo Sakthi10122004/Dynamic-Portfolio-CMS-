@@ -639,6 +639,128 @@
     gap: 1rem;
 }
 
+/* ── Custom Checkbox ── */
+.admin-checkbox {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.admin-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.admin-checkbox .checkmark {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all .25s;
+    position: relative;
+}
+
+.admin-checkbox .checkmark::after {
+    content: '';
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    transition: transform .2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-top: -1px;
+}
+
+.admin-checkbox input:checked + .checkmark {
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    border-color: transparent;
+    box-shadow: 0 2px 12px rgba(139, 92, 246, 0.3);
+}
+
+.admin-checkbox input:checked + .checkmark::after {
+    transform: rotate(45deg) scale(1);
+}
+
+.admin-checkbox .checkbox-label {
+    font-size: .88rem;
+    color: #b0a8c9;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.admin-checkbox:hover .checkmark {
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* ── File Input ── */
+.admin-form .field input[type="file"] {
+    padding: .7rem 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(139, 92, 246, 0.2);
+    border-radius: 12px;
+    color: #b0a8c9;
+    cursor: pointer;
+    font-size: .85rem;
+}
+
+.admin-form .field input[type="file"]:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+    background: rgba(139, 92, 246, 0.04);
+}
+
+.admin-form .field input[type="file"]::file-selector-button {
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    color: white;
+    border: none;
+    padding: .45rem 1rem;
+    border-radius: 8px;
+    font-size: .82rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: .75rem;
+    transition: all .25s;
+}
+
+.admin-form .field input[type="file"]::file-selector-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+/* ── Inline Form (for table actions) ── */
+.inline-form {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── Select Option ── */
+.admin-form .field select option {
+    background: #140e28;
+    color: #f1eeff;
+}
+
+/* ── Current Image ── */
+.admin-body .current-image-wrap img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    object-fit: cover;
+}
+
 /* ══════════════════════════════════════════════
    ADMIN BUTTONS
 ══════════════════════════════════════════════ */

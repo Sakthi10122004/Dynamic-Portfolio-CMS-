@@ -31,6 +31,15 @@ require_once 'includes/header.php';
 ?>
 
 <article class="project-detail">
+    <!-- Cover Image -->
+    <?php if (!empty($note['image'])): ?>
+        <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:1.5rem;border-radius:20px;">
+            <img src="<?php echo UPLOAD_URL . escape($note['image']); ?>"
+                 alt="<?php echo escape($note['title']); ?>"
+                 style="width:100%;max-height:450px;object-fit:cover;display:block">
+        </div>
+    <?php endif; ?>
+
     <!-- Header -->
     <div class="glass-card" style="padding:2rem;margin-bottom:1.5rem;">
         <a href="<?php echo BASE_URL; ?>/#blog" class="back-link">
@@ -41,6 +50,11 @@ require_once 'includes/header.php';
             <i class="fa-regular fa-calendar" aria-hidden="true"></i>
             <?php echo formatDate($note['created_at']); ?>
         </time>
+        <?php if (!empty($note['excerpt'])): ?>
+            <p style="font-size:.95rem;color:var(--ink2);margin-top:1rem;line-height:1.7;font-style:italic;border-left:3px solid rgba(139,92,246,0.3);padding-left:1rem;">
+                <?php echo escape($note['excerpt']); ?>
+            </p>
+        <?php endif; ?>
     </div>
 
     <!-- Content -->

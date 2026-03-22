@@ -75,6 +75,7 @@
                     <a href="#about" class="nav-link">About</a>
                     <a href="#skills" class="nav-link">Skills</a>
                     <a href="#projects" class="nav-link">Projects</a>
+                    <a href="#blog" class="nav-link">Blog</a>
                 </nav>
 
                 <div class="navbar-actions">

@@ -334,36 +334,49 @@ $catConfig = [
 </section>
 
 <!-- ══ BLOG / NOTES ══════════════════════════════════════════ -->
-<?php if ($notes): ?>
-  <section id="blog">
-    <div class="container">
-      <div class="text-center" style="margin-bottom:3rem">
-        <span class="section-label">Thoughts & Learnings</span>
-        <h2 class="section-title">Latest <span>Articles</span></h2>
-      </div>
+<section id="blog">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <span class="section-label">Thoughts & Learnings</span>
+      <h2 class="section-title">Latest <span>Articles</span></h2>
+      <p class="section-subtitle">Insights, tutorials, and lessons from my development journey.</p>
+    </div>
+    <?php if ($notes): ?>
       <div class="projects-grid">
         <?php foreach ($notes as $j => $note): ?>
           <a href="<?php echo BASE_URL; ?>/note.php?id=<?php echo (int) $note['id']; ?>"
             class="glass-card project-card reveal" data-delay="<?php echo $j * 80; ?>"
             style="text-decoration:none;color:inherit">
+            <?php if (!empty($note['image'])): ?>
+              <div class="project-img-wrap">
+                <img src="<?php echo UPLOAD_URL . escape($note['image']); ?>"
+                     alt="<?php echo escape($note['title']); ?>"
+                     class="project-img" loading="lazy">
+              </div>
+            <?php endif; ?>
             <div class="project-body" style="padding:1.75rem">
               <div style="font-size:.76rem;color:var(--ink3);margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem">
                 <i class="fa-regular fa-calendar" aria-hidden="true"></i>
                 <?php echo formatDate($note['created_at']); ?>
               </div>
               <h3 class="project-title"><?php echo escape($note['title']); ?></h3>
-              <p class="project-desc"><?php echo escape(truncate($note['excerpt'] ?? '', 100)); ?></p>
+              <p class="project-desc"><?php echo escape(truncate($note['excerpt'] ?? $note['content'] ?? '', 120)); ?></p>
               <span
-                style="color:var(--primary);font-size:.84rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem">
+                style="color:var(--primary);font-size:.84rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;margin-top:.5rem">
                 Read more <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
               </span>
             </div>
           </a>
         <?php endforeach; ?>
       </div>
-    </div>
-  </section>
-<?php endif; ?>
+    <?php else: ?>
+      <div class="empty-state" style="padding:3rem">
+        <i class="fa-solid fa-pen-nib" aria-hidden="true" style="font-size:2rem;opacity:.2;display:block;margin-bottom:.75rem"></i>
+        <p style="color:var(--ink3)">Articles coming soon. Stay tuned!</p>
+      </div>
+    <?php endif; ?>
+  </div>
+</section>
 
 <!-- ══ CONTACT ════════════════════════════════════════════════ -->
 <section id="contact">
