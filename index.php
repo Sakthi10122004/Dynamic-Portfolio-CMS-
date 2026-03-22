@@ -1,6 +1,6 @@
 <?php
 /* ============================================================
-   index.php — Deep Space Neon Portfolio (Dynamic CMS)
+   index.php — Professional Portfolio (Dynamic CMS)
    ============================================================ */
 require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/db.php';
@@ -43,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
     $to = !empty($profile['email']) ? $profile['email'] : 'hello@example.com';
     $subject = "New Contact Message from " . $name;
 
-    // Construct email body
     $body = "You have received a new message from your portfolio website.\n\n";
     $body .= "Name: " . $name . "\n";
     $body .= "Email: " . $email . "\n";
@@ -58,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
 
       $mail = new PHPMailer\PHPMailer\PHPMailer(true);
       try {
-        // Server settings
         $mail->isSMTP();
         $mail->Host = $profile['smtp_host'];
         $mail->SMTPAuth = true;
@@ -67,23 +65,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
         $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = !empty($profile['smtp_port']) ? (int) $profile['smtp_port'] : 587;
 
-        // Recipients
-        $mail->setFrom($profile['smtp_user'], escape($profile['name']) . ' Portfolio'); // Best practice: send exactly FROM authenticated user
+        $mail->setFrom($profile['smtp_user'], escape($profile['name']) . ' Portfolio');
         $mail->addAddress($to);
         $mail->addReplyTo($email, $name);
 
-        // Content
         $mail->isHTML(false);
         $mail->Subject = $subject;
         $mail->Body = $body;
 
         $mail->send();
       } catch (Exception $e) {
-        // Fallback natively silently if PHPMailer fails (or log error)
         error_log("PHPMailer Error: {$mail->ErrorInfo}");
       }
     } else {
-      // Fallback to native mail if no configure SMTP
       $headers = "From: noreply@" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "\r\n";
       $headers .= "Reply-To: " . $email . "\r\n";
       $headers .= "X-Mailer: PHP/" . phpversion();
@@ -117,7 +111,7 @@ $catConfig = [
       Available for work
     </div>
 
-    <!-- Glowing avatar -->
+    <!-- Avatar -->
     <div class="hero-avatar-wrap reveal" data-delay="80">
       <div class="hero-avatar-glow"></div>
       <?php if (!empty($profile['avatar'])): ?>
@@ -140,7 +134,7 @@ $catConfig = [
     <!-- CTA buttons -->
     <div class="hero-cta reveal" data-delay="300">
       <a href="#projects" class="btn-primary">
-        <i class="fa-solid fa-rocket" aria-hidden="true"></i> View Projects
+        <i class="fa-solid fa-briefcase" aria-hidden="true"></i> View Projects
       </a>
       <a href="#contact" class="btn-glass">
         <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Get in Touch
@@ -190,7 +184,7 @@ $catConfig = [
 <!-- ══ ABOUT ═════════════════════════════════════════════════ -->
 <section id="about">
   <div class="container">
-    <div class="text-center" style="margin-bottom:3.5rem">
+    <div class="text-center" style="margin-bottom:3rem">
       <span class="section-label">Who I Am</span>
       <h2 class="section-title">About <span>Me</span></h2>
     </div>
@@ -216,7 +210,7 @@ $catConfig = [
 <!-- ══ SKILLS ════════════════════════════════════════════════ -->
 <section id="skills">
   <div class="container">
-    <div class="text-center" style="margin-bottom:3.5rem">
+    <div class="text-center" style="margin-bottom:3rem">
       <span class="section-label">What I Know</span>
       <h2 class="section-title">Technical <span>Skills</span></h2>
       <p class="section-subtitle">A curated set of tools and technologies I use to build great products.</p>
@@ -259,7 +253,7 @@ $catConfig = [
 <!-- ══ PROJECTS ══════════════════════════════════════════════ -->
 <section id="projects">
   <div class="container">
-    <div class="text-center" style="margin-bottom:3.5rem">
+    <div class="text-center" style="margin-bottom:3rem">
       <span class="section-label">What I've Built</span>
       <h2 class="section-title">Featured <span>Projects</span></h2>
       <p class="section-subtitle">A selection of projects that showcase my skills and passion for building.</p>
@@ -290,7 +284,7 @@ $catConfig = [
                   class="project-img" loading="lazy">
               <?php else: ?>
                 <div class="project-img-placeholder">
-                  <i class="fa-solid fa-rocket" aria-hidden="true"></i>
+                  <i class="fa-solid fa-code" aria-hidden="true"></i>
                 </div>
               <?php endif; ?>
             </div>
@@ -339,9 +333,9 @@ $catConfig = [
 <?php if ($notes): ?>
   <section id="blog">
     <div class="container">
-      <div class="text-center" style="margin-bottom:3.5rem">
-        <span class="section-label">Thoughts &amp; Learnings</span>
-        <h2 class="section-title">Digital <span>Garden</span></h2>
+      <div class="text-center" style="margin-bottom:3rem">
+        <span class="section-label">Thoughts & Learnings</span>
+        <h2 class="section-title">Latest <span>Articles</span></h2>
       </div>
       <div class="projects-grid">
         <?php foreach ($notes as $j => $note): ?>
@@ -356,7 +350,7 @@ $catConfig = [
               <h3 class="project-title"><?php echo escape($note['title']); ?></h3>
               <p class="project-desc"><?php echo escape(truncate($note['excerpt'] ?? '', 100)); ?></p>
               <span
-                style="color:var(--violet2);font-size:.84rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem">
+                style="color:var(--primary);font-size:.84rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem">
                 Read more <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
               </span>
             </div>
@@ -370,7 +364,7 @@ $catConfig = [
 <!-- ══ CONTACT ════════════════════════════════════════════════ -->
 <section id="contact">
   <div class="container">
-    <div class="text-center" style="margin-bottom:3.5rem">
+    <div class="text-center" style="margin-bottom:3rem">
       <span class="section-label">Say Hello</span>
       <h2 class="section-title">Get In <span>Touch</span></h2>
       <p class="section-subtitle">Have a project in mind? Let's build something great together.</p>
@@ -378,7 +372,7 @@ $catConfig = [
 
     <div class="contact-grid">
       <!-- Info side -->
-      <div class="glass-card contact-info reveal" style="padding:2.2rem">
+      <div class="glass-card contact-info reveal">
         <h3>Let's connect</h3>
         <p>Open to freelance projects, collaborations, and full-time opportunities. I typically respond within 24 hours.
         </p>

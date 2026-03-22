@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -8,26 +8,25 @@
         <meta name="robots" content="noindex, nofollow">
     <?php else: ?>
         <meta name="description"
-            content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Full-Stack Developer — deep space neon portfolio'; ?>">
-        <meta name="theme-color" content="#0a0a0f">
+            content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Professional Portfolio — Full-Stack Developer'; ?>">
+        <meta name="theme-color" content="#2563eb">
         <meta property="og:title"
             content="<?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?>">
         <meta property="og:description"
-            content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Full-Stack Developer Portfolio'; ?>">
+            content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Professional Developer Portfolio'; ?>">
         <meta property="og:type" content="website">
     <?php endif; ?>
     <title><?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?></title>
 
-    <!-- Fonts: Space Grotesk (headings) + Inter (body) -->
+    <!-- Fonts: Playfair Display (headings) + Inter (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <!-- Font Awesome 6 — self-hosted (CDN blocked on InfinityFree) -->
+    <!-- Font Awesome 6 — self-hosted -->
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/fontawesome/css/all.min.css">
-    <!-- FA CDN fallback (for local dev if BASE_URL doesn't resolve) -->
     <link rel="stylesheet" href="../assets/fontawesome/css/all.min.css" onerror="this.remove()">
 
     <!-- Main CSS -->
@@ -42,7 +41,7 @@
     <script>
         (function () {
             var t = localStorage.getItem('portfolio-theme');
-            document.documentElement.setAttribute('data-theme', t || 'dark');
+            document.documentElement.setAttribute('data-theme', t || 'light');
         })();
     </script>
 </head>
@@ -54,29 +53,14 @@
             <div class="loader-blob"></div>
         </div>
 
-        <!-- Particle Canvas -->
-        <canvas id="particle-canvas" aria-hidden="true"></canvas>
-
-        <!-- Animated Background Mesh + Floating Orbs -->
-        <div class="bg-shapes" aria-hidden="true">
-            <div class="bg-mesh"></div>
-        </div>
-        <div class="orb-field" aria-hidden="true">
-            <div class="orb orb-1"></div>
-            <div class="orb orb-2"></div>
-            <div class="orb orb-3"></div>
-            <div class="orb orb-4"></div>
-        </div>
-
-
-        <!-- ── Glassmorphism Navbar ────────────────────────────── -->
+        <!-- ── Navbar ────────────────────────────────────────────── -->
         <header class="navbar" id="navbar" role="banner">
             <div class="navbar-inner">
                 <a href="<?php echo BASE_URL; ?>/" class="navbar-brand" aria-label="Home">
                     <div class="brand-icon" aria-hidden="true">
                         <svg width="18" height="18" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="20" cy="20" r="17" stroke="white" stroke-width="2.5"
-                                fill="rgba(255,255,255,0.08)" />
+                                fill="rgba(255,255,255,0.1)" />
                             <path d="M13 29 L20 11 L27 29" stroke="white" stroke-width="2.5" stroke-linecap="round"
                                 stroke-linejoin="round" />
                             <line x1="15.5" y1="23" x2="24.5" y2="23" stroke="white" stroke-width="2"
@@ -115,6 +99,6 @@
             </div>
         </header>
 
-    <?php endif; /* end non-admin navbar */ ?>
+    <?php endif; ?>
 
-    <main<?php echo !empty($isAdminPage) ? '' : ''; ?>>
+    <main>

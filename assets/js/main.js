@@ -1,6 +1,6 @@
 /* ============================================================
    main.js — Portfolio Interactions & Animations
-   Deep Space Neon — v2 (3D tilt, particles, no scroll bar)
+   Professional & Clean — v3
    ============================================================ */
 
 (function () {
@@ -10,18 +10,18 @@
     const loader = document.getElementById('page-loader');
     if (loader) {
         window.addEventListener('load', () => {
-            setTimeout(() => loader.classList.add('hidden'), 300);
+            setTimeout(() => loader.classList.add('hidden'), 200);
         });
-        setTimeout(() => loader && loader.classList.add('hidden'), 3000);
+        // Fallback: hide loader after 2s
+        setTimeout(() => loader && loader.classList.add('hidden'), 2000);
     }
 
     // ── Sticky Navbar ─────────────────────────────────────────
     const navbar = document.getElementById('navbar');
     function handleScroll() {
         if (navbar) {
-            navbar.classList.toggle('scrolled', window.scrollY > 60);
+            navbar.classList.toggle('scrolled', window.scrollY > 40);
         }
-        revealElements();
         animateSkillBars();
     }
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -60,7 +60,7 @@
         });
 
         document.addEventListener('click', (e) => {
-            if (!navbar.contains(e.target)) {
+            if (navbar && !navbar.contains(e.target)) {
                 navMenu.classList.remove('open');
                 navToggle.setAttribute('aria-expanded', 'false');
                 navToggle.classList.remove('active');
@@ -93,15 +93,6 @@
 
     // ── Reveal on Scroll (Intersection Observer) ───────────────
     const revealItems = document.querySelectorAll('.reveal');
-    function revealElements() {
-        revealItems.forEach(el => {
-            const rect = el.getBoundingClientRect();
-            const delay = parseInt(el.dataset.delay || 0);
-            if (rect.top < window.innerHeight - 80) {
-                setTimeout(() => el.classList.add('visible'), delay);
-            }
-        });
-    }
 
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
@@ -112,11 +103,11 @@
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
         revealItems.forEach(el => observer.observe(el));
     } else {
-        revealElements();
-        window.addEventListener('scroll', revealElements, { passive: true });
+        // Fallback for older browsers
+        revealItems.forEach(el => el.classList.add('visible'));
     }
 
     // ── Skill Bar Animation ───────────────────────────────────
@@ -140,135 +131,6 @@
         }
     }
 
-    // ── 3D Card Tilt Effect ───────────────────────────────────
-    function init3DTilt() {
-        document.querySelectorAll('.project-card, .skill-card, .about-card').forEach(card => {
-            card.addEventListener('mousemove', function (e) {
-                const rect = this.getBoundingClientRect();
-                const cx = rect.left + rect.width / 2;
-                const cy = rect.top + rect.height / 2;
-                const dx = (e.clientX - cx) / (rect.width / 2);
-                const dy = (e.clientY - cy) / (rect.height / 2);
-                const rotX = -dy * 8;
-                const rotY = dx * 8;
-                this.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(8px)`;
-                // Move the glow overlay
-                const glow = this.querySelector('.card-glow');
-                if (glow) {
-                    glow.style.background = `radial-gradient(circle at ${(dx + 1) * 50}% ${(dy + 1) * 50}%, rgba(108,99,255,0.18) 0%, transparent 70%)`;
-                }
-            });
-            card.addEventListener('mouseleave', function () {
-                this.style.transform = '';
-                const glow = this.querySelector('.card-glow');
-                if (glow) glow.style.background = '';
-            });
-        });
-    }
-    init3DTilt();
-
-    // ── Floating Particle System ──────────────────────────────
-    function initParticles() {
-        const canvas = document.getElementById('particle-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
-
-        const COLORS = ['#6c63ff', '#00d4ff', '#ff6b6b', '#39d98a'];
-        const COUNT = window.innerWidth < 768 ? 30 : 60;
-        const particles = Array.from({ length: COUNT }, () => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            r: Math.random() * 2 + 0.5,
-            vx: (Math.random() - 0.5) * 0.4,
-            vy: (Math.random() - 0.5) * 0.4,
-            color: COLORS[Math.floor(Math.random() * COLORS.length)],
-            alpha: Math.random() * 0.5 + 0.1,
-        }));
-
-        let mouse = { x: -9999, y: -9999 };
-        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                // Mouse repulsion
-                const dx = p.x - mouse.x;
-                const dy = p.y - mouse.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 100) {
-                    p.vx += dx / dist * 0.15;
-                    p.vy += dy / dist * 0.15;
-                }
-                // Speed clamp
-                const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-                if (speed > 1.2) { p.vx *= 0.9; p.vy *= 0.9; }
-
-                p.x += p.vx;
-                p.y += p.vy;
-                if (p.x < 0) p.x = canvas.width;
-                if (p.x > canvas.width) p.x = 0;
-                if (p.y < 0) p.y = canvas.height;
-                if (p.y > canvas.height) p.y = 0;
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = p.alpha;
-                ctx.fill();
-            });
-            // Draw connecting lines between nearby particles
-            ctx.globalAlpha = 1;
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const d = Math.sqrt(dx * dx + dy * dy);
-                    if (d < 120) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = particles[i].color;
-                        ctx.globalAlpha = (1 - d / 120) * 0.12;
-                        ctx.lineWidth = 0.5;
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(draw);
-        }
-        draw();
-    }
-    initParticles();
-
-    // ── Typewriter Effect ─────────────────────────────────────
-    function initTypewriter() {
-        const el = document.getElementById('typewriter');
-        if (!el) return;
-        const words = el.dataset.words ? JSON.parse(el.dataset.words) : [el.textContent];
-        let wi = 0, ci = 0, deleting = false;
-        function tick() {
-            const word = words[wi];
-            if (!deleting) {
-                el.textContent = word.slice(0, ++ci);
-                if (ci === word.length) { deleting = true; setTimeout(tick, 1800); return; }
-            } else {
-                el.textContent = word.slice(0, --ci);
-                if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; }
-            }
-            setTimeout(tick, deleting ? 55 : 90);
-        }
-        el.textContent = '';
-        tick();
-    }
-    initTypewriter();
-
     // ── Smooth Scroll ─────────────────────────────────────────
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -276,7 +138,7 @@
             const target = document.getElementById(targetId);
             if (target) {
                 e.preventDefault();
-                const offset = document.querySelector('.navbar')?.offsetHeight || 70;
+                const offset = document.querySelector('.navbar')?.offsetHeight || 72;
                 const top = target.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top, behavior: 'smooth' });
             }
@@ -300,7 +162,6 @@
     const sidebarToggle = document.getElementById('sidebarToggle');
     const adminSidebar = document.querySelector('.admin-sidebar');
     if (sidebarToggle && adminSidebar) {
-        // Show toggle only on mobile
         function handleSidebarResize() {
             sidebarToggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
         }
@@ -346,21 +207,6 @@
         }, 5000);
     });
 
-    // ── Parallax bg shapes ────────────────────────────────────
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                const y = window.scrollY;
-                document.querySelectorAll('.bg-shape').forEach((s, i) => {
-                    s.style.transform = `translateY(${y * (i + 1) * 0.06}px)`;
-                });
-                ticking = false;
-            });
-            ticking = true;
-        }
-    }, { passive: true });
-
     // ── Counters (number roll-up) ─────────────────────────────
     function initCounters() {
         document.querySelectorAll('[data-count]').forEach(el => {
@@ -385,6 +231,5 @@
     // ── Initial triggers ──────────────────────────────────────
     updateActiveNav();
     setTimeout(animateSkillBars, 600);
-    setTimeout(revealElements, 100);
 
 })();

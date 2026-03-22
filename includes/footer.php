@@ -8,7 +8,7 @@ if (empty($isAdminPage)):
         <div class="footer-inner">
             <div class="footer-brand">
                 <span class="footer-logo"><?php echo escape($profile['name'] ?? SITE_NAME); ?></span>
-                <p class="footer-tagline">Crafting digital experiences with passion.</p>
+                <p class="footer-tagline"><?php echo escape($profile['headline'] ?? 'Full-Stack Developer'); ?></p>
             </div>
 
             <nav class="footer-nav" aria-label="Footer navigation">
@@ -52,7 +52,7 @@ if (empty($isAdminPage)):
         <div class="footer-bottom">
             <p>&copy; <?php echo date('Y'); ?> &nbsp;
                 <?php echo escape($profile['name'] ?? SITE_NAME); ?>.
-                Built with <i class="fa-solid fa-heart"></i> using PHP &amp; MySQL.
+                All rights reserved.
             </p>
         </div>
     </footer>

@@ -8,12 +8,17 @@ $note = getPublishedNote($id);
 
 if (!$note) {
     header('HTTP/1.0 404 Not Found');
-    $pageTitle = 'Note Not Found';
+    $pageTitle = 'Article Not Found';
     require_once 'includes/header.php';
-    echo '<div class="error-page bento-card" style="max-width:600px;margin:4rem auto;text-align:center;">
-        <h1>Note Not Found</h1>
-        <p style="margin:1rem 0;color:var(--text-secondary);">This note doesn\'t exist or isn\'t published yet.</p>
-        <a href="' . BASE_URL . '/#garden" class="btn primary">Back to Garden</a>
+    echo '<div class="project-detail" style="text-align:center;padding:8rem 2rem;">
+        <div class="glass-card" style="max-width:500px;margin:0 auto;padding:3rem 2rem;">
+            <i class="fa-solid fa-file-lines" style="font-size:2.5rem;color:var(--ink3);opacity:.3;display:block;margin-bottom:1rem;"></i>
+            <h1 style="font-family:var(--font-head);font-size:1.5rem;margin-bottom:.75rem;">Article Not Found</h1>
+            <p style="color:var(--ink2);margin-bottom:1.5rem;">This article doesn\'t exist or isn\'t published yet.</p>
+            <a href="' . BASE_URL . '/#blog" class="btn-primary">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Articles
+            </a>
+        </div>
     </div>';
     require_once 'includes/footer.php';
     exit;
@@ -25,17 +30,24 @@ $pageDescription = escape(truncate($note['excerpt'] ?? $note['content'] ?? '', 1
 require_once 'includes/header.php';
 ?>
 
-<article class="note-detail bento-grid">
-    <div class="note-header bento-card">
-        <a href="<?php echo BASE_URL; ?>/#garden" class="back-link">← Back to Garden</a>
+<article class="project-detail">
+    <!-- Header -->
+    <div class="glass-card" style="padding:2rem;margin-bottom:1.5rem;">
+        <a href="<?php echo BASE_URL; ?>/#blog" class="back-link">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Articles
+        </a>
         <h1><?php echo escape($note['title']); ?></h1>
-        <time datetime="<?php echo $note['created_at']; ?>">
+        <time datetime="<?php echo $note['created_at']; ?>" style="font-size:.8rem;color:var(--ink3);display:inline-flex;align-items:center;gap:.4rem;">
+            <i class="fa-regular fa-calendar" aria-hidden="true"></i>
             <?php echo formatDate($note['created_at']); ?>
         </time>
     </div>
-    
-    <div class="note-content bento-card">
-        <?php echo nl2br(escape($note['content'])); ?>
+
+    <!-- Content -->
+    <div class="glass-card" style="padding:2rem;">
+        <div style="font-size:1rem;line-height:1.85;color:var(--ink2);">
+            <?php echo nl2br(escape($note['content'])); ?>
+        </div>
     </div>
 </article>
 
