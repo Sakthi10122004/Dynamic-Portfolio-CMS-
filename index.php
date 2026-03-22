@@ -105,81 +105,83 @@ $catConfig = [
 <section id="hero">
   <div class="hero-grid-overlay" aria-hidden="true"></div>
   <div class="hero-orb-cyan" aria-hidden="true"></div>
-  <div class="hero-center">
 
-    <!-- Available badge -->
-    <div class="hero-badge reveal">
-      <i class="fa-solid fa-circle" style="font-size:.5rem"></i>
-      Available for work
-    </div>
+  <div class="hero-split">
+    <!-- LEFT — Text content -->
+    <div class="hero-left">
+      <div class="hero-badge reveal">
+        <i class="fa-solid fa-circle" style="font-size:.5rem"></i>
+        Available for work
+      </div>
 
-    <!-- Avatar -->
-    <div class="hero-avatar-wrap reveal" data-delay="80">
-      <div class="hero-avatar-glow"></div>
-      <?php if (!empty($profile['avatar'])): ?>
-        <img src="<?php echo UPLOAD_URL . escape($profile['avatar']); ?>" alt="<?php echo escape($profile['name']); ?>"
-          class="hero-avatar" loading="eager">
-      <?php else: ?>
-        <div class="hero-avatar-placeholder">
-          <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+      <h1 class="hero-title reveal" data-delay="100">
+        <?php echo escape($profile['name']); ?>
+        <span class="grad-text"><?php echo escape($hero['title']); ?></span>
+      </h1>
+
+      <p class="hero-subtitle reveal" data-delay="180"><?php echo escape($hero['subtitle']); ?></p>
+
+      <div class="hero-cta reveal" data-delay="260">
+        <a href="#projects" class="btn-primary">
+          <i class="fa-solid fa-briefcase" aria-hidden="true"></i> View Projects
+        </a>
+        <a href="#contact" class="btn-glass">
+          <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Get in Touch
+        </a>
+        <?php if (!empty($profile['resume'])): ?>
+          <a href="<?php echo UPLOAD_URL . escape($profile['resume']); ?>" class="btn-outline" download target="_blank"
+            rel="noopener">
+            <i class="fa-solid fa-download" aria-hidden="true"></i> Résumé
+          </a>
+        <?php endif; ?>
+      </div>
+
+      <!-- Social pills -->
+      <?php if ($socials): ?>
+        <div class="hero-tech-pills reveal" data-delay="340">
+          <?php foreach ($socials as $sl):
+            $url = sanitizeUrl($sl['url']);
+            if (!$url) continue; ?>
+            <a href="<?php echo escape($url); ?>" target="_blank" rel="noopener noreferrer" class="hero-tech-pill">
+              <i class="<?php echo escape($sl['icon_class']); ?>" aria-hidden="true"></i>
+              <?php echo escape($sl['platform']); ?>
+            </a>
+          <?php endforeach; ?>
         </div>
       <?php endif; ?>
-    </div>
 
-    <!-- Name & title -->
-    <h1 class="hero-title reveal" data-delay="160">
-      <?php echo escape($profile['name']); ?>
-      <span class="grad-text"><?php echo escape($hero['title']); ?></span>
-    </h1>
-    <p class="hero-subtitle reveal" data-delay="220"><?php echo escape($hero['subtitle']); ?></p>
-
-    <!-- CTA buttons -->
-    <div class="hero-cta reveal" data-delay="300">
-      <a href="#projects" class="btn-primary">
-        <i class="fa-solid fa-briefcase" aria-hidden="true"></i> View Projects
-      </a>
-      <a href="#contact" class="btn-glass">
-        <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Get in Touch
-      </a>
-      <?php if (!empty($profile['resume'])): ?>
-        <a href="<?php echo UPLOAD_URL . escape($profile['resume']); ?>" class="btn-outline" download target="_blank"
-          rel="noopener">
-          <i class="fa-solid fa-download" aria-hidden="true"></i> Résumé
-        </a>
-      <?php endif; ?>
-    </div>
-
-    <!-- Social pills -->
-    <?php if ($socials): ?>
-      <div class="hero-tech-pills reveal" data-delay="380">
-        <?php foreach ($socials as $sl):
-          $url = sanitizeUrl($sl['url']);
-          if (!$url)
-            continue; ?>
-          <a href="<?php echo escape($url); ?>" target="_blank" rel="noopener noreferrer" class="hero-tech-pill">
-            <i class="<?php echo escape($sl['icon_class']); ?>" aria-hidden="true"></i>
-            <?php echo escape($sl['platform']); ?>
-          </a>
-        <?php endforeach; ?>
-      </div>
-    <?php endif; ?>
-
-    <!-- Stats -->
-    <div class="hero-stats reveal" data-delay="440">
-      <div class="hero-stat">
-        <span class="hero-stat-num"><?php echo count($projects); ?>+</span>
-        <span class="hero-stat-label">Projects</span>
-      </div>
-      <div class="hero-stat">
-        <span class="hero-stat-num"><?php echo count($skills); ?>+</span>
-        <span class="hero-stat-label">Skills</span>
-      </div>
-      <div class="hero-stat">
-        <span class="hero-stat-num">3+</span>
-        <span class="hero-stat-label">Years Exp.</span>
+      <!-- Stats -->
+      <div class="hero-stats reveal" data-delay="400">
+        <div class="hero-stat">
+          <span class="hero-stat-num"><?php echo count($projects); ?>+</span>
+          <span class="hero-stat-label">Projects</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num"><?php echo count($skills); ?>+</span>
+          <span class="hero-stat-label">Skills</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">3+</span>
+          <span class="hero-stat-label">Years Exp.</span>
+        </div>
       </div>
     </div>
 
+    <!-- RIGHT — Profile image -->
+    <div class="hero-right reveal" data-delay="200">
+      <div class="hero-image-frame">
+        <div class="hero-image-glow" aria-hidden="true"></div>
+        <div class="hero-image-ring" aria-hidden="true"></div>
+        <?php if (!empty($profile['avatar'])): ?>
+          <img src="<?php echo UPLOAD_URL . escape($profile['avatar']); ?>" alt="<?php echo escape($profile['name']); ?>"
+            class="hero-avatar" loading="eager">
+        <?php else: ?>
+          <div class="hero-avatar-placeholder">
+            <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
   </div>
 </section>
 

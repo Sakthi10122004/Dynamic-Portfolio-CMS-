@@ -1,6 +1,6 @@
 /* ============================================================
-   main.js — Vibrant Gradient Portfolio v5
-   Futuristic · Smooth · Premium Interactions
+   main.js — Vibrant Gradient Portfolio v6
+   Split Hero · No Cursor · Fixed Hamburger
    ============================================================ */
 
 (function () {
@@ -41,39 +41,35 @@
 
     // ── Mobile Navigation ─────────────────────────────────────
     const navToggle = document.getElementById('navToggle');
-    const navMenu = document.querySelector('.navbar-nav');
+    const navMenu = document.getElementById('navMenu') || document.querySelector('.navbar-nav');
     if (navToggle && navMenu) {
-        navToggle.addEventListener('click', () => {
+        navToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             const open = navMenu.classList.toggle('open');
             navToggle.setAttribute('aria-expanded', open);
             navToggle.classList.toggle('active', open);
+            // Prevent body scroll when menu is open
+            document.body.style.overflow = open ? 'hidden' : '';
         });
+
         navMenu.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('open');
                 navToggle.setAttribute('aria-expanded', 'false');
                 navToggle.classList.remove('active');
+                document.body.style.overflow = '';
             });
         });
+
         document.addEventListener('click', (e) => {
-            if (navbar && !navbar.contains(e.target)) {
+            if (navMenu.classList.contains('open') && !navbar.contains(e.target)) {
                 navMenu.classList.remove('open');
                 navToggle.setAttribute('aria-expanded', 'false');
                 navToggle.classList.remove('active');
+                document.body.style.overflow = '';
             }
         });
     }
-
-    // ── Hamburger animation + hide-mobile ─────────────────────
-    const injectStyle = document.createElement('style');
-    injectStyle.textContent = `
-    .Nav-hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-    .Nav-hamburger.active span:nth-child(2){opacity:0;transform:scaleX(0)}
-    .Nav-hamburger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-    .hide-mobile{display:inline-flex}
-    @media(max-width:768px){.hide-mobile{display:none!important}}
-    `;
-    document.head.appendChild(injectStyle);
 
     // ── Active Nav Link Highlight ─────────────────────────────
     const sections = document.querySelectorAll('section[id]');
@@ -151,40 +147,7 @@
         });
     }
 
-    // ── Custom Cursor (desktop fine pointers only) ────────────
-    const cursorDot = document.getElementById('cursorDot');
-    const cursorRing = document.getElementById('cursorRing');
-
-    if (cursorDot && cursorRing && window.matchMedia('(pointer: fine)').matches && window.innerWidth > 768) {
-        let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            cursorDot.style.left = mouseX + 'px';
-            cursorDot.style.top = mouseY + 'px';
-        });
-
-        function animateRing() {
-            ringX += (mouseX - ringX) * 0.12;
-            ringY += (mouseY - ringY) * 0.12;
-            cursorRing.style.left = ringX + 'px';
-            cursorRing.style.top = ringY + 'px';
-            requestAnimationFrame(animateRing);
-        }
-        animateRing();
-
-        const interactiveEls = 'a, button, .project-card, .skill-category-card, .hero-tech-pill, .about-tag, .social-icon-btn';
-        document.querySelectorAll(interactiveEls).forEach(el => {
-            el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
-        });
-    } else {
-        if (cursorDot) cursorDot.style.display = 'none';
-        if (cursorRing) cursorRing.style.display = 'none';
-    }
-
-    // ── 3D Tilt on Cards ─────────────────────────────────────
+    // ── 3D Tilt on Cards (desktop only) ──────────────────────
     if (window.innerWidth > 768) {
         document.querySelectorAll('.project-card, .skill-category-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
@@ -203,16 +166,20 @@
         });
     }
 
-    // ── Floating Particles (hero only) ───────────────────────
+    // ── Floating Particles (hero, desktop only) ──────────────
     const hero = document.getElementById('hero');
     if (hero && window.innerWidth > 768) {
-        for (let i = 0; i < 20; i++) {
+        const colors = [
+            'rgba(139,92,246,0.3)', 'rgba(236,72,153,0.25)',
+            'rgba(6,182,212,0.3)', 'rgba(59,130,246,0.25)'
+        ];
+        for (let i = 0; i < 18; i++) {
             const particle = document.createElement('div');
             const size = Math.random() * 3 + 1;
             particle.style.cssText = `
                 position:absolute;width:${size}px;height:${size}px;
                 border-radius:50%;pointer-events:none;z-index:0;
-                background:${['rgba(139,92,246,0.3)', 'rgba(236,72,153,0.25)', 'rgba(6,182,212,0.3)', 'rgba(59,130,246,0.25)'][Math.floor(Math.random() * 4)]};
+                background:${colors[Math.floor(Math.random() * 4)]};
                 left:${Math.random() * 100}%;top:${Math.random() * 100}%;
                 animation:floatParticle ${8 + Math.random() * 12}s ease-in-out infinite;
                 animation-delay:${Math.random() * 5}s;
@@ -224,9 +191,9 @@
         pStyle.textContent = `
         @keyframes floatParticle{
             0%,100%{transform:translate(0,0) scale(1);opacity:0.4}
-            25%{transform:translate(${Math.random() > 0.5 ? '' : '-'}30px,-40px) scale(1.2);opacity:0.7}
-            50%{transform:translate(${Math.random() > 0.5 ? '' : '-'}20px,30px) scale(0.8);opacity:0.3}
-            75%{transform:translate(${Math.random() > 0.5 ? '' : '-'}40px,-20px) scale(1.1);opacity:0.6}
+            25%{transform:translate(30px,-40px) scale(1.2);opacity:0.7}
+            50%{transform:translate(-20px,30px) scale(0.8);opacity:0.3}
+            75%{transform:translate(40px,-20px) scale(1.1);opacity:0.6}
         }`;
         document.head.appendChild(pStyle);
     }
@@ -244,7 +211,7 @@
         });
     });
 
-    // ── Admin Sidebar Mobile Toggle ───────────────────────────
+    // ── Admin Sidebar Mobile Toggle ──────────────────────────
     const sidebarToggle = document.getElementById('sidebarToggle');
     const adminSidebar = document.querySelector('.admin-sidebar');
     if (sidebarToggle && adminSidebar) {
@@ -261,14 +228,14 @@
         });
     }
 
-    // ── Skill % preview (admin) ───────────────────────────────
+    // ── Skill % preview (admin) ──────────────────────────────
     const pctRange = document.getElementById('percentage-range');
     const pctShow = document.getElementById('percentage-display');
     if (pctRange && pctShow) {
         pctRange.addEventListener('input', () => { pctShow.textContent = pctRange.value + '%'; });
     }
 
-    // ── Image preview (admin) ─────────────────────────────────
+    // ── Image preview (admin) ────────────────────────────────
     document.querySelectorAll('input[type="file"][data-preview]').forEach(input => {
         input.addEventListener('change', () => {
             const previewId = input.dataset.preview;
@@ -281,7 +248,7 @@
         });
     });
 
-    // ── Auto-dismiss flash messages ───────────────────────────
+    // ── Auto-dismiss flash messages ──────────────────────────
     document.querySelectorAll('.flash, .alert').forEach(flash => {
         setTimeout(() => {
             flash.style.transition = 'opacity .5s';
@@ -290,7 +257,7 @@
         }, 5000);
     });
 
-    // ── Counter animation ─────────────────────────────────────
+    // ── Counter animation ────────────────────────────────────
     function initCounters() {
         document.querySelectorAll('[data-count]').forEach(el => {
             const target = parseInt(el.dataset.count);
@@ -311,7 +278,7 @@
         document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
     }
 
-    // ── Initial triggers ──────────────────────────────────────
+    // ── Initial triggers ─────────────────────────────────────
     updateActiveNav();
     handleBackToTop();
     setTimeout(animateSkillBars, 600);

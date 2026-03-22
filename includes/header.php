@@ -53,10 +53,6 @@
             <div class="loader-blob"></div>
         </div>
 
-        <!-- ── Custom cursor ── -->
-        <div class="cursor-dot" id="cursorDot"></div>
-        <div class="cursor-ring" id="cursorRing"></div>
-
         <!-- ── Navbar (Floating Glass) ── -->
         <header class="navbar" id="navbar" role="banner">
             <div class="navbar-inner">
@@ -74,12 +70,11 @@
                     <span class="brand-name"><?php echo escape(SITE_NAME); ?></span>
                 </a>
 
-                <nav class="navbar-nav" aria-label="Main navigation">
+                <nav class="navbar-nav" id="navMenu" aria-label="Main navigation">
                     <a href="#hero" class="nav-link">Home</a>
                     <a href="#about" class="nav-link">About</a>
                     <a href="#skills" class="nav-link">Skills</a>
                     <a href="#projects" class="nav-link">Projects</a>
-                    <a href="#contact" class="nav-link">Contact</a>
                 </nav>
 
                 <div class="navbar-actions">
@@ -94,11 +89,12 @@
                         </a>
                     <?php endif; ?>
 
-                    <a href="#contact" class="nav-cta hide-mobile">
+                    <a href="#contact" class="nav-cta">
                         <i class="fa-solid fa-rocket" aria-hidden="true"></i> Get Started
                     </a>
 
-                    <button class="Nav-hamburger" aria-label="Toggle mobile menu" id="navToggle" aria-expanded="false">
+                    <!-- Mobile menu toggle -->
+                    <button class="nav-hamburger" aria-label="Toggle mobile menu" id="navToggle" aria-expanded="false">
                         <span></span><span></span><span></span>
                     </button>
                 </div>
