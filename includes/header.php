@@ -9,7 +9,7 @@
     <?php else: ?>
         <meta name="description"
             content="<?php echo isset($pageDescription) ? escape($pageDescription) : 'Professional Portfolio — Full-Stack Developer'; ?>">
-        <meta name="theme-color" content="#06b6d4">
+        <meta name="theme-color" content="#8b5cf6">
         <meta property="og:title"
             content="<?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?>">
         <meta property="og:description"
@@ -18,11 +18,11 @@
     <?php endif; ?>
     <title><?php echo isset($pageTitle) ? escape($pageTitle) . ' | ' . SITE_NAME : SITE_NAME; ?></title>
 
-    <!-- Fonts: Outfit (headings) + Inter (body) -->
+    <!-- Fonts: Poppins (headings) + Inter (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
     <!-- Font Awesome 6 — self-hosted -->
@@ -48,16 +48,16 @@
 <body<?php echo !empty($isAdminPage) ? ' class="admin-body"' : ''; ?>>
 
     <?php if (empty($isAdminPage)): ?>
-        <!-- ── Page Loader ─────────────────────────────────────── -->
+        <!-- ── Page Loader ── -->
         <div id="page-loader" aria-hidden="true">
             <div class="loader-blob"></div>
         </div>
 
-        <!-- ── Custom cursor (desktop only) ── -->
+        <!-- ── Custom cursor ── -->
         <div class="cursor-dot" id="cursorDot"></div>
         <div class="cursor-ring" id="cursorRing"></div>
 
-        <!-- ── Navbar ────────────────────────────────────────────── -->
+        <!-- ── Navbar (Floating Glass) ── -->
         <header class="navbar" id="navbar" role="banner">
             <div class="navbar-inner">
                 <a href="<?php echo BASE_URL; ?>/" class="navbar-brand" aria-label="Home">
@@ -83,7 +83,6 @@
                 </nav>
 
                 <div class="navbar-actions">
-                    <!-- Dark/Light toggle -->
                     <button class="theme-toggle" aria-label="Toggle dark/light mode" id="themeToggle">
                         <i class="fa-solid fa-moon  icon-dark" aria-hidden="true"></i>
                         <i class="fa-solid fa-sun   icon-light" aria-hidden="true"></i>
@@ -95,12 +94,10 @@
                         </a>
                     <?php endif; ?>
 
-                    <!-- Hire Me CTA -->
-                    <a href="#contact" class="nav-link nav-cta hide-mobile">
-                        <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Let's Talk
+                    <a href="#contact" class="nav-cta hide-mobile">
+                        <i class="fa-solid fa-rocket" aria-hidden="true"></i> Get Started
                     </a>
 
-                    <!-- Mobile menu toggle -->
                     <button class="Nav-hamburger" aria-label="Toggle mobile menu" id="navToggle" aria-expanded="false">
                         <span></span><span></span><span></span>
                     </button>
