@@ -1052,7 +1052,10 @@ input[type=range]{width:100%;accent-color:var(--primary)}
     top:8px;width:calc(100% - 1.5rem);height:56px;
     border-radius:var(--radius-sm);
   }
-  .navbar-inner{padding:0 1rem}
+  .navbar-inner{
+    padding:0 1rem;
+    justify-content:space-between !important;
+  }
 
   /* ── Hide CTA on mobile ── */
   .nav-cta,
@@ -1116,7 +1119,7 @@ input[type=range]{width:100%;accent-color:var(--primary)}
   }
   .navbar-nav .nav-link::after{display:none !important}
 
-  .navbar-actions{gap:.4rem;margin-left:auto}
+  .navbar-actions{gap:.4rem;margin-left:auto !important;justify-content:flex-end}
 
   /* ── Hero mobile ── */
   .hero-split{gap:2rem}
