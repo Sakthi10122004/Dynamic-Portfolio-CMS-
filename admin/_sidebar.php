@@ -26,12 +26,7 @@ $currentUser = $auth->getCurrentUser();
     </div>
   </div>
 
-  <!-- Mobile Nav Toggle (hidden on desktop by default) -->
-  <button class="sidebar-mobile-toggle" id="sidebarToggle" style="display:none" aria-expanded="false"
-    aria-controls="sidebar-nav-content">
-    <i class="fa-solid fa-bars" id="sidebarToggleIcon"></i>
-    <span>Navigation</span>
-  </button>
+
 
   <!-- Navigation -->
   <nav class="sidebar-nav" aria-label="Admin pages">
@@ -120,5 +115,8 @@ $currentUser = $auth->getCurrentUser();
 
 </aside>
 
-<!-- Mobile sidebar backdrop -->
+<!-- Mobile sidebar toggle & backdrop -->
+<button class="sidebar-mobile-toggle" id="sidebarToggle" style="display:none" aria-expanded="false" aria-controls="adminSidebar">
+  <i class="fa-solid fa-bars" id="sidebarToggleIcon"></i>
+</button>
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>

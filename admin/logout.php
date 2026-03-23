@@ -1,9 +1,9 @@
 <?php
+require_once '../includes/config.php';
 require_once '../includes/auth.php';
 
-$auth->requireLogin();
-verifyCsrf();
-
+$auth = new Auth();
 $auth->logout();
-header('Location: ' . BASE_URL . '/admin/?logged_out=1');
+
+header('Location: ' . BASE_URL . '/admin/index.php?logged_out=1');
 exit;

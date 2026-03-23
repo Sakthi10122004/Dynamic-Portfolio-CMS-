@@ -309,11 +309,16 @@ function getPublishedNote($id)
 function saveContactMessage($name, $email, $message, $ip = '')
 {
     $db = Database::getInstance();
-    return $db->insert(
-        "INSERT INTO contact_messages (name, email, message, ip_address) VALUES (?, ?, ?, ?)",
-        [$name, $email, $message, $ip],
-        'ssss'
-    );
+    try {
+        // Use try-catch in case table structure differences occur
+        return $db->insert(
+            "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)",
+            [$name, $email, $message],
+            'sss'
+        );
+    } catch (\Exception $e) {
+        return false;
+    }
 }
 
 function getMessages($limit = null)

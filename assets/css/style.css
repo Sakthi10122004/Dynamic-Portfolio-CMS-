@@ -234,10 +234,18 @@ ul{list-style:none}
 /* Hamburger */
 .nav-hamburger{
   display:none;flex-direction:column;gap:5px;
-  background:none;border:none;cursor:pointer;padding:.3rem;z-index:201;
+  background:var(--glass);border:1px solid var(--glass-border);
+  width:38px;height:38px;border-radius:12px;
+  cursor:pointer;align-items:center;justify-content:center;
+  transition:all var(--tr);z-index:201;padding:0;
+}
+.nav-hamburger:hover{
+  background:rgba(139,92,246,0.15);
+  border-color:var(--glass-border-hover);
+  box-shadow:var(--shadow-glow-purple);
 }
 .nav-hamburger span{
-  display:block;width:22px;height:2px;background:var(--ink);
+  display:block;width:18px;height:2px;background:var(--ink);
   border-radius:2px;transition:all var(--tr);transform-origin:center;
 }
 .nav-hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
@@ -1108,7 +1116,7 @@ input[type=range]{width:100%;accent-color:var(--primary)}
   }
   .navbar-nav .nav-link::after{display:none !important}
 
-  .navbar-actions{gap:.4rem}
+  .navbar-actions{gap:.4rem;margin-left:auto}
 
   /* ── Hero mobile ── */
   .hero-split{gap:2rem}
