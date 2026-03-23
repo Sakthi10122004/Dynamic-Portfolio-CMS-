@@ -1,82 +1,58 @@
-# Enable rewrite engine
-RewriteEngine On
+# ============================================================
+# .htaccess — Portfolio Error Handling & Security
+# ============================================================
 
-# ===========================================================
-# SECURITY HEADERS
-# ===========================================================
-<IfModule mod_headers.c>
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set X-Frame-Options "SAMEORIGIN"
-    Header always set X-XSS-Protection "1; mode=block"
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    Header always set X-Permitted-Cross-Domain-Policies "none"
-    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
-    # Content Security Policy — allow self-hosted FA, Google Fonts, inline styles
-    Header always set Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self'; frame-ancestors 'none';"
-</IfModule>
-
-# ===========================================================
-# BLOCK ACCESS TO SENSITIVE FILES
-# ===========================================================
-<FilesMatch "\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|swp|env)$">
-    Require all denied
-</FilesMatch>
-
-# Protect includes directory — cannot be accessed directly
-RewriteRule ^includes/.*$ - [F,L]
-
-# Block sensitive maintenance scripts in production
-# (Comment out on localhost if you need to run them)
-<FilesMatch "^(setup|fix_admin|migrate_profile|migrate_security|note)\.php$">
-    Require all denied
-</FilesMatch>
-
-# ===========================================================
-# COMPRESSION
-# ===========================================================
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/font-woff2
-</IfModule>
-
-# ===========================================================
-# CACHE CONTROL
-# ===========================================================
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 month"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType application/font-woff2 "access plus 1 year"
-</IfModule>
-
-# ===========================================================
-# PREVENT DIRECTORY LISTING
-# ===========================================================
+# Prevent directory listing (fixes 403 on blog/note URLs)
 Options -Indexes
 
-# ===========================================================
-# CHARACTER ENCODING
-# ===========================================================
-AddDefaultCharset UTF-8
+# Disable MultiViews to prevent conflicts
+Options -MultiViews
 
-# ===========================================================
-# CUSTOM ERROR PAGES
-# ===========================================================
-# IMPORTANT: For InfinityFree (where the app is hosted in the root /)
-# Use: ErrorDocument [code] /error.php
-# 
-# If running locally in a subfolder (e.g. /protfolio), you MUST prefix the path
-# example: ErrorDocument 404 /protfolio/error.php
-#
-# Below rules attempt to grab the query param if it is passed, but generally it uses REDIRECT_STATUS
+# Custom Error Pages (uses relative paths — works on any host)
 ErrorDocument 400 /error.php
 ErrorDocument 401 /error.php
 ErrorDocument 403 /error.php
 ErrorDocument 404 /error.php
 ErrorDocument 500 /error.php
 ErrorDocument 503 /error.php
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Pretty URLs for blog posts: /blog/5 -> /note.php?id=5
+    RewriteRule ^blog/([0-9]+)/?$ note.php?id=$1 [L,QSA]
+
+    # Pretty URLs for projects: /project/([0-9]+) -> /project.php?id=$1
+    RewriteRule ^project/([0-9]+)/?$ project.php?id=$1 [L,QSA]
+
+    # If file or directory exists, serve it directly
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Send everything else to error page
+    RewriteRule ^ error.php [L]
+</IfModule>
+
+# Security: protect sensitive files
+<FilesMatch "\.(sql|md|log|env)$">
+    Require all denied
+</FilesMatch>
+
+# Protect config files
+<Files "config.php">
+    Require all denied
+</Files>
+
+# Cache static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType font/woff2 "access plus 1 month"
+</IfModule>

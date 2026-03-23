@@ -80,7 +80,9 @@
             if (window.scrollY >= s.offsetTop - 130) current = s.id;
         });
         navLinks.forEach(l => {
-            l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+            const href = l.getAttribute('href') || '';
+            const hash = href.includes('#') ? '#' + href.split('#').pop() : href;
+            l.classList.toggle('active', hash === '#' + current);
         });
     }
     window.addEventListener('scroll', updateActiveNav, { passive: true });
@@ -214,17 +216,48 @@
     // ── Admin Sidebar Mobile Toggle ──────────────────────────
     const sidebarToggle = document.getElementById('sidebarToggle');
     const adminSidebar = document.querySelector('.admin-sidebar');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+    function closeSidebar() {
+        if (adminSidebar) adminSidebar.classList.remove('sidebar-open');
+        if (sidebarBackdrop) sidebarBackdrop.classList.remove('show');
+        if (sidebarToggle) {
+            sidebarToggle.setAttribute('aria-expanded', 'false');
+            const icon = document.getElementById('sidebarToggleIcon');
+            if (icon) icon.className = 'fa-solid fa-bars';
+        }
+    }
+
     if (sidebarToggle && adminSidebar) {
         function handleSidebarResize() {
-            sidebarToggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+            if (window.innerWidth > 768) {
+                sidebarToggle.style.display = 'none';
+                closeSidebar();
+            } else {
+                sidebarToggle.style.display = 'flex';
+            }
         }
         handleSidebarResize();
         window.addEventListener('resize', handleSidebarResize);
+
         sidebarToggle.addEventListener('click', () => {
             const isOpen = adminSidebar.classList.toggle('sidebar-open');
             sidebarToggle.setAttribute('aria-expanded', isOpen);
             const icon = document.getElementById('sidebarToggleIcon');
             if (icon) icon.className = isOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+            if (sidebarBackdrop) sidebarBackdrop.classList.toggle('show', isOpen);
+        });
+
+        // Close on backdrop click
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', closeSidebar);
+        }
+
+        // Close on nav link click (mobile)
+        adminSidebar.querySelectorAll('.sidebar-nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) closeSidebar();
+            });
         });
     }
 

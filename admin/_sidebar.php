@@ -119,3 +119,6 @@ $currentUser = $auth->getCurrentUser();
   </div>
 
 </aside>
+
+<!-- Mobile sidebar backdrop -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>

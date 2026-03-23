@@ -154,15 +154,15 @@ $catConfig = [
       <div class="hero-stats reveal" data-delay="400">
         <div class="hero-stat">
           <span class="hero-stat-num"><?php echo count($projects); ?>+</span>
-          <span class="hero-stat-label">Projects</span>
+          <span class="hero-stat-label"><?php echo escape(getSetting('stat_1_label', 'Projects')); ?></span>
         </div>
         <div class="hero-stat">
           <span class="hero-stat-num"><?php echo count($skills); ?>+</span>
-          <span class="hero-stat-label">Skills</span>
+          <span class="hero-stat-label"><?php echo escape(getSetting('stat_2_label', 'Skills')); ?></span>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-num">3+</span>
-          <span class="hero-stat-label">Years Exp.</span>
+          <span class="hero-stat-num"><?php echo escape(getSetting('stat_3_value', '3+')); ?></span>
+          <span class="hero-stat-label"><?php echo escape(getSetting('stat_3_label', 'Years Exp.')); ?></span>
         </div>
       </div>
     </div>
@@ -201,9 +201,11 @@ $catConfig = [
       <div class="about-content reveal" data-delay="150">
         <p class="about-text"><?php echo escape($about['content']); ?></p>
         <div class="about-tags">
-          <?php $tags = ['Problem Solver', 'Team Player', 'Fast Learner', 'Open Source', 'Creative Thinker', 'Full-Stack'];
-          foreach ($tags as $t): ?>
-            <span class="about-tag"><?php echo $t; ?></span>
+          <?php
+          $tagStr = getSetting('about_tags', 'Problem Solver,Team Player,Fast Learner,Open Source,Creative Thinker,Full-Stack');
+          $tags = array_map('trim', explode(',', $tagStr));
+          foreach ($tags as $t): if (!$t) continue; ?>
+            <span class="about-tag"><?php echo escape($t); ?></span>
           <?php endforeach; ?>
         </div>
       </div>
@@ -390,8 +392,8 @@ $catConfig = [
     <div class="contact-grid">
       <!-- Info side -->
       <div class="glass-card contact-info reveal">
-        <h3>Let's connect</h3>
-        <p>Open to freelance projects, collaborations, and full-time opportunities. I typically respond within 24 hours.
+        <h3><?php echo escape(getSetting('contact_info_title', 'Let\'s connect')); ?></h3>
+        <p><?php echo escape(getSetting('contact_info_desc', 'Open to freelance projects, collaborations, and full-time opportunities. I typically respond within 24 hours.')); ?>
         </p>
         <?php if (!empty($profile['email'])): ?>
           <div class="contact-detail">
@@ -434,7 +436,7 @@ $catConfig = [
         <?php if ($contactSuccess): ?>
           <div class="alert alert-success">
             <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-            Message sent! I'll get back to you within 24 hours.
+            <?php echo escape(getSetting('contact_success_msg', 'Message sent! I\'ll get back to you within 24 hours.')); ?>
           </div>
         <?php endif; ?>
         <?php if ($contactError): ?>
@@ -448,18 +450,18 @@ $catConfig = [
           <?php echo csrfField(); ?>
           <div class="form-row">
             <div class="field">
-              <label for="c-name">Your Name</label>
+              <label for="c-name"><?php echo escape(getSetting('contact_name_label', 'Your Name')); ?></label>
               <input type="text" id="c-name" name="name" required autocomplete="name" placeholder="John Doe"
                 value="<?php echo !$contactSuccess ? escape($_POST['name'] ?? '') : ''; ?>">
             </div>
             <div class="field">
-              <label for="c-email">Email Address</label>
+              <label for="c-email"><?php echo escape(getSetting('contact_email_label', 'Email Address')); ?></label>
               <input type="email" id="c-email" name="email" required autocomplete="email" placeholder="john@example.com"
                 value="<?php echo !$contactSuccess ? escape($_POST['email'] ?? '') : ''; ?>">
             </div>
           </div>
           <div class="field">
-            <label for="c-msg">Message</label>
+            <label for="c-msg"><?php echo escape(getSetting('contact_msg_label', 'Message')); ?></label>
             <textarea id="c-msg" name="message" required rows="5"
               placeholder="Tell me about your project..."><?php echo !$contactSuccess ? escape($_POST['message'] ?? '') : ''; ?></textarea>
           </div>

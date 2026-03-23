@@ -1,7 +1,9 @@
 <?php
-require_once 'includes/db.php';
-require_once 'includes/functions.php';
-require_once 'includes/auth.php';
+require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/auth.php';
+$auth = new Auth();
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $note = getPublishedNote($id);

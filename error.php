@@ -4,7 +4,10 @@
  * Handles 400, 401, 403, 404, 500, 503
  */
 require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/auth.php';
+$auth = new Auth();
 
 // Determine the error code from server or GET params
 $code = $_SERVER['REDIRECT_STATUS'] ?? $_GET['code'] ?? 404;

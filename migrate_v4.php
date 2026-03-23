@@ -38,11 +38,16 @@ $settings = [
     ['hero_cta_1', 'View Projects', 'Hero Button 1 Text', 'hero', 'text'],
     ['hero_cta_2', 'Get in Touch', 'Hero Button 2 Text', 'hero', 'text'],
     ['hero_cta_3', 'Resume', 'Hero Button 3 Text', 'hero', 'text'],
+    ['stat_1_label', 'Projects', 'Stat 1 Label', 'hero', 'text'],
+    ['stat_2_label', 'Skills', 'Stat 2 Label', 'hero', 'text'],
+    ['stat_3_value', '3+', 'Stat 3 Value', 'hero', 'text'],
+    ['stat_3_label', 'Years Exp.', 'Stat 3 Label', 'hero', 'text'],
 
     // About
     ['about_label', 'Who I Am', 'Section Label', 'about', 'text'],
     ['about_title_1', 'About', 'Section Title (Part 1)', 'about', 'text'],
     ['about_title_2', 'Me', 'Section Title (Part 2)', 'about', 'text'],
+    ['about_tags', 'Problem Solver,Team Player,Fast Learner,Open Source,Creative Thinker,Full-Stack', 'Tags (comma separated)', 'about', 'textarea'],
 
     // Skills
     ['skills_label', 'What I Know', 'Section Label', 'skills', 'text'],
@@ -68,6 +73,12 @@ $settings = [
     ['contact_title_2', 'Touch', 'Section Title (Part 2)', 'contact', 'text'],
     ['contact_subtitle', 'Have a project in mind? Let\'s build something great together.', 'Section Subtitle', 'contact', 'textarea'],
     ['contact_button', 'Send Message', 'Submit Button Text', 'contact', 'text'],
+    ['contact_info_title', 'Let\'s connect', 'Info Card Title', 'contact', 'text'],
+    ['contact_info_desc', 'Open to freelance projects, collaborations, and full-time opportunities. I typically respond within 24 hours.', 'Info Card Description', 'contact', 'textarea'],
+    ['contact_name_label', 'Your Name', 'Name Field Label', 'contact', 'text'],
+    ['contact_email_label', 'Email Address', 'Email Field Label', 'contact', 'text'],
+    ['contact_msg_label', 'Message', 'Message Field Label', 'contact', 'text'],
+    ['contact_success_msg', 'Message sent! I\'ll get back to you within 24 hours.', 'Success Message', 'contact', 'textarea'],
 
     // Footer
     ['footer_text', 'Built with passion and lots of coffee.', 'Footer Slogan', 'footer', 'textarea'],
