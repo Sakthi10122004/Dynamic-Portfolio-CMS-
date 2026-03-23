@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resumeFile = $profile['resume'] ?? null;
 
         // Handle avatar upload
-        if (!empty($_FILES['avatar']['name']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+        if (!empty($_FILES['avatar']['name']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
             $result = uploadImage($_FILES['avatar'], $avatarFile);
             if ($result['success']) {
                 $avatarFile = $result['filename'];
@@ -80,9 +80,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Handle resume upload
-        if (!empty($_FILES['resume']['name']) && $_FILES['resume']['error'] === UPLOAD_ERR_OK) {
+        if (!empty($_FILES['resume']['name']) && $_FILES['resume']['error'] !== UPLOAD_ERR_NO_FILE) {
             $file = $_FILES['resume'];
-            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                // Determine exact error
+                $errMsg = [
+                    UPLOAD_ERR_INI_SIZE => 'Resume exceeds server upload limit.',
+                    UPLOAD_ERR_FORM_SIZE => 'Resume exceeds form size limit.',
+                    UPLOAD_ERR_PARTIAL => 'Resume was only partially uploaded.',
+                    UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder.',
+                    UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+                ];
+                $error = $errMsg[$file['error']] ?? 'Resume upload error.';
+            } else {
+                $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
             $allowedResume = ['pdf', 'doc', 'docx'];
 
             if (!in_array($ext, $allowedResume)) {
@@ -102,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $error = 'Failed to upload resume';
                 }
+            }
             }
         }
 

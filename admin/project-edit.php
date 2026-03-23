@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = 'Project title is required.';
   } else {
     $image = $project['image'] ?? null;
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+    if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
       $upload = uploadImage($_FILES['image'], $image);
       if ($upload['success']) {
         $image = $upload['filename'];

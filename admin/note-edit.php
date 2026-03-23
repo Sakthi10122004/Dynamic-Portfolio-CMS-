@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Handle image upload
         $imageFilename = $note['image'] ?? null;
-        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
             $result = uploadImage($_FILES['image'], $imageFilename);
             if ($result['success']) {
                 $imageFilename = $result['filename'];
