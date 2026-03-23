@@ -58,6 +58,10 @@ $currentUser = $auth->getCurrentUser();
       class="<?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
       <i class="fa-solid fa-id-card"></i> Profile
     </a>
+    <a href="<?php echo BASE_URL; ?>/admin/settings.php"
+      class="<?php echo $currentPage === 'settings.php' ? 'active' : ''; ?>">
+      <i class="fa-solid fa-gear"></i> Settings
+    </a>
 
     <div class="sidebar-nav-label">Portfolio</div>
     <a href="<?php echo BASE_URL; ?>/admin/projects.php"

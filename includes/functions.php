@@ -332,3 +332,31 @@ function getMessage($id)
     $db = Database::getInstance();
     return $db->getRow("SELECT * FROM contact_messages WHERE id = ?", [(int) $id], 'i');
 }
+
+// ----------------------------------------------------------
+// Data Retrieval — Settings (Dynamic Text Labels)
+// ----------------------------------------------------------
+
+function getSettings()
+{
+    static $settings = null;
+    if ($settings !== null) {
+        return $settings;
+    }
+    
+    $db = Database::getInstance();
+    $rows = $db->getRows("SELECT * FROM settings");
+    $settings = [];
+    if ($rows) {
+        foreach ($rows as $row) {
+            $settings[$row['setting_key']] = $row;
+        }
+    }
+    return $settings;
+}
+
+function getSetting($key, $default = '')
+{
+    $settings = getSettings();
+    return isset($settings[$key]) ? $settings[$key]['setting_value'] : $default;
+}

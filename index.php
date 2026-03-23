@@ -111,7 +111,7 @@ $catConfig = [
     <div class="hero-left">
       <div class="hero-badge reveal">
         <i class="fa-solid fa-circle" style="font-size:.5rem"></i>
-        Available for work
+        <?php echo escape(getSetting('hero_badge', 'Available for work')); ?>
       </div>
 
       <h1 class="hero-title reveal" data-delay="100">
@@ -123,15 +123,15 @@ $catConfig = [
 
       <div class="hero-cta reveal" data-delay="260">
         <a href="#projects" class="btn-primary">
-          <i class="fa-solid fa-briefcase" aria-hidden="true"></i> View Projects
+          <i class="fa-solid fa-briefcase" aria-hidden="true"></i> <?php echo escape(getSetting('hero_cta_1', 'View Projects')); ?>
         </a>
         <a href="#contact" class="btn-glass">
-          <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Get in Touch
+          <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> <?php echo escape(getSetting('hero_cta_2', 'Get in Touch')); ?>
         </a>
         <?php if (!empty($profile['resume'])): ?>
           <a href="<?php echo UPLOAD_URL . escape($profile['resume']); ?>" class="btn-outline" download target="_blank"
             rel="noopener">
-            <i class="fa-solid fa-download" aria-hidden="true"></i> Résumé
+            <i class="fa-solid fa-download" aria-hidden="true"></i> <?php echo escape(getSetting('hero_cta_3', 'Resume')); ?>
           </a>
         <?php endif; ?>
       </div>
@@ -189,8 +189,8 @@ $catConfig = [
 <section id="about">
   <div class="container">
     <div class="text-center" style="margin-bottom:3rem">
-      <span class="section-label">Who I Am</span>
-      <h2 class="section-title">About <span>Me</span></h2>
+      <span class="section-label"><?php echo escape(getSetting('about_label', 'Who I Am')); ?></span>
+      <h2 class="section-title"><?php echo escape(getSetting('about_title_1', 'About')); ?> <span><?php echo escape(getSetting('about_title_2', 'Me')); ?></span></h2>
     </div>
     <div class="about-grid">
       <div class="reveal">
@@ -215,9 +215,9 @@ $catConfig = [
 <section id="skills">
   <div class="container">
     <div class="text-center" style="margin-bottom:3rem">
-      <span class="section-label">What I Know</span>
-      <h2 class="section-title">Technical <span>Skills</span></h2>
-      <p class="section-subtitle">A curated set of tools and technologies I use to build great products.</p>
+      <span class="section-label"><?php echo escape(getSetting('skills_label', 'What I Know')); ?></span>
+      <h2 class="section-title"><?php echo escape(getSetting('skills_title_1', 'Technical')); ?> <span><?php echo escape(getSetting('skills_title_2', 'Skills')); ?></span></h2>
+      <p class="section-subtitle"><?php echo escape(getSetting('skills_subtitle', 'A curated set of tools and technologies I use to build great products.')); ?></p>
     </div>
 
     <?php if ($skillsByCategory): ?>
@@ -258,9 +258,9 @@ $catConfig = [
 <section id="projects">
   <div class="container">
     <div class="text-center" style="margin-bottom:3rem">
-      <span class="section-label">What I've Built</span>
-      <h2 class="section-title">Featured <span>Projects</span></h2>
-      <p class="section-subtitle">A selection of projects that showcase my skills and passion for building.</p>
+      <span class="section-label"><?php echo escape(getSetting('projects_label', 'What I\'ve Built')); ?></span>
+      <h2 class="section-title"><?php echo escape(getSetting('projects_title_1', 'Featured')); ?> <span><?php echo escape(getSetting('projects_title_2', 'Projects')); ?></span></h2>
+      <p class="section-subtitle"><?php echo escape(getSetting('projects_subtitle', 'A selection of projects that showcase my skills and passion for building.')); ?></p>
     </div>
 
     <?php if ($projects): ?>
@@ -337,9 +337,9 @@ $catConfig = [
 <section id="blog">
   <div class="container">
     <div class="text-center" style="margin-bottom:3rem">
-      <span class="section-label">Thoughts & Learnings</span>
-      <h2 class="section-title">Latest <span>Articles</span></h2>
-      <p class="section-subtitle">Insights, tutorials, and lessons from my development journey.</p>
+      <span class="section-label"><?php echo escape(getSetting('blog_label', 'Thoughts & Learnings')); ?></span>
+      <h2 class="section-title"><?php echo escape(getSetting('blog_title_1', 'Latest')); ?> <span><?php echo escape(getSetting('blog_title_2', 'Articles')); ?></span></h2>
+      <p class="section-subtitle"><?php echo escape(getSetting('blog_subtitle', 'Insights, tutorials, and lessons from my development journey.')); ?></p>
     </div>
     <?php if ($notes): ?>
       <div class="projects-grid">
@@ -382,9 +382,9 @@ $catConfig = [
 <section id="contact">
   <div class="container">
     <div class="text-center" style="margin-bottom:3rem">
-      <span class="section-label">Say Hello</span>
-      <h2 class="section-title">Get In <span>Touch</span></h2>
-      <p class="section-subtitle">Have a project in mind? Let's build something great together.</p>
+      <span class="section-label"><?php echo escape(getSetting('contact_label', 'Say Hello')); ?></span>
+      <h2 class="section-title"><?php echo escape(getSetting('contact_title_1', 'Get In')); ?> <span><?php echo escape(getSetting('contact_title_2', 'Touch')); ?></span></h2>
+      <p class="section-subtitle"><?php echo escape(getSetting('contact_subtitle', 'Have a project in mind? Let\'s build something great together.')); ?></p>
     </div>
 
     <div class="contact-grid">
@@ -464,7 +464,7 @@ $catConfig = [
               placeholder="Tell me about your project..."><?php echo !$contactSuccess ? escape($_POST['message'] ?? '') : ''; ?></textarea>
           </div>
           <button type="submit" name="contact_submit" class="btn-primary" style="width:100%;justify-content:center">
-            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Send Message
+            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> <?php echo escape(getSetting('contact_button', 'Send Message')); ?>
           </button>
         </form>
       </div>

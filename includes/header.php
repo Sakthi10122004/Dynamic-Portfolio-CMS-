@@ -71,11 +71,11 @@
                 </a>
 
                 <nav class="navbar-nav" id="navMenu" aria-label="Main navigation">
-                    <a href="#hero" class="nav-link">Home</a>
-                    <a href="#about" class="nav-link">About</a>
-                    <a href="#skills" class="nav-link">Skills</a>
-                    <a href="#projects" class="nav-link">Projects</a>
-                    <a href="#blog" class="nav-link">Blog</a>
+                    <a href="<?php echo BASE_URL; ?>/#hero" class="nav-link"><?php echo escape(getSetting('nav_home', 'Home')); ?></a>
+                    <a href="<?php echo BASE_URL; ?>/#about" class="nav-link"><?php echo escape(getSetting('nav_about', 'About')); ?></a>
+                    <a href="<?php echo BASE_URL; ?>/#skills" class="nav-link"><?php echo escape(getSetting('nav_skills', 'Skills')); ?></a>
+                    <a href="<?php echo BASE_URL; ?>/#projects" class="nav-link"><?php echo escape(getSetting('nav_projects', 'Projects')); ?></a>
+                    <a href="<?php echo BASE_URL; ?>/#blog" class="nav-link"><?php echo escape(getSetting('nav_blog', 'Blog')); ?></a>
                 </nav>
 
                 <div class="navbar-actions">
@@ -88,15 +88,18 @@
                         <a href="<?php echo BASE_URL; ?>/admin/dashboard.php" class="btn-glass btn-sm">
                             <i class="fa-solid fa-gauge-high" aria-hidden="true"></i> Dashboard
                         </a>
+                    <?php else: ?>
+                        <a href="<?php echo BASE_URL; ?>/#contact" class="btn-primary" style="display:none">
+                            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> <?php echo escape(getSetting('nav_cta', 'Get Started')); ?>
+                        </a>
                     <?php endif; ?>
 
-                    <a href="#contact" class="nav-cta">
-                        <i class="fa-solid fa-rocket" aria-hidden="true"></i> Get Started
-                    </a>
-
-                    <!-- Mobile menu toggle -->
-                    <button class="nav-hamburger" aria-label="Toggle mobile menu" id="navToggle" aria-expanded="false">
-                        <span></span><span></span><span></span>
+                    <!-- Mobile Menu Toggle -->
+                    <button class="nav-hamburger" aria-label="Toggle mobile menu" id="navToggle" aria-expanded="false"
+                        aria-controls="navMenu">
+                        <span class="bar bar-1"></span>
+                        <span class="bar bar-2"></span>
+                        <span class="bar bar-3"></span>
                     </button>
                 </div>
             </div>

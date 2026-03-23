@@ -12,11 +12,12 @@ if (empty($isAdminPage)):
             </div>
 
             <nav class="footer-nav" aria-label="Footer navigation">
-                <a href="#hero">Home</a>
-                <a href="#about">About</a>
-                <a href="#skills">Skills</a>
-                <a href="#projects">Projects</a>
-                <a href="#contact">Contact</a>
+                <a href="<?php echo BASE_URL; ?>/#hero"><?php echo escape(getSetting('nav_home', 'Home')); ?></a>
+                <a href="<?php echo BASE_URL; ?>/#about"><?php echo escape(getSetting('nav_about', 'About')); ?></a>
+                <a href="<?php echo BASE_URL; ?>/#skills"><?php echo escape(getSetting('nav_skills', 'Skills')); ?></a>
+                <a href="<?php echo BASE_URL; ?>/#projects"><?php echo escape(getSetting('nav_projects', 'Projects')); ?></a>
+                <a href="<?php echo BASE_URL; ?>/#blog"><?php echo escape(getSetting('nav_blog', 'Blog')); ?></a>
+                <a href="<?php echo BASE_URL; ?>/#contact">Contact</a>
             </nav>
 
             <div class="footer-social">
@@ -50,10 +51,8 @@ if (empty($isAdminPage)):
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; <?php echo date('Y'); ?> &nbsp;
-                <?php echo escape($profile['name'] ?? SITE_NAME); ?>.
-                Crafted with <i class="fa-solid fa-heart" aria-hidden="true"></i> &amp; code.
-            </p>
+            <p style="margin-bottom:.5rem"><?php echo escape(getSetting('footer_text', 'Built with passion and lots of coffee.')); ?></p>
+            <p style="font-size:.8rem;color:var(--ink3)"><?php echo escape(getSetting('footer_copyright', '© 2026 Sakthi. All rights reserved.')); ?></p>
         </div>
     </footer>
 
