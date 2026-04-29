@@ -57,15 +57,8 @@
         <header class="navbar" id="navbar" role="banner">
             <div class="navbar-inner">
                 <a href="<?php echo BASE_URL; ?>/" class="navbar-brand" aria-label="Home">
-                    <div class="brand-icon" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="20" cy="20" r="17" stroke="white" stroke-width="2.5"
-                                fill="rgba(255,255,255,0.1)" />
-                            <path d="M13 29 L20 11 L27 29" stroke="white" stroke-width="2.5" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <line x1="15.5" y1="23" x2="24.5" y2="23" stroke="white" stroke-width="2"
-                                stroke-linecap="round" />
-                        </svg>
+                    <div class="brand-icon" aria-hidden="true" style="background: transparent; box-shadow: 0 0 20px rgba(99,102,241,0.5); border: 1px solid rgba(255,255,255,0.1);">
+                        <img src="<?php echo BASE_URL; ?>/assets/brand_tech_logo.png" alt="Tech Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
                     </div>
                     <span class="brand-name"><?php echo escape(SITE_NAME); ?></span>
                 </a>
