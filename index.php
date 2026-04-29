@@ -194,8 +194,14 @@ $catConfig = [
     </div>
     <div class="about-grid">
       <div class="reveal">
-        <div class="glass-card about-illustration">
-          <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+        <style>
+          @keyframes float3d {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(1.5deg); }
+          }
+        </style>
+        <div class="about-illustration-3d" style="border-radius: var(--radius); aspect-ratio: 1; display: flex; align-items: center; justify-content: center; position: relative;">
+          <img src="<?php echo BASE_URL; ?>/assets/tech_3d.png" alt="3D Tech Element" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius); box-shadow: var(--shadow-glow-cyan), var(--shadow-card); animation: float3d 6s ease-in-out infinite; border: 1px solid var(--glass-border);">
         </div>
       </div>
       <div class="about-content reveal" data-delay="150">
