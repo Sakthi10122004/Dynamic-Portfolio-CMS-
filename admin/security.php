@@ -92,8 +92,86 @@ require_once '../includes/header.php';
         </div>
         <?php endif; ?>
 
-        <!-- ── Change Password ──────────────────────────── -->
-        <div class="admin-card">
+        <style>
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            align-items: start;
+            margin-top: 1.5rem;
+        }
+        .pw-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .pw-wrap input {
+            width: 100%;
+            padding-right: 45px !important;
+        }
+        .pw-toggle {
+            position: absolute;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pw-toggle:hover {
+            color: var(--primary-light);
+            transform: scale(1.15);
+        }
+        .pw-strength-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-top: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+        #strengthFill {
+            height: 100%;
+            width: 0;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease;
+            border-radius: 10px;
+        }
+        .current-question-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+            border: 1px solid rgba(99,102,241,0.25);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .current-question-box:hover {
+            border-color: rgba(99,102,241,0.5);
+            box-shadow: 0 8px 32px rgba(99,102,241,0.2);
+        }
+        .current-question-box::before {
+            content: '\f059';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: -10px;
+            bottom: -20px;
+            font-size: 6rem;
+            color: rgba(99,102,241,0.08);
+            pointer-events: none;
+            transform: rotate(-15deg);
+        }
+        </style>
+
+        <div class="security-grid">
+            <!-- ── Change Password ──────────────────────────── -->
+            <div class="admin-card">
             <div class="admin-card-header">
                 <h2><i class="fa-solid fa-lock"></i> Change Password</h2>
             </div>
@@ -161,9 +239,13 @@ require_once '../includes/header.php';
                 </p>
 
             <?php if (!empty($currentUser['security_question'])): ?>
-            <div style="background:rgba(167,139,250,0.06); border:1px solid var(--glass-border); border-radius:12px; padding:1.25rem; margin-bottom:1.5rem">
-                <div style="color:var(--text-muted);font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:0.5rem">Current question</div>
-                <div style="font-size:1rem; color:var(--text-strong); font-weight:500"><?php echo escape($currentUser['security_question']); ?></div>
+            <div class="current-question-box">
+                <div style="color:var(--primary-light);font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem;">
+                    <i class="fa-solid fa-circle-question"></i> Current question
+                </div>
+                <div style="font-size:1.1rem; color:var(--text-strong); font-weight:600; line-height: 1.4; position: relative; z-index: 1;">
+                    <?php echo escape($currentUser['security_question']); ?>
+                </div>
             </div>
             <?php else: ?>
             <div class="flash flash-info" style="margin-bottom:1.5rem">
@@ -230,6 +312,7 @@ require_once '../includes/header.php';
                 </div>
             </form>
             </div>
+        </div>
         </div>
     </div>
 </div>
