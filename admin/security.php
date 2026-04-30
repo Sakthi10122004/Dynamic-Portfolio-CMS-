@@ -108,6 +108,23 @@ require_once '../includes/header.php';
         .pw-wrap input {
             width: 100%;
             padding-right: 45px !important;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            color: #f1eeff;
+            font-family: 'Inter', sans-serif;
+            font-size: .95rem;
+            padding: 1rem 1.25rem;
+            outline: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(12px);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .pw-wrap input:focus, select#security_question:focus {
+            border-color: #a78bfa;
+            background: rgba(139, 92, 246, 0.08);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), inset 0 2px 4px rgba(0,0,0,0.1), 0 0 20px rgba(139, 92, 246, 0.2);
+            transform: translateY(-2px);
         }
         .pw-toggle {
             position: absolute;
@@ -179,7 +196,7 @@ require_once '../includes/header.php';
                 <form method="POST" class="admin-form" id="pwForm">
                 <?php echo csrfField(); ?>
 
-                <div class="form-group">
+                <div class="field">
                     <label for="current_password">Current Password</label>
                     <div class="pw-wrap">
                         <input type="password" id="current_password" name="current_password"
@@ -191,7 +208,7 @@ require_once '../includes/header.php';
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="field">
                     <label for="new_password">New Password</label>
                     <div class="pw-wrap">
                         <input type="password" id="new_password" name="new_password"
@@ -206,7 +223,7 @@ require_once '../includes/header.php';
                     <small id="strengthLabel" style="display:block;margin-top:0.25rem;"></small>
                 </div>
 
-                <div class="form-group">
+                <div class="field">
                     <label for="confirm_password">Confirm New Password</label>
                     <div class="pw-wrap">
                         <input type="password" id="confirm_password" name="confirm_password"
@@ -256,7 +273,7 @@ require_once '../includes/header.php';
             <form method="POST" class="admin-form" id="sqForm">
                 <?php echo csrfField(); ?>
 
-                <div class="form-group">
+                <div class="field">
                     <label for="security_question">Security Question</label>
                     <select id="security_question" name="security_question" required>
                         <option value="">— Select a question —</option>
@@ -280,7 +297,7 @@ require_once '../includes/header.php';
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="field">
                     <label for="security_answer">Answer</label>
                     <div class="pw-wrap">
                         <input type="password" id="security_answer" name="security_answer"
@@ -292,7 +309,7 @@ require_once '../includes/header.php';
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="field">
                     <label for="confirm_answer">Confirm Answer</label>
                     <div class="pw-wrap">
                         <input type="password" id="confirm_answer" name="confirm_answer"
