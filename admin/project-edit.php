@@ -131,9 +131,12 @@ require_once '../includes/header.php';
             <p class="form-hint">Max 5MB. Formats: JPG, PNG, WebP, GIF.</p>
           </div>
 
-          <div class="field" style="display:flex;align-items:center;gap:.6rem">
-            <input type="checkbox" id="featured" name="featured" <?php echo ($project['featured'] ?? false) || isset($_POST['featured']) ? 'checked' : ''; ?>>
-            <label for="featured" style="margin-bottom:0;cursor:pointer">⭐ Mark as Featured Project</label>
+          <div class="field">
+            <label class="admin-checkbox">
+              <input type="checkbox" name="featured" value="1" <?php echo ($project['featured'] ?? false) || isset($_POST['featured']) ? 'checked' : ''; ?>>
+              <span class="checkmark"></span>
+              <span class="checkbox-label"><i class="fa-solid fa-star" style="color: #fbbf24;"></i> Mark as Featured Project</span>
+            </label>
           </div>
 
           <div class="form-actions" style="margin-top:1.5rem">
