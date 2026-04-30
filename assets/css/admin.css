@@ -1127,6 +1127,7 @@
     cursor: pointer;
     font-size: .9rem;
     padding: .2rem;
+    z-index: 10;
 }
 
 /* ── Recent Items ── */
