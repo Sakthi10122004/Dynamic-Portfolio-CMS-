@@ -36,10 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       );
     }
     
-    // Update the dynamic stats in the settings table
-    $db->query("UPDATE settings SET setting_value=? WHERE setting_key='stat_1_label'", [$stat_1], 's');
-    $db->query("UPDATE settings SET setting_value=? WHERE setting_key='stat_2_label'", [$stat_2], 's');
-    $db->query("UPDATE settings SET setting_value=? WHERE setting_key='stat_3_value'", [$stat_3], 's');
+    // Update the dynamic stats in the settings table using ON DUPLICATE KEY UPDATE
+    $db->query("INSERT INTO settings (setting_key, setting_value, setting_label, setting_group, setting_type) VALUES ('stat_1_label', ?, 'Stat 1 Label', 'hero', 'text') ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)", [$stat_1], 's');
+    $db->query("INSERT INTO settings (setting_key, setting_value, setting_label, setting_group, setting_type) VALUES ('stat_2_label', ?, 'Stat 2 Label', 'hero', 'text') ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)", [$stat_2], 's');
+    $db->query("INSERT INTO settings (setting_key, setting_value, setting_label, setting_group, setting_type) VALUES ('stat_3_value', ?, 'Stat 3 Value', 'hero', 'text') ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)", [$stat_3], 's');
     
     $flash = 'Hero section updated successfully!';
   }
