@@ -129,6 +129,8 @@ require_once '../includes/header.php';
         .pw-toggle {
             position: absolute;
             right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
             background: transparent;
             border: none;
             color: var(--text-muted);
@@ -142,7 +144,7 @@ require_once '../includes/header.php';
         }
         .pw-toggle:hover {
             color: var(--primary-light);
-            transform: scale(1.15);
+            transform: translateY(-50%) scale(1.15);
         }
         .pw-strength-bar {
             height: 6px;
