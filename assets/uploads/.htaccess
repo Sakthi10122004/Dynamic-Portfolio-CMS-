@@ -7,9 +7,9 @@
 </FilesMatch>
 
 # Allow image and document types
-<FilesMatch "\.(jpg|jpeg|png|gif|webp|pdf|doc|docx)$">
-    Require all granted
-</FilesMatch>
+# <FilesMatch "\.(jpg|jpeg|png|gif|webp|pdf|doc|docx)$">
+#     Require all granted
+# </FilesMatch>
 
 # Set correct MIME types
 AddType image/webp .webp
