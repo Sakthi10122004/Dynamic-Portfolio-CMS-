@@ -1,5 +1,5 @@
 # Allow image files to be served from uploads
-Options -Indexes -ExecCGI
+# Options -Indexes -ExecCGI
 
 # Block PHP execution in uploads directory (security)
 <FilesMatch "\.php$">

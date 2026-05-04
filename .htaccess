@@ -3,10 +3,10 @@
 # ============================================================
 
 # Prevent directory listing (fixes 403 on blog/note URLs)
-Options -Indexes
+# Options -Indexes
 
 # Disable MultiViews to prevent conflicts
-Options -MultiViews
+# Options -MultiViews
 
 # Custom Error Pages (uses relative paths — works on any host)
 ErrorDocument 400 /error.php
